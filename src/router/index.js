@@ -12,6 +12,16 @@ export const constantRoutes = [
     component: () => import('@/views/login/index'),
     hidden: true
   },
+  {
+    path: '/register',
+    component: () => import('@/views/register/index'),
+    hidden: true
+  },
+  {
+    path: '/forget',
+    component: () => import('@/views/register/forget'),
+    hidden: true
+  },
 
   {
     path: '/404',
@@ -32,21 +42,33 @@ export const constantRoutes = [
   {
     path: '/customInfo',
     component: Layout,
-    redirect: '/example/table',
+    redirect: '/customInfo',
     name: 'Example',
     meta: { title: '个人中心', icon: 'example' },
     children: [
       {
+        path: 'main',
+        name: 'Mian',
+        component: () => import('@/views/customInfo/main'),
+        meta: { title: '主账号' }
+      },
+      {
+        path: 'rtkmain',
+        name: 'RTKMain',
+        component: () => import('@/views/customInfo/RTKmain'),
+        meta: { title: 'RTK账号' }
+      },
+      {
         path: 'table',
         name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: '主账号', icon: 'table' }
+        component: () => import('@/views/customInfo/business'),
+        meta: { title: '业务流水' }
       },
       {
         path: 'tree',
         name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: '业务流水', icon: 'tree' }
+        component: () => import('@/views/customInfo/RTKposition'),
+        meta: { title: 'RTK位置' }
       }
     ]
   },
@@ -64,17 +86,22 @@ export const constantRoutes = [
         path: 'menu1',
         component: () => import('@/views/nested/menu1/index'), // Parent router-view
         name: 'Menu1',
-        meta: { title: '联系人变更' }
+        meta: { title: '办理进度' }
       },
       {
         path: 'menu2',
         component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'GNSS处理申请' }
+        meta: { title: '坐标转换联系人变更申请' }
       },
       {
         path: 'menu3',
         component: () => import('@/views/nested/menu2/index'),
-        meta: { title: '业务持续' }
+        meta: { title: 'RTK密码修改处理申请' }
+      },
+      {
+        path: 'menu4',
+        component: () => import('@/views/nested/menu2/index'),
+        meta: { title: '静态数据处理申请' }
       }
     ]
   },
@@ -107,7 +134,7 @@ export const constantRoutes = [
     redirect: '/nested/menu1',
     name: 'Nested',
     meta: {
-      title: '售后管理',
+      title: '业务查询',
       icon: 'table'
     },
     children: [
@@ -121,62 +148,6 @@ export const constantRoutes = [
         path: 'menu2',
         component: () => import('@/views/nested/menu2/index'),
         meta: { title: '售后分析' }
-      }
-    ]
-  },
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: '费用管理',
-      icon: 'table'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: '费用充值管理' }
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: '计算折扣管理' }
-      }
-    ]
-  },
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: '系统管理',
-      icon: 'table'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: '日志管理' }
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: '数据管理' }
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: '权限管理' }
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: '基本管理' }
       }
     ]
   },

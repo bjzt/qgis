@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">系统登录</h3>
+        <h3 class="title">新用户注册</h3>
       </div>
 
       <el-form-item prop="username">
@@ -41,11 +41,10 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">确定</el-button>
 
       <div class="tips">
-        <span style="margin-right:20px;"><router-link to="register">新用户注册</router-link></span>
-        <span><router-link to="forget">忘记密码？</router-link></span>
+        <span style="margin-right:20px;"><router-link to="login">返回登陆界面</router-link></span>
       </div>
 
     </el-form>
@@ -60,14 +59,14 @@ export default {
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error('请输入正确的用户名'))
+        callback(new Error('Please enter the correct user name'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('密码不能少于6位'))
+        callback(new Error('The password can not be less than 6 digits'))
       } else {
         callback()
       }
