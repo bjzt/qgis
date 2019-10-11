@@ -73,34 +73,38 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/nested1',
+    path: '/business',
     component: Layout,
-    redirect: '/nested/one',
-    name: 'one',
+    redirect: '/business',
+    name: 'Business',
     meta: {
       title: '个人业务',
       icon: 'table'
     },
     children: [
       {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
+        path: 'rateProgress',
+        component: () => import('@/views/business/rateProgress'), // Parent router-view
         meta: { title: '办理进度' }
       },
       {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
+        path: 'handle',
+        component: () => import('@/views/business/handle'), // Parent router-view
+        meta: { title: '业务办理' }
+      },
+      {
+        path: 'changePhone',
+        component: () => import('@/views/business/changePhone'),
         meta: { title: '坐标转换联系人变更申请' }
       },
       {
-        path: 'menu3',
-        component: () => import('@/views/nested/menu2/index'),
+        path: 'RTKpassword',
+        component: () => import('@/views/business/RTKpassword'),
         meta: { title: 'RTK密码修改处理申请' }
       },
       {
-        path: 'menu4',
-        component: () => import('@/views/nested/menu2/index'),
+        path: 'staticData',
+        component: () => import('@/views/business/staticData'),
         meta: { title: '静态数据处理申请' }
       }
     ]

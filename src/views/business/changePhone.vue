@@ -1,17 +1,19 @@
 <template>
   <div style="margin: 20px">
     <el-row>
-      <el-col :span="22">
+      <el-col :span="20">
         <el-form :inline="true">
           <el-form-item label-width="20px">
-              <el-input placeholder="公司名称">
+              <el-input placeholder="用户姓名">
                   <el-button slot="append" icon="el-icon-search"></el-button>
               </el-input>
           </el-form-item>
         </el-form>
       </el-col>
-      <el-col :span="2">
+      <el-col :span="4">
         <el-button type="primary" size="small" icon="el-icon-refresh"></el-button>
+        <el-button type="primary" size="small">模板下载</el-button>
+        <el-button type="primary" size="small">申请联系人</el-button>
       </el-col>
     </el-row>
     <el-table
@@ -25,27 +27,22 @@
     </el-table-column>
       <el-table-column
         prop="date"
-        label="公司名称"
+        label="联系人姓名"
         width="180">
       </el-table-column>
       <el-table-column
         prop="name"
-        label="充值前金额"
+        label="联系人电话"
         width="180">
       </el-table-column>
       <el-table-column
         prop="name"
-        label="本次充值金额"
+        label="审核状态"
         width="180">
       </el-table-column>
       <el-table-column
         prop="address"
-        label="充值类型"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="address"
-        label="充值时间">
+        label="创建时间">
       </el-table-column>
     </el-table>
     <el-pagination

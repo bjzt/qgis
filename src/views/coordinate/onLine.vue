@@ -110,14 +110,14 @@
         <div>
           <el-switch
             v-model="fileUpload"
-            active-text="文件上传"
-            inactive-text="文本上传">
+            active-text="上传文件"
+            inactive-text="文本框输入">
           </el-switch>
           <el-form>
             <el-form-item label="文件格式" label-width="120px">
-              
+              <p>点名,B(DD.MMS),L(DD.MMSS),H,未修正的天线高</p>
             </el-form-item>
-            <el-form-item label="上传文件" label-width="120px">
+            <el-form-item v-if="fileUpload" label="上传文件" label-width="120px">
               <el-upload
                 class="upload-demo"
                 action="https://jsonplaceholder.typicode.com/posts/"
@@ -131,11 +131,35 @@
                 <el-button size="mini">上传文件</el-button>
               </el-upload>
             </el-form-item>
-            <el-form-item label="数据上传地址" label-width="120px">
+            <el-form-item v-if="fileUpload" label="数据上传地址" label-width="120px">
               
+            </el-form-item>
+            <el-form-item v-if="!fileUpload" label="坐标转换内容" label-width="120px">
+              <el-input style="width:400px" type="textarea" :rows="3"></el-input>
             </el-form-item>
             <el-form-item label="手机号" label-width="120px">
               
+            </el-form-item>
+            <el-form-item label="短信验证" label-width="120px">
+              <el-input style="width:250px" size="small"></el-input> <el-button size="small">发送验证码</el-button>
+            </el-form-item>
+            <el-form-item label-width="120px">
+              <el-button type="primary" size="small">开始转换坐标</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+      </el-form-item>
+      <el-form-item label="数据下载" label-width="120px">
+        <div>
+          <el-form>
+            <el-form-item label="写入数据" label-width="120px">
+              
+            </el-form-item>
+            <el-form-item label="转换处理" label-width="120px">
+              
+            </el-form-item>
+            <el-form-item label-width="120px">
+              <el-button type="primary" size="small">查询结果</el-button>
             </el-form-item>
           </el-form>
         </div>
