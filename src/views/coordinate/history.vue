@@ -1,12 +1,20 @@
 <template>
   <div style="margin: 20px">
+    
     <el-row>
       <el-col :span="22">
         <el-form :inline="true">
-          <el-form-item label-width="20px">
-              <el-input placeholder="公司名称">
-                  <el-button slot="append" icon="el-icon-search"></el-button>
-              </el-input>
+          <el-form-item label="关键字:">
+              <el-input placeholder="公司名称/主账号"></el-input>
+          </el-form-item>
+          <el-form-item label="开始时间:">
+              <el-input></el-input>
+          </el-form-item>
+          <el-form-item label="结束时间:">
+              <el-input></el-input>
+          </el-form-item>
+          <el-form-item>
+              <el-button icon="el-icon-search" type="primary"></el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -29,22 +37,32 @@
       </el-table-column>
       <el-table-column
         prop="name"
-        label="充值前金额"
+        label="公司账号"
         width="180">
       </el-table-column>
       <el-table-column
         prop="name"
-        label="本次充值金额"
+        label="使用人"
         width="180">
       </el-table-column>
       <el-table-column
         prop="address"
-        label="充值类型"
+        label="使用人电话"
         width="180">
       </el-table-column>
       <el-table-column
         prop="address"
-        label="充值时间">
+        label="源文件"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="address"
+        label="转换文件"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="address"
+        label="转换时间">
       </el-table-column>
     </el-table>
     <el-pagination

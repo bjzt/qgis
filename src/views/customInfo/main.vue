@@ -22,7 +22,7 @@
             <el-input></el-input>
           </el-form-item>
           <el-form-item label="坐标转换支付" label-width="120px">
-            <el-select v-model="value" placeholder="请选择">
+            <el-select placeholder="请选择">
               <!-- <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -53,8 +53,8 @@
               :limit="3"
               :on-exceed="handleExceed"
               :file-list="fileList">
-            <el-button size="mini">添加图片</el-button>
-            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+              <el-button size="mini">添加图片</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
             </el-upload>
           </el-form-item>
           <el-form-item label="预览" label-width="120px">

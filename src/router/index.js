@@ -106,9 +106,9 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/nested2',
+    path: '/coordinate',
     component: Layout,
-    redirect: '/nested/menu1',
+    redirect: '/coordinate',
     name: 'Nested',
     meta: {
       title: '坐标转换',
@@ -116,14 +116,14 @@ export const constantRoutes = [
     },
     children: [
       {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
+        path: 'onLine',
+        component: () => import('@/views/coordinate/onLine'), // Parent router-view
+        name: 'OnLine',
         meta: { title: '在线坐标转换' }
       },
       {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
+        path: 'history',
+        component: () => import('@/views/coordinate/history'),
         meta: { title: '查询历史记录' }
       }
     ]
