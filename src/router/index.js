@@ -43,7 +43,7 @@ export const constantRoutes = [
     path: '/customInfo',
     component: Layout,
     redirect: '/customInfo',
-    name: 'Example',
+    name: 'CustomInfo',
     meta: { title: '个人中心', icon: 'example' },
     children: [
       {
@@ -144,13 +144,13 @@ export const constantRoutes = [
     children: [
       {
         path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
+        component: () => import('@/views/business/staticData'), // Parent router-view
         name: 'Menu1',
         meta: { title: '售后管理' }
       },
       {
         path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
+        component: () => import('@/views/business/staticData'),
         meta: { title: '售后分析' }
       }
     ]

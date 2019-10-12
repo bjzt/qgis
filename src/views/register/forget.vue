@@ -1,9 +1,9 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+    <el-form ref="loginForm" :model="registerForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">新用户注册</h3>
+        <h3 class="title">忘记密码</h3>
       </div>
 
       <el-form-item prop="username">
@@ -12,8 +12,8 @@
         </span>
         <el-input
           ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
+          v-model="registerForm.username"
+          placeholder="请输入绑定的手机号"
           name="username"
           type="text"
           tabindex="1"
@@ -28,20 +28,52 @@
         <el-input
           :key="passwordType"
           ref="password"
-          v-model="loginForm.password"
+          v-model="registerForm.password"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="新密码"
           name="password"
           tabindex="2"
           auto-complete="on"
-          @keyup.enter.native="handleLogin"
+          @keyup.enter.native="handleRegister"
         />
         <span class="show-pwd" @click="showPwd">
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-form-item prop="repassword">
+        <span class="svg-container">
+          <svg-icon icon-class="password" />
+        </span>
+        <el-input
+          :key="repasswordType"
+          ref="repassword"
+          v-model="registerForm.repassword"
+          :type="repasswordType"
+          placeholder="确认新密码"
+          name="repassword"
+          tabindex="3"
+          auto-complete="on"
+          @keyup.enter.native="handleRegister"
+        />
+        <span class="show-pwd" @click="showPwd(2)">
+          <svg-icon :icon-class="repasswordType === 'password' ? 'eye' : 'eye-open'" />
+        </span>
+      </el-form-item>
+
+      <el-form-item prop="code">
+        <el-input
+          ref="code"
+          v-model="registerForm.code"
+          placeholder="输入验证码"
+          name="code"
+          tabindex="4"
+          auto-complete="on"
+          @keyup.enter.native="handleRegister"
+        />
+      </el-form-item>
+
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleRegister">确定提交</el-button>
 
       <div class="tips">
         <span style="margin-right:20px;"><router-link to="login">返回登陆界面</router-link></span>
@@ -52,36 +84,46 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
-
 export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+      if (value.length == "") {
+        callback(new Error('手机号不能为空'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error('密码不能少于6位'))
+      } else {
+        callback()
+      }
+    }
+    const validateRePassword = (rule, value, callback) => {
+      if (value.length < 6) {
+        callback(new Error('密码不能少于6位'))
+      } else if (this.registerForm.password != this.registerForm.repassword) {
+        callback(new Error('密码不一致'))
       } else {
         callback()
       }
     }
     return {
-      loginForm: {
-        username: 'admin',
-        password: '111111'
+      registerForm: {
+        username: '',
+        password: '',
+        repassword: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }],
+        repassword: [{ required: true, trigger: 'blur', validator: validateRePassword }]
       },
       loading: false,
       passwordType: 'password',
+      repasswordType: 'password',
       redirect: undefined
     }
   },
@@ -94,28 +136,40 @@ export default {
     }
   },
   methods: {
-    showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = ''
+    showPwd(value) {
+      if (value === 2) {
+        if (this.repasswordType === 'password') {
+          this.repasswordType = ''
+        } else {
+          this.repasswordType = 'password'
+        }
+        this.$nextTick(() => {
+        this.$refs.repassword.focus()
+      })
       } else {
-        this.passwordType = 'password'
-      }
-      this.$nextTick(() => {
+        if (this.passwordType === 'password') {
+          this.passwordType = ''
+        } else {
+          this.passwordType = 'password'
+        }
+        this.$nextTick(() => {
         this.$refs.password.focus()
       })
+      }
     },
-    handleLogin() {
+    handleRegister() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+          this.$store.dispatch('user/forget', this.registerForm).then(() => {
+            this.$router.push({ path: '/login' })
             this.loading = false
           }).catch(() => {
             this.loading = false
           })
         } else {
-          console.log('error submit!!')
+          this.loading = false
+          console.log('注册失败')
           return false
         }
       })
