@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'Vue Admin Template',
+  title: 'Qgis客户服务系统',
 
   /**
    * @type {boolean} true | false
