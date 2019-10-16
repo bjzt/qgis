@@ -24,28 +24,33 @@
       width="50">
     </el-table-column>
       <el-table-column
-        prop="date"
+        prop="conpanyName"
         label="公司名称"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="name"
+        prop="oldbalance"
         label="充值前金额"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="name"
+        prop="money"
         label="本次充值金额"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="play"
         label="充值类型"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="created"
+        width="180"
         label="充值时间">
+      </el-table-column>
+      <el-table-column
+        prop="note"
+        label="备注">
       </el-table-column>
     </el-table>
     <el-pagination

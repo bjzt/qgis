@@ -5,13 +5,16 @@
       <el-col :span="22">
         <el-form :inline="true">
           <el-form-item label="关键字:">
-              <el-input placeholder="公司名称/主账号"></el-input>
+              <el-input v-model="map.name" placeholder="公司名称/主账号"></el-input>
           </el-form-item>
-          <el-form-item label="开始时间:">
-              <el-input></el-input>
-          </el-form-item>
-          <el-form-item label="结束时间:">
-              <el-input></el-input>
+          <el-form-item label="选择时间范围:">
+              <el-date-picker
+                v-model="date"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
           </el-form-item>
           <el-form-item>
               <el-button icon="el-icon-search" type="primary"></el-button>
@@ -31,12 +34,12 @@
       width="50">
     </el-table-column>
       <el-table-column
-        prop="date"
+        prop="conpanyName"
         label="公司名称"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="name"
+        prop="username"
         label="公司账号"
         width="180">
       </el-table-column>
@@ -46,22 +49,22 @@
         width="180">
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="phone"
         label="使用人电话"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="oldFile"
         label="源文件"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="newFile"
         label="转换文件"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="created"
         label="转换时间">
       </el-table-column>
     </el-table>
@@ -81,9 +84,11 @@
 export default {
   data() {
     return {
+      date: [],
       tableData: [],
       currentPage: 5,
-      tatol: 0
+      tatol: 0,
+      map: {} //查询条件
     }
   },
   created() {

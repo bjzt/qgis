@@ -1,14 +1,5 @@
 <template>
   <div style="margin: 20px">
-    <!-- <el-row>
-      <el-col :span="20">
-        <div><pre></pre></div>
-      </el-col>
-      <el-col :span="4">
-        <el-button type="primary" size="small">模板下载</el-button>
-        <el-button type="primary" size="small">上传文件</el-button>
-      </el-col>
-    </el-row> -->
     <div style="position:absolute;right:20px;top:20px;z-index:9">
       <el-button type="primary" size="small">模板下载</el-button>
       <el-button type="primary" size="small">上传文件</el-button>
@@ -21,17 +12,17 @@
         :header-cell-style="{background:'#eef1f6',color:'#606266'}"
         style="width: 100%">
           <el-table-column
-              prop="address"
+              prop="filename"
               align="right"
               label="文件名">
           </el-table-column>
           <el-table-column
-              prop="address"
+              prop="created"
               align="right"
               label="上传时间">
           </el-table-column>
           <el-table-column
-              prop="address"
+              prop="note"
               align="right"
               label="操作">
           </el-table-column>

@@ -1,6 +1,6 @@
 <template>
   <div style="margin: 20px">
-    <h1>办理进度</h1>
+    
   </div>
 </template>
 
@@ -8,6 +8,7 @@
 export default {
   data() {
     return {
+      user: {}
     }
   },
   created() {

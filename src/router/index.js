@@ -34,9 +34,9 @@ export const constantRoutes = [
     redirect: '/dashboard',
     children: [{
       path: 'dashboard',
-      name: 'Dashboard',
+      name: '首页',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '首页', icon: 'dashboard' }
     }]
   },
   {
@@ -44,7 +44,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/customInfo',
     name: 'CustomInfo',
-    meta: { title: '个人中心', icon: 'example' },
+    meta: { title: '个人中心', icon: 'user' },
     children: [
       {
         path: 'main',
@@ -53,22 +53,15 @@ export const constantRoutes = [
         meta: { title: '主账号' }
       },
       {
-        path: 'rtkmain',
-        name: 'RTKMain',
-        component: () => import('@/views/customInfo/RTKmain'),
-        meta: { title: 'RTK账号' }
+        path: 'password',
+        component: () => import('@/views/business/password'),
+        meta: { title: '修改密码' }
       },
       {
         path: 'table',
         name: 'Table',
         component: () => import('@/views/customInfo/business'),
         meta: { title: '业务流水' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/customInfo/RTKposition'),
-        meta: { title: 'RTK位置' }
       }
     ]
   },
@@ -83,24 +76,9 @@ export const constantRoutes = [
     },
     children: [
       {
-        path: 'rateProgress',
-        component: () => import('@/views/business/rateProgress'), // Parent router-view
-        meta: { title: '办理进度' }
-      },
-      {
-        path: 'handle',
-        component: () => import('@/views/business/handle'), // Parent router-view
-        meta: { title: '业务办理' }
-      },
-      {
         path: 'changePhone',
         component: () => import('@/views/business/changePhone'),
         meta: { title: '坐标转换联系人变更申请' }
-      },
-      {
-        path: 'RTKpassword',
-        component: () => import('@/views/business/RTKpassword'),
-        meta: { title: 'RTK密码修改处理申请' }
       },
       {
         path: 'staticData',
@@ -121,7 +99,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'onLine',
-        component: () => import('@/views/coordinate/onLine'), // Parent router-view
+        component: () => import('@/views/coordinate/onLine'), 
         name: 'OnLine',
         meta: { title: '在线坐标转换' }
       },
@@ -133,26 +111,32 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/nested',
+    path: '/systemManage',
     component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
+    redirect: '/systemManage',
+    name: 'SystemManage',
     meta: {
-      title: '业务查询',
-      icon: 'table'
+      title: '系统管理',
+      icon: 'example'
     },
     children: [
       {
-        path: 'menu1',
-        component: () => import('@/views/business/staticData'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: '售后管理' }
+        path: 'customerManage',
+        component: () => import('@/views/system/customerManage'),
+        name: 'OnLine',
+        meta: { title: '客户管理' }
       },
       {
-        path: 'menu2',
-        component: () => import('@/views/business/staticData'),
-        meta: { title: '售后分析' }
-      }
+        path: 'history',
+        component: () => import('@/views/system/linkPhoneManage'),
+        meta: { title: '客户联系人管理' }
+      },
+      {
+        path: 'log',
+        component: () => import('@/views/system/linkPhoneManage'),
+        meta: { title: '系统日志管理' }
+      },
+
     ]
   },
 
