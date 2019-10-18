@@ -1,8 +1,8 @@
 <template>
   <div style="margin: 20px;">
-    <el-tabs type="card" @tab-click="handleClick">
+    <el-tabs type="card">
       <el-tab-pane label="基本信息">
-        <el-form v-model="customInfo" size="mini">
+        <el-form v-model="customInfo" size="small">
           <el-form-item label="公司名称" label-width="120px">
             <el-input v-model="customInfo.companyName"></el-input>
           </el-form-item>

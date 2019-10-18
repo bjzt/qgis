@@ -71,23 +71,27 @@
     <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
-      :current-page="currentPage"
+      :current-page="listQuery.currentPage"
       :page-sizes="[5, 10, 20, 50]"
-      :page-size="100"
+      :page-size="listQuery.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="tatol">
+      :total="total">
     </el-pagination>
   </div>
 </template>
 
 <script>
+import request from '@/utils/request'
 export default {
   data() {
     return {
       date: [],
       tableData: [],
-      currentPage: 5,
-      tatol: 0,
+      listQuery: {
+        currentPage: 1,
+        pageSize: 5,
+      },
+      total: 0,
       map: {} //查询条件
     }
   },
@@ -96,12 +100,27 @@ export default {
   },
   methods: {
     fetchData() {
+      this.getList()
+    },
+    getList() {
+      //查询列表
+      this.listLoading = true;
+      request({
+        url: "/changeFileRecord/list",
+        method: "post",
+        params: this.listQuery,
+        data: this.map
+      }).then(data => {
+        this.listLoading = false;
+        this.tableData = data.data.rows;
+        this.total = data.data.total;
+      })
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+      this.getList()
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      this.getList()
     }
   }
 }

@@ -1,10 +1,10 @@
 <template>
   <div style="margin: 20px">
-    <div style="position:absolute;right:20px;top:20px;z-index:9">
+    <div style="position:absolute;right:20px;top:70px;z-index:9">
       <el-button type="primary" size="small">模板下载</el-button>
       <el-button type="primary" size="small">上传文件</el-button>
     </div>
-    <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+    <el-tabs type="card">
       <el-tab-pane label="GNSS数据申请">
         <el-table
         :data="tableData"
@@ -28,13 +28,13 @@
           </el-table-column>
         </el-table>
         <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="currentPage"
-        :page-sizes="[5, 10, 20, 50]"
-        :page-size="100"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="tatol">
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="listQuery.currentPage"
+          :page-sizes="[5, 10, 20, 50]"
+          :page-size="listQuery.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total">
         </el-pagination>
       </el-tab-pane>
     </el-tabs>
@@ -42,9 +42,20 @@
 </template>
 
 <script>
+import request from '@/utils/request'
 export default {
   data() {
     return {
+      tableData: [],
+      listLoading: false,//数据加载等待动画
+      listQuery: {
+        currentPage: 1,
+        pageSize: 5,
+      },
+      total: 0,
+      map: {
+        userId: ""
+      }//查询条件
     }
   },
   created() {
@@ -52,6 +63,27 @@ export default {
   },
   methods: {
     fetchData() {
+      this.getList()
+    },
+    getList() {
+      //查询列表
+      this.listLoading = true;
+      request({
+        url: "/fileRecord/list",
+        method: "post",
+        params: this.listQuery,
+        data: this.map
+      }).then(data => {
+        this.listLoading = false;
+        this.tableData = data.data.rows;
+        this.total = data.data.total;
+      })
+    },
+    handleSizeChange(val) {
+      this.getList()
+    },
+    handleCurrentChange(val) {
+      this.getList()
     }
   }
 }

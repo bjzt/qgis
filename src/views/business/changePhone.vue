@@ -11,13 +11,15 @@
         </el-form>
       </el-col>
     </el-row>
-    <div style="position:absolute;right:20px;top:20px;z-index:9">
-      <el-button type="primary" size="small" icon="el-icon-refresh"></el-button>
+    <div style="position:absolute;right:20px;top:70px;z-index:9">
+      <el-button type="primary" @click="getList" size="small" icon="el-icon-refresh"></el-button>
         <el-button type="primary" @click="downloadTemplate" size="small">模板下载</el-button>
         <el-button type="primary" @click="linkPhoneVisible = true; linkPhone = {}" size="small">申请联系人</el-button>
     </div>
     <el-table
       :data="tableData"
+      v-loading.body="listLoading" 
+      element-loading-text="拼命加载中"
       :header-cell-style="{background:'#eef1f6',color:'#606266'}"
       size="small"
       style="width: 100%">
@@ -35,10 +37,12 @@
         label="联系人电话"
         width="180">
       </el-table-column>
-      <el-table-column
-        prop="status"
-        label="审核状态"
-        width="180">
+      <el-table-column prop="status" label="审核状态" width="180">
+        <template slot-scope="scope">
+          <span v-if="scope.row.status==-1">未通过</span>
+          <span v-if="scope.row.status==0">审核中</span>
+          <span v-if="scope.row.status==1">已通过</span>
+        </template>
       </el-table-column>
       <el-table-column
         prop="created"
@@ -48,11 +52,11 @@
     <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
-      :current-page="currentPage"
+      :current-page="listQuery.currentPage"
       :page-sizes="[5, 10, 20, 50]"
-      :page-size="100"
+      :page-size="listQuery.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="tatol">
+      :total="total">
     </el-pagination>
 
     <el-dialog
@@ -77,13 +81,19 @@
 </template>
 
 <script>
+import request from '@/utils/request'
+
 export default {
   data() {
     return {
       tableData: [],
       linkPhone: {}, //联系人
-      currentPage: 5,
-      tatol: 0,
+      listLoading: false,//数据加载等待动画
+      listQuery: {
+        currentPage: 1,
+        pageSize: 5,
+      },
+      total: 0,
       linkPhoneVisible: false, //弹窗默认关闭
       map: {
         name: ""
@@ -95,26 +105,45 @@ export default {
   },
   methods: {
     fetchData() {
+      this.getList()
+    },
+    getList() {
+      //查询列表
+      this.listLoading = true;
+      request({
+        url: "/userLink/list",
+        method: "post",
+        params: this.listQuery,
+        data: this.map
+      }).then(data => {
+        this.listLoading = false;
+        this.tableData = data.data.rows;
+        this.total = data.data.total;
+      })
     },
     selectByName(){
-      // this.fetchData()
-      console.log(`根据${this.map.name}查询`);
+      this.getList()
     },
     //下载模板按钮
     downloadTemplate(){
       
     },
     addLinkPhone(){
-      this.linkPhone.status = '审核中'
-      this.linkPhone.created = new Date()
-      this.tableData.push(this.linkPhone)
-      this.linkPhoneVisible = false
+      this.linkPhone.userId = '10'
+      this.api({
+        url: "/userLink",
+        method: "post",
+        data: this.linkPhone
+      }).then(data => {
+        this.linkPhoneVisible = false
+        this.getList()
+      })
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+      this.getList()
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      this.getList()
     }
   }
 }

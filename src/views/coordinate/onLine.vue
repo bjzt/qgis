@@ -6,7 +6,13 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label-width="120px" label="联系人(必填)">
-                <el-select size="small" placeholder="请选择">
+                <el-select size="small" v-model="userLink.phone" placeholder="请选择">
+                  <el-option
+                    v-for="item in userLinkOption"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
                 </el-select>
                 <span>联系人作为安全责任人，其手机接收短信验证码</span>
               </el-form-item>
@@ -51,7 +57,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item v-if="zb == 'xyh'" label-width="120px">
+              <el-form-item v-if="item1.zb == 'xyh'" label-width="120px">
                 <el-select size="small" v-model="item1.zyzw" placeholder="请选择">
                   <el-option label="高斯3度带" value="高斯3度带"></el-option>
                   <el-option label="高斯6度带" value="高斯6度带"></el-option>
@@ -73,10 +79,10 @@
                 <el-input size="small" :disabled="item1.zb == 'BLH'" v-model="item1.x" style="width:250px"></el-input>
               </el-form-item>
               <el-form-item label-width="120px" label="y/E加常数(km)">
-                <el-input size="small" :disabled="item1.zb == 'BLH'" style="width:250px" v-model="item1.y" value="500"></el-input>
+                <el-input size="small" :disabled="item1.zb == 'BLH'" style="width:250px" v-model="item1.y"></el-input>
               </el-form-item>
               <el-form-item label-width="120px" label="投影面高(m)">
-                <el-input size="small" :disabled="item1.zb == 'BLH'" style="width:250px" v-model="item1.t" value="0"></el-input>
+                <el-input size="small" :disabled="item1.zb == 'BLH'" style="width:250px" v-model="item1.t"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -137,7 +143,7 @@
               </el-form-item>
               
               <el-form-item label-width="120px" label="投影面高(m)">
-                <el-input size="small" :disabled="item2.zb == 'BLH'" style="width:250px" v-model="item2.t" value="0"></el-input>
+                <el-input size="small" :disabled="item2.zb == 'BLH'" style="width:250px" v-model="item2.t"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -204,6 +210,7 @@
 </template>
 
 <script>
+import request from '@/utils/request'
 export default {
   data() {
     return {
@@ -213,6 +220,10 @@ export default {
         content: '',//文本内容
         name: "",
         fileList: [],
+        userLinkOption: [],//联系人选项
+        userLink: {
+          phone: null
+        },
         item1: { //源对象
           name: "",
           yqq: 'CGCS2000',
@@ -232,6 +243,10 @@ export default {
           zyzw: '高斯自定义',
           t: 0
         },
+        map: {
+          userId: "10",
+          status: 1 //审核通过的联系人
+        }
     }
   },
   watch:{
@@ -244,14 +259,30 @@ export default {
   },
   created() {
     this.fetchData()
+    this.getUserLink()
   },
   methods: {
     fetchData() {
       switch(this.item1.zb){
-          case 'xyh': this.name = '点名,x,y,h.txt / 点名,y,x,h.dat';break;
-          case 'XYZ': this.name = '点名,X,Y,Z.txt';break;
-          case 'BLH': this.name = `点名,B(${this.item1.dd}),L(${this.item1.dd}),H,未修正的天线高.txt`;break;
-        }
+        case 'xyh': this.name = '点名,x,y,h.txt / 点名,y,x,h.dat';break;
+        case 'XYZ': this.name = '点名,X,Y,Z.txt';break;
+        case 'BLH': this.name = `点名,B(${this.item1.dd}),L(${this.item1.dd}),H,未修正的天线高.txt`;break;
+      }
+    },
+    getUserLink(){
+      request({
+        url: "/userLink/all",
+        method: "post",
+        data: this.map
+      }).then(data => {
+        let userLink = data.data;
+        userLink.map(link => {
+          link.label = link.name 
+          link.value = link.id
+        })
+        this.userLinkOption = userLink
+        console.log(this.userLinkOption)
+      })
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);
