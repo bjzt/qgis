@@ -37,6 +37,8 @@
 </template>
 
 <script>
+import request from '@/utils/request'
+
 export default {
   data() {
     return {
@@ -48,6 +50,15 @@ export default {
   },
   methods: {
     fetchData() {
+      this.getUser()
+    },
+    getUser(){
+      request({
+        url: "/user/10",
+        method: "get",
+      }).then(data => {
+        this.user = data.data;
+      })
     },
     submit(){
       

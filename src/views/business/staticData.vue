@@ -1,6 +1,6 @@
 <template>
   <div style="margin: 20px">
-    <div style="position:absolute;right:20px;top:70px;z-index:9">
+    <div style="position:absolute;right:20px;top:20px;z-index:9">
       <el-button type="primary" size="small">模板下载</el-button>
       <el-button type="primary" size="small">上传文件</el-button>
     </div>
@@ -80,9 +80,11 @@ export default {
       })
     },
     handleSizeChange(val) {
+      this.listQuery.pageSize = val
       this.getList()
     },
     handleCurrentChange(val) {
+      this.listQuery.currentPage = val
       this.getList()
     }
   }

@@ -42,6 +42,12 @@
         prop="play"
         label="充值类型"
         width="180">
+        <template slot-scope="scope">
+          <span v-if="scope.row.play==1">按点按次支付</span>
+          <span v-if="scope.row.play==2">包月</span>
+          <span v-if="scope.row.play==3">包季</span>
+          <span v-if="scope.row.play==4">包年</span>
+        </template>
       </el-table-column>
       <el-table-column
         prop="created"
@@ -80,7 +86,7 @@ export default {
       total: 0,
       linkPhoneVisible: false, //弹窗默认关闭
       map: {
-        name: ""
+        name: "",
       }//查询条件
     }
   },
@@ -109,9 +115,11 @@ export default {
       this.getList()
     },
     handleSizeChange(val) {
+      this.listQuery.pageSize = val
       this.getList()
     },
     handleCurrentChange(val) {
+      this.listQuery.currentPage = val
       this.getList()
     }
   }

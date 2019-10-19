@@ -11,7 +11,7 @@
         </el-form>
       </el-col>
     </el-row>
-    <div style="position:absolute;right:20px;top:70px;z-index:9">
+    <div style="position:absolute;right:20px;top:20px;z-index:9">
       <el-button type="primary" @click="getList" size="small" icon="el-icon-refresh"></el-button>
         <el-button type="primary" @click="downloadTemplate" size="small">模板下载</el-button>
         <el-button type="primary" @click="linkPhoneVisible = true; linkPhone = {}" size="small">申请联系人</el-button>
@@ -130,7 +130,7 @@ export default {
     },
     addLinkPhone(){
       this.linkPhone.userId = '10'
-      this.api({
+      request({
         url: "/userLink",
         method: "post",
         data: this.linkPhone
@@ -140,9 +140,11 @@ export default {
       })
     },
     handleSizeChange(val) {
+      this.listQuery.pageSize = val
       this.getList()
     },
     handleCurrentChange(val) {
+      this.listQuery.currentPage = val
       this.getList()
     }
   }

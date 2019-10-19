@@ -133,7 +133,7 @@ export const constantRoutes = [
       },
       {
         path: 'log',
-        component: () => import('@/views/system/linkPhoneManage'),
+        component: () => import('@/views/system/logManage'),
         meta: { title: '系统日志管理' }
       },
 

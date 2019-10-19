@@ -9,7 +9,7 @@
           </el-form-item>
           <el-form-item label="选择时间范围:">
               <el-date-picker
-                v-model="date"
+                v-model="map.date"
                 type="daterange"
                 range-separator="至"
                 start-placeholder="开始日期"
@@ -85,14 +85,15 @@ import request from '@/utils/request'
 export default {
   data() {
     return {
-      date: [],
       tableData: [],
       listQuery: {
         currentPage: 1,
         pageSize: 5,
       },
       total: 0,
-      map: {} //查询条件
+      map: {
+        date: []
+      } //查询条件
     }
   },
   created() {
@@ -117,9 +118,11 @@ export default {
       })
     },
     handleSizeChange(val) {
+      this.listQuery.pageSize = val
       this.getList()
     },
     handleCurrentChange(val) {
+      this.listQuery.currentPage = val
       this.getList()
     }
   }

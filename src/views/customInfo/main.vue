@@ -50,7 +50,6 @@
               :before-remove="beforeRemove"
               multiple
               :limit="3"
-              :on-exceed="handleExceed"
               :file-list="fileList">
               <el-button size="mini">添加图片</el-button>
               <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
@@ -58,8 +57,10 @@
           </el-form-item>
           <el-form-item label="预览" label-width="120px">
             <el-image
+              v-for="item in this.customInfo.imagesList"
+              :key="item"
               style="width: 100px; height: 100px"
-              src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
+              :src="item"
               fit="scale-down"></el-image>
           </el-form-item>
         </el-form>
@@ -69,6 +70,7 @@
 </template>
 
 <script>
+import request from '@/utils/request'
 export default {
   data() {
     return {
@@ -96,6 +98,18 @@ export default {
   },
   methods: {
     fetchData() {
+      this.getUser()
+    },
+    getUser(){
+      request({
+        url: "/user/10",
+        method: "get",
+      }).then(data => {
+        this.customInfo = data.data;
+        if (this.customInfo.images != null) {
+          this.customInfo.imagesList = this.customInfo.images.split(";")
+        }
+      })
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);
