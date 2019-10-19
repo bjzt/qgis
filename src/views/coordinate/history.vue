@@ -5,11 +5,12 @@
       <el-col :span="22">
         <el-form :inline="true">
           <el-form-item label="关键字:">
-              <el-input v-model="map.name" placeholder="公司名称/主账号"></el-input>
+              <el-input v-model="map.name" size="small" placeholder="公司名称/主账号"></el-input>
           </el-form-item>
           <el-form-item label="选择时间范围:">
               <el-date-picker
                 v-model="map.date"
+                size="small"
                 type="daterange"
                 range-separator="至"
                 start-placeholder="开始日期"
@@ -17,12 +18,12 @@
               </el-date-picker>
           </el-form-item>
           <el-form-item>
-              <el-button icon="el-icon-search" type="primary"></el-button>
+              <el-button size="small" icon="el-icon-search" type="primary"></el-button>
           </el-form-item>
         </el-form>
       </el-col>
       <el-col :span="2">
-        <el-button type="primary" icon="el-icon-refresh"></el-button>
+        <el-button type="primary" size="small" icon="el-icon-refresh"></el-button>
       </el-col>
     </el-row>
     <el-table

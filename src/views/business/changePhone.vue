@@ -1,7 +1,7 @@
 <template>
   <div style="margin: 20px">
     <el-row>
-      <el-col :span="20">
+      <el-col :xs="24" :xl="18" :sm="14" :md="16">
         <el-form :inline="true">
           <el-form-item label-width="20px">
               <el-input v-model="map.name" size="small" placeholder="用户姓名">
@@ -10,12 +10,12 @@
           </el-form-item>
         </el-form>
       </el-col>
-    </el-row>
-    <div style="position:absolute;right:20px;top:20px;z-index:9">
-      <el-button type="primary" @click="getList" size="small" icon="el-icon-refresh"></el-button>
+      <el-col :xs="24" :xl="6" :sm="8" :md="8">
+        <el-button type="primary" @click="getList" size="small" icon="el-icon-refresh"></el-button>
         <el-button type="primary" @click="downloadTemplate" size="small">模板下载</el-button>
         <el-button type="primary" @click="linkPhoneVisible = true; linkPhone = {}" size="small">申请联系人</el-button>
-    </div>
+      </el-col>
+    </el-row>
     <el-table
       :data="tableData"
       v-loading.body="listLoading" 

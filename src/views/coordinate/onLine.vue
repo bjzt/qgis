@@ -4,7 +4,7 @@
       <el-form-item label="基本信息">
         <div>
           <el-row>
-            <el-col :span="12">
+            <el-col :xs="24" :xl="12" :sm="18" :md="24" >
               <el-form-item label-width="120px" label="联系人(必填)">
                 <el-select size="small" v-model="userLink.phone" placeholder="请选择">
                   <el-option
@@ -26,7 +26,7 @@
       <el-form-item label="源参数">
         <div>
           <el-row>
-            <el-col :span="8">
+            <el-col :xs="24" :xl="8" :sm="18" :md="24">
               <el-form-item label-width="120px" label="源确球">
                 <el-select size="small" v-model="item1.yqq" placeholder="请选择">
                   <el-option label="CGCS2000" value="CGCS2000"></el-option>
@@ -56,7 +56,7 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :xs="24" :xl="12" :sm="18" :md="24">
               <el-form-item v-if="item1.zb == 'xyh'" label-width="120px">
                 <el-select size="small" v-model="item1.zyzw" placeholder="请选择">
                   <el-option label="高斯3度带" value="高斯3度带"></el-option>
@@ -92,7 +92,7 @@
       <el-form-item label="目标参数">
         <div>
           <el-row>
-            <el-col :span="8">
+            <el-col :xs="24" :xl="8" :sm="18" :md="24">
               <el-form-item label-width="120px" label="目标确球">
                 <el-select size="small" v-model="item2.yqq" placeholder="请选择">
                   <el-option label="CGCS2000" value="CGCS2000"></el-option>
@@ -122,7 +122,7 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :xs="24" :xl="12" :sm="18" :md="24">
               <el-form-item label-width="120px" v-if="item2.zb == 'xyh'">
                 <el-select size="small" v-model="item2.zyzw" placeholder="请选择">
                   <el-option label="高斯3度带" value="高斯3度带"></el-option>
@@ -149,60 +149,67 @@
           </el-row>
         </div>
       </el-form-item>
-      <el-form-item label="数据上传" label-width="120px">
+      <el-form-item label="数据上传">
         <div>
-          <el-switch
-            v-model="fileUpload"
-            active-text="上传文件"
-            inactive-text="文本框输入">
-          </el-switch>
-          <el-form>
-            <el-form-item label="文件格式" label-width="120px">
-              <span v-text="name"></span>
-            </el-form-item>
-            <el-form-item v-if="fileUpload" label="上传文件" label-width="120px">
-              <el-upload
-                class="upload-demo"
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
-                :before-remove="beforeRemove"
-                multiple
-                :file-list="fileList">
-                <el-button size="mini">上传文件</el-button>
-              </el-upload>
-            </el-form-item>
-            <!-- <el-form-item v-if="fileUpload" label="数据上传地址" label-width="120px">
-              
-            </el-form-item> -->
-            <el-form-item v-if="!fileUpload" label="坐标转换内容" label-width="120px">
-              <el-input style="width:400px" v-model="content" type="textarea" :rows="3"></el-input>
-            </el-form-item>
-            <el-form-item label="手机号" label-width="120px">
-              <span v-text="thisPhone"></span>
-            </el-form-item>
-            <el-form-item label="短信验证" label-width="120px">
-              <el-input style="width:250px" v-model="checkcode" size="small"></el-input> <el-button size="small">发送验证码</el-button>
-            </el-form-item>
-            <el-form-item label-width="120px">
-              <el-button type="primary" size="small">开始转换坐标</el-button>
-            </el-form-item>
-          </el-form>
+          <el-row>
+            <el-col :xs="24" :xl="18" :sm="18" :md="24">
+                <el-form-item label-width="120px">
+                  <el-switch
+                    v-model="fileUpload"
+                    active-text="上传文件"
+                    inactive-text="文本框输入">
+                  </el-switch>
+                </el-form-item>
+                <el-form-item label="文件格式" label-width="120px">
+                  <span v-text="name"></span>
+                </el-form-item>
+                <el-form-item v-if="fileUpload" label="上传文件" label-width="120px">
+                  <el-upload
+                    class="upload-demo"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :on-preview="handlePreview"
+                    :on-remove="handleRemove"
+                    :before-remove="beforeRemove"
+                    multiple
+                    :file-list="fileList">
+                    <el-button size="mini">上传文件</el-button>
+                  </el-upload>
+                </el-form-item>
+                <!-- <el-form-item v-if="fileUpload" label="数据上传地址" label-width="120px">
+                  
+                </el-form-item> -->
+                <el-form-item v-if="!fileUpload" label="坐标转换内容" label-width="120px">
+                  <el-input style="width:400px" v-model="content" type="textarea" :rows="3"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号" label-width="120px">
+                  <span v-text="thisPhone"></span>
+                </el-form-item>
+                <el-form-item label="短信验证" label-width="120px">
+                  <el-input style="width:250px" v-model="checkcode" size="small"></el-input> <el-button size="small">发送验证码</el-button>
+                </el-form-item>
+                <el-form-item label-width="120px">
+                  <el-button type="primary" size="small">开始转换坐标</el-button>
+                </el-form-item>
+            </el-col>
+          </el-row>
+          
         </div>
       </el-form-item>
-      <el-form-item label="数据下载" label-width="120px">
+      <el-form-item label="数据下载">
         <div>
-          <el-form>
-            <el-form-item label="写入数据" label-width="120px">
-              
-            </el-form-item>
-            <el-form-item label="转换处理" label-width="120px">
-              
-            </el-form-item>
-            <el-form-item label-width="120px">
-              <el-button type="primary" size="small">查询结果</el-button>
-            </el-form-item>
-          </el-form>
+          <el-row>
+            <el-col :xs="24" :xl="18" :sm="18" :md="24">
+              <el-form-item label="写入数据" label-width="120px">
+                
+              </el-form-item>
+              <el-form-item label="转换处理" label-width="120px">
+                
+              </el-form-item>
+              <el-form-item label-width="120px">
+                <el-button type="primary" size="small">查询结果</el-button>
+              </el-form-item>
+              </el-col>
+          </el-row>
         </div>
       </el-form-item>
     </el-form>

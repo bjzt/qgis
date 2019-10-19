@@ -1,8 +1,10 @@
 <template>
   <div style="margin: 20px">
     <div style="position:absolute;right:20px;top:20px;z-index:9">
+
       <el-button type="primary" size="small">模板下载</el-button>
-      <el-button type="primary" size="small">上传文件</el-button>
+      <el-button type="primary" size="small">文件上传<i class="el-icon-upload el-icon--right"></i></el-button>
+
     </div>
     <el-tabs type="card">
       <el-tab-pane label="GNSS数据申请">

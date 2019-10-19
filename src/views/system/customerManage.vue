@@ -4,7 +4,7 @@
       <el-col :span="22">
         <el-form :inline="true">
           <el-form-item label-width="20px">
-              <el-input v-model="map.companyName" placeholder="公司名称">
+              <el-input size="small" v-model="map.companyName" placeholder="公司名称">
                   <el-button slot="append" @click="selectByName" icon="el-icon-search"></el-button>
               </el-input>
           </el-form-item>
