@@ -110,12 +110,17 @@ export const constantRoutes = [
       }
     ]
   },
+
+// ]
+// //需要权限动态挂载的路由
+// export const asyncRouterMap = [
   {
     path: '/systemManage',
     component: Layout,
     redirect: '/systemManage',
     name: 'SystemManage',
     meta: {
+      role: ['admin'],
       title: '系统管理',
       icon: 'example'
     },
@@ -124,22 +129,21 @@ export const constantRoutes = [
         path: 'customerManage',
         component: () => import('@/views/system/customerManage'),
         name: 'OnLine',
-        meta: { title: '客户管理' }
+        meta: { role: ['admin'],title: '客户管理' }
       },
       {
         path: 'history',
         component: () => import('@/views/system/linkPhoneManage'),
-        meta: { title: '客户联系人管理' }
+        meta: { role: ['admin'],title: '客户联系人管理' }
       },
       {
         path: 'log',
         component: () => import('@/views/system/logManage'),
-        meta: { title: '系统日志管理' }
+        meta: { role: ['admin'],title: '系统日志管理' }
       },
 
     ]
   },
-
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

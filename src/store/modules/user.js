@@ -5,7 +5,8 @@ import { resetRouter } from '@/router'
 const state = {
   token: getToken(),
   name: '',
-  avatar: ''
+  avatar: '',
+  roles: []
 }
 
 const mutations = {
@@ -17,6 +18,9 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  SET_ROLES: (state, roles) => {
+    state.roles = roles
   }
 }
 
@@ -43,13 +47,14 @@ const actions = {
         const { data } = response
 
         if (!data) {
-          reject('Verification failed, please Login again.')
+          reject('登录信息超时，请重新登陆')
         }
 
-        const { name, avatar } = data
+        const { name, avatar,roles } = data
 
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
+        commit('SET_ROLES', roles)
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -62,6 +67,9 @@ const actions = {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
         commit('SET_TOKEN', '')
+        commit('SET_NAME', '')
+        commit('SET_AVATAR', '')
+        commit('SET_ROLES', '')
         removeToken()
         resetRouter()
         resolve()

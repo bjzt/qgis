@@ -72,8 +72,8 @@
 </template>
 
 <script>
+import request from '@/utils/request'
 export default {
-  name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
       if (value.length < 3) {
@@ -151,15 +151,33 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/register', this.registerForm).then(() => {
-            this.$router.push({ path: '/login' })
-            this.loading = false
+          request({
+            url: 'user/register',
+            method: "post",
+            data: this.registerForm
+          }).then((data) => {
+            if(data.code === 20000){
+              this.$message({
+                showClose: true,
+                message: data.message,
+                type: 'success'
+              });
+              this.$router.push({ path: '/login' })
+              this.loading = false
+            }else {
+              this.$message({
+                showClose: true,
+                message: data.message,
+                type: 'error'
+              });
+              this.loading = false
+            }
           }).catch(() => {
             this.loading = false
           })
         } else {
           this.loading = false
-          console.log('注册失败')
+          console.log('未知错误')
           return false
         }
       })

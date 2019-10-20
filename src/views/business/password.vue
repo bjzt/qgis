@@ -54,7 +54,7 @@ export default {
     },
     getUser(){
       request({
-        url: "/user/10",
+        url: "/user/one",
         method: "get",
       }).then(data => {
         this.user = data.data;

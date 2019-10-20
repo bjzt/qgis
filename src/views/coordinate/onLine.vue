@@ -12,6 +12,8 @@
                     :key="item.value"
                     :label="item.label"
                     :value="item.value">
+                    <span style="float: left">{{ item.label }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.phone }}</span>
                   </el-option>
                 </el-select>
                 <span>联系人作为安全责任人，其手机接收短信验证码</span>
@@ -65,15 +67,17 @@
                 </el-select>
               </el-form-item>
               <el-form-item label-width="120px" label="中央子午线">
-                <el-select size="small" :disabled="item1.zb == 'BLH'"  placeholder="请选择">
-                  <el-option label="114"></el-option>
-                </el-select>
-                <el-select size="small" :disabled="item1.zb == 'BLH'" placeholder="请选择">
-                  <el-option label="0"></el-option>
-                </el-select>
-                <el-select size="small" :disabled="item1.zb == 'BLH'" placeholder="请选择">
-                  <el-option label="0"></el-option>
-                </el-select>
+                <el-row>
+                  <el-col :span="8">
+                    <el-input size="small" v-model="item1.zw1"></el-input>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-input size="small" v-model="item1.zw2"></el-input>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-input size="small" v-model="item1.zw3"></el-input>
+                  </el-col>
+                </el-row>
               </el-form-item>
               <el-form-item label-width="120px" label="x/N加常数(km)">
                 <el-input size="small" :disabled="item1.zb == 'BLH'" v-model="item1.x" style="width:250px"></el-input>
@@ -131,15 +135,23 @@
                 </el-select>
               </el-form-item>
               <el-form-item label-width="120px" label="中央子午线">
-                <el-select size="small" :disabled="item2.zb == 'BLH'" placeholder="请选择">
-                  <el-option label="114"></el-option>
-                </el-select>
-                <el-select size="small" :disabled="item2.zb == 'BLH'" placeholder="请选择">
-                  <el-option label="0"></el-option>
-                </el-select>
-                <el-select size="small" :disabled="item2.zb == 'BLH'" placeholder="请选择">
-                  <el-option label="0"></el-option>
-                </el-select>
+                <el-row>
+                  <el-col :span="8">
+                    <el-input size="small" v-model="item2.zw1"></el-input>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-input size="small" v-model="item2.zw2"></el-input>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-input size="small" v-model="item2.zw3"></el-input>
+                  </el-col>
+                </el-row>
+              </el-form-item>
+              <el-form-item label-width="120px" label="x/N加常数(km)">
+                <el-input size="small" :disabled="item2.zb == 'BLH'" v-model="item2.x" style="width:250px"></el-input>
+              </el-form-item>
+              <el-form-item label-width="120px" label="y/E加常数(km)">
+                <el-input size="small" :disabled="item2.zb == 'BLH'" style="width:250px" v-model="item2.y"></el-input>
               </el-form-item>
               
               <el-form-item label-width="120px" label="投影面高(m)">
@@ -238,8 +250,11 @@ export default {
           dd: 'DD.MMSS',
           mb: '大地高',
           zyzw: '高斯自定义',
+          zw1: 114,
+          zw2: 0,
+          zw3: 0,
           y: 500,
-          x: 500,
+          x: 0,
           t: 0
         },
         item2: {//目标对象
@@ -248,6 +263,11 @@ export default {
           dd: 'DD.MMSS',
           mb: '大地高',
           zyzw: '高斯自定义',
+          zw1: 114,
+          zw2: 0,
+          zw3: 0,
+          y: 500,
+          x: 0,
           t: 0
         },
         map: {
@@ -261,6 +281,17 @@ export default {
       deep: true,
       handler(newV){
         this.fetchData()
+      }
+    },
+    userLink: {
+      deep: true,
+      handler(newV){
+        for (let item of this.userLinkOption){
+          if(item.value == newV.phone){
+            this.thisPhone = item.phone
+          }
+        }
+        
       }
     }
   },
@@ -288,7 +319,6 @@ export default {
           link.value = link.id
         })
         this.userLinkOption = userLink
-        console.log(this.userLinkOption)
       })
     },
     handleRemove(file, fileList) {
