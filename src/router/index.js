@@ -111,9 +111,9 @@ export const constantRoutes = [
     ]
   },
 
-// ]
-// //需要权限动态挂载的路由
-// export const asyncRouterMap = [
+]
+//需要权限动态挂载的路由
+export const asyncRouterMap = [
   {
     path: '/systemManage',
     component: Layout,
@@ -128,11 +128,11 @@ export const constantRoutes = [
       {
         path: 'customerManage',
         component: () => import('@/views/system/customerManage'),
-        name: 'OnLine',
+        name: 'customer',
         meta: { role: ['admin'],title: '客户管理' }
       },
       {
-        path: 'history',
+        path: 'userLinkMange',
         component: () => import('@/views/system/linkPhoneManage'),
         meta: { role: ['admin'],title: '客户联系人管理' }
       },

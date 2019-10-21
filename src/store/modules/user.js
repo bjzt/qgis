@@ -1,6 +1,9 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
+import router from '../../router'
+
+import { constantRouterMap } from "../../router/index"
 
 const state = {
   token: getToken(),
@@ -50,7 +53,7 @@ const actions = {
           reject('登录信息超时，请重新登陆')
         }
 
-        const { name, avatar,roles } = data
+        const { name, avatar, roles } = data
 
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
@@ -66,10 +69,11 @@ const actions = {
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
+        router.options.routes = constantRouterMap
         commit('SET_TOKEN', '')
         commit('SET_NAME', '')
         commit('SET_AVATAR', '')
-        commit('SET_ROLES', '')
+        commit('SET_ROLES', [])
         removeToken()
         resetRouter()
         resolve()

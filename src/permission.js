@@ -5,10 +5,15 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
+import { asyncRouterMap, constantRoutes } from './router/index'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['/login', '/register', '/forget'] // no redirect whitelist
+
+
+
+// router.options.routes = asyncRouterMap;
 
 router.beforeEach(async(to, from, next) => {
   // start progress bar
@@ -32,9 +37,18 @@ router.beforeEach(async(to, from, next) => {
       } else {
         try {
           // get user info
-          await store.dispatch('user/getInfo')
-
-          next()
+          store.dispatch('user/getInfo').then(res => {
+            const roles = res.roles;
+            for (let role of roles) {
+              if(role === 'admin'){
+                for(let item of asyncRouterMap){
+                  constantRoutes.push(item)
+                }
+                // router.addRoutes(asyncRouterMap) // 动态添加可访问路由表
+              }
+            }
+            next()
+          })
         } catch (error) {
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')

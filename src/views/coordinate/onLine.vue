@@ -51,7 +51,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item label-width="120px" label="原高程">
-                <el-select size="small" v-model="item1.mb" placeholder="请选择">
+                <el-select size="small" :disabled="item1.zb == 'XYZ'" v-model="item1.mb" placeholder="请选择">
                   <el-option label="85国家高程" value="85国家高程"></el-option>
                   <el-option label="56黄海高程" value="56黄海高程"></el-option>
                   <el-option label="大地高" value="大地高"></el-option>
@@ -69,24 +69,24 @@
               <el-form-item label-width="120px" label="中央子午线">
                 <el-row>
                   <el-col :span="8">
-                    <el-input size="small" v-model="item1.zw1"></el-input>
+                    <el-input size="small" :disabled="item1.zb != 'xyh'" v-model="item1.zw1"></el-input>
                   </el-col>
                   <el-col :span="8">
-                    <el-input size="small" v-model="item1.zw2"></el-input>
+                    <el-input size="small" :disabled="item1.zb != 'xyh'" v-model="item1.zw2"></el-input>
                   </el-col>
                   <el-col :span="8">
-                    <el-input size="small" v-model="item1.zw3"></el-input>
+                    <el-input size="small" :disabled="item1.zb != 'xyh'" v-model="item1.zw3"></el-input>
                   </el-col>
                 </el-row>
               </el-form-item>
               <el-form-item label-width="120px" label="x/N加常数(km)">
-                <el-input size="small" :disabled="item1.zb == 'BLH'" v-model="item1.x" style="width:250px"></el-input>
+                <el-input size="small" :disabled="item1.zb != 'xyh'" v-model="item1.x" style="width:250px"></el-input>
               </el-form-item>
               <el-form-item label-width="120px" label="y/E加常数(km)">
-                <el-input size="small" :disabled="item1.zb == 'BLH'" style="width:250px" v-model="item1.y"></el-input>
+                <el-input size="small" :disabled="item1.zb != 'xyh'" style="width:250px" v-model="item1.y"></el-input>
               </el-form-item>
               <el-form-item label-width="120px" label="投影面高(m)">
-                <el-input size="small" :disabled="item1.zb == 'BLH'" style="width:250px" v-model="item1.t"></el-input>
+                <el-input size="small" :disabled="item1.zb != 'xyh'" style="width:250px" v-model="item1.t"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -137,25 +137,25 @@
               <el-form-item label-width="120px" label="中央子午线">
                 <el-row>
                   <el-col :span="8">
-                    <el-input size="small" v-model="item2.zw1"></el-input>
+                    <el-input size="small" :disabled="item2.zb != 'xyh'" v-model="item2.zw1"></el-input>
                   </el-col>
                   <el-col :span="8">
-                    <el-input size="small" v-model="item2.zw2"></el-input>
+                    <el-input size="small" :disabled="item2.zb != 'xyh'" v-model="item2.zw2"></el-input>
                   </el-col>
                   <el-col :span="8">
-                    <el-input size="small" v-model="item2.zw3"></el-input>
+                    <el-input size="small" :disabled="item2.zb != 'xyh'" v-model="item2.zw3"></el-input>
                   </el-col>
                 </el-row>
               </el-form-item>
               <el-form-item label-width="120px" label="x/N加常数(km)">
-                <el-input size="small" :disabled="item2.zb == 'BLH'" v-model="item2.x" style="width:250px"></el-input>
+                <el-input size="small" :disabled="item2.zb != 'xyh'" v-model="item2.x" style="width:250px"></el-input>
               </el-form-item>
               <el-form-item label-width="120px" label="y/E加常数(km)">
-                <el-input size="small" :disabled="item2.zb == 'BLH'" style="width:250px" v-model="item2.y"></el-input>
+                <el-input size="small" :disabled="item2.zb != 'xyh'" style="width:250px" v-model="item2.y"></el-input>
               </el-form-item>
               
               <el-form-item label-width="120px" label="投影面高(m)">
-                <el-input size="small" :disabled="item2.zb == 'BLH'" style="width:250px" v-model="item2.t"></el-input>
+                <el-input size="small" :disabled="item2.zb != 'xyh'" style="width:250px" v-model="item2.t"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -271,7 +271,6 @@ export default {
           t: 0
         },
         map: {
-          userId: "10",
           status: 1 //审核通过的联系人
         }
     }

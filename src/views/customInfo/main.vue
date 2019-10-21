@@ -32,10 +32,10 @@
             </el-select>
           </el-form-item>
           <el-form-item label="包年服务开始" label-width="120px">
-            <el-input v-model="customInfo.start"></el-input>
+            <el-input disabled v-model="customInfo.start"></el-input>
           </el-form-item>
           <el-form-item label="包年服务结束" label-width="120px">
-            <el-input v-model="customInfo.end"></el-input>
+            <el-input disabled v-model="customInfo.end"></el-input>
           </el-form-item>
           <el-form-item label="余额" label-width="120px">
             <el-input v-model="customInfo.balance"></el-input>
