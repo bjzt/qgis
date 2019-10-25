@@ -83,7 +83,36 @@ export const constantRoutes = [
       {
         path: 'staticData',
         component: () => import('@/views/business/staticData'),
-        meta: { title: '静态数据处理申请' }
+        meta: { title: '数据上传申请' }
+      },
+      {
+        path: 'dataFormat',
+        component: () => import('@/views/business/null'),
+        meta: { title: '数据格式' }
+      },{
+        path: 'parems',
+        component: () => import('@/views/business/null'),
+        meta: { title: '参数计算' }
+      },
+      {
+        path: 'number',
+        component: () => import('@/views/business/null'),
+        meta: { title: '数学精度' }
+      },
+      {
+        path: 'aviation',
+        component: () => import('@/views/business/null'),
+        meta: { title: '航空设计' }
+      },
+      {
+        path: 'buttom',
+        component: () => import('@/views/business/null'),
+        meta: { title: '地面控制' }
+      },
+      {
+        path: 'quality',
+        component: () => import('@/views/business/null'),
+        meta: { title: '质检模拟' }
       }
     ]
   },
@@ -129,7 +158,7 @@ export const asyncRouterMap = [
         path: 'customerManage',
         component: () => import('@/views/system/customerManage'),
         name: 'customer',
-        meta: { role: ['admin'],title: '客户管理' }
+        meta: { role: ['admin'],title: '客户消费管理' }
       },
       {
         path: 'userLinkMange',
@@ -141,6 +170,11 @@ export const asyncRouterMap = [
         component: () => import('@/views/system/logManage'),
         meta: { role: ['admin'],title: '系统日志管理' }
       },
+      {
+        path: 'service',
+        component: () => import('@/views/system/business'),
+        meta: { role: ['admin'],title: '客户订单管理' }
+      }
 
     ]
   },

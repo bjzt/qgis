@@ -4,9 +4,9 @@
       <el-form-item label="基本信息">
         <div>
           <el-row>
-            <el-col :xs="24" :xl="12" :sm="18" :md="24" >
+            <el-col :xs="24" :xl="12" :lg="18" :sm="24" :md="24" >
               <el-form-item label-width="120px" label="联系人(必填)">
-                <el-select size="small" v-model="userLink.phone" placeholder="请选择">
+                <el-select size="mini" v-model="userLink.phone" placeholder="请选择">
                   <el-option
                     v-for="item in userLinkOption"
                     :key="item.value"
@@ -19,7 +19,7 @@
                 <span>联系人作为安全责任人，其手机接收短信验证码</span>
               </el-form-item>
               <el-form-item label-width="120px" label="项目名称(必填)">
-                <el-input size="small" v-model="item1.name" placeholder="50字以内"></el-input>
+                <el-input size="mini" v-model="item1.name" placeholder="50字以内"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -28,9 +28,9 @@
       <el-form-item label="源参数">
         <div>
           <el-row>
-            <el-col :xs="24" :xl="8" :sm="18" :md="24">
+            <el-col :xs="24" :xl="8" :lg="8" :sm="18" :md="24">
               <el-form-item label-width="120px" label="源确球">
-                <el-select size="small" v-model="item1.yqq" placeholder="请选择">
+                <el-select size="mini" v-model="item1.yqq" placeholder="请选择">
                   <el-option label="CGCS2000" value="CGCS2000"></el-option>
                   <el-option label="北京54" value="北京54"></el-option>
                   <el-option label="西安80" value="西安80"></el-option>
@@ -38,12 +38,12 @@
                 </el-select>
               </el-form-item>
               <el-form-item label-width="120px" label="源坐标系">
-                <el-select size="small" v-model="item1.zb" placeholder="请选择">
+                <el-select size="mini" v-model="item1.zb" placeholder="请选择">
                   <el-option label="BLH" value="BLH"></el-option>
                   <el-option label="XYZ" value="XYZ"></el-option>
                   <el-option label="xyh" value="xyh"></el-option>
                 </el-select>
-                <el-select size="small" :disabled="item1.zb != 'BLH'" v-model="item1.dd" placeholder="请选择">
+                <el-select size="mini" :disabled="item1.zb != 'BLH'" v-model="item1.dd" placeholder="请选择">
                   <el-option label="DD.MMSS" value="DD.MMSS"></el-option>
                   <el-option label="DD.DDDD" value="DD.DDDD"></el-option>
                   <el-option label="DD°MM'SS''" value="DD°MM'SS''"></el-option>
@@ -51,16 +51,16 @@
                 </el-select>
               </el-form-item>
               <el-form-item label-width="120px" label="原高程">
-                <el-select size="small" :disabled="item1.zb == 'XYZ'" v-model="item1.mb" placeholder="请选择">
+                <el-select size="mini" :disabled="item1.zb == 'XYZ'" v-model="item1.mb" placeholder="请选择">
                   <el-option label="85国家高程" value="85国家高程"></el-option>
                   <el-option label="56黄海高程" value="56黄海高程"></el-option>
                   <el-option label="大地高" value="大地高"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :xs="24" :xl="12" :sm="18" :md="24">
+            <el-col :xs="24" :xl="12" :lg="12" :sm="18" :md="24">
               <el-form-item v-if="item1.zb == 'xyh'" label-width="120px">
-                <el-select size="small" v-model="item1.zyzw" placeholder="请选择">
+                <el-select size="mini" v-model="item1.zyzw" placeholder="请选择">
                   <el-option label="高斯3度带" value="高斯3度带"></el-option>
                   <el-option label="高斯6度带" value="高斯6度带"></el-option>
                   <el-option label="高斯自定义" value="高斯自定义"></el-option>
@@ -68,25 +68,25 @@
               </el-form-item>
               <el-form-item label-width="120px" label="中央子午线">
                 <el-row>
-                  <el-col :span="8">
-                    <el-input size="small" :disabled="item1.zb != 'xyh'" v-model="item1.zw1"></el-input>
+                  <el-col :xs="6" :xl="8" :lg="8" :sm="8" :md="6">
+                    <el-input size="mini" :disabled="item1.zb != 'xyh'" v-model="item1.zw1"></el-input>
                   </el-col>
-                  <el-col :span="8">
-                    <el-input size="small" :disabled="item1.zb != 'xyh'" v-model="item1.zw2"></el-input>
+                  <el-col :xs="6" :xl="8" :lg="8" :sm="8" :md="6">
+                    <el-input size="mini" :disabled="item1.zb != 'xyh'" v-model="item1.zw2"></el-input>
                   </el-col>
-                  <el-col :span="8">
-                    <el-input size="small" :disabled="item1.zb != 'xyh'" v-model="item1.zw3"></el-input>
+                  <el-col :xs="6" :xl="8" :lg="8" :sm="8" :md="6">
+                    <el-input size="mini" :disabled="item1.zb != 'xyh'" v-model="item1.zw3"></el-input>
                   </el-col>
                 </el-row>
               </el-form-item>
               <el-form-item label-width="120px" label="x/N加常数(km)">
-                <el-input size="small" :disabled="item1.zb != 'xyh'" v-model="item1.x" style="width:250px"></el-input>
+                <el-input size="mini" :disabled="item1.zb != 'xyh'" v-model="item1.x" style="width:250px"></el-input>
               </el-form-item>
               <el-form-item label-width="120px" label="y/E加常数(km)">
-                <el-input size="small" :disabled="item1.zb != 'xyh'" style="width:250px" v-model="item1.y"></el-input>
+                <el-input size="mini" :disabled="item1.zb != 'xyh'" style="width:250px" v-model="item1.y"></el-input>
               </el-form-item>
               <el-form-item label-width="120px" label="投影面高(m)">
-                <el-input size="small" :disabled="item1.zb != 'xyh'" style="width:250px" v-model="item1.t"></el-input>
+                <el-input size="mini" :disabled="item1.zb != 'xyh'" style="width:250px" v-model="item1.t"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -96,9 +96,9 @@
       <el-form-item label="目标参数">
         <div>
           <el-row>
-            <el-col :xs="24" :xl="8" :sm="18" :md="24">
+            <el-col :xs="24" :xl="8" :lg="8" :sm="18" :md="24">
               <el-form-item label-width="120px" label="目标确球">
-                <el-select size="small" v-model="item2.yqq" placeholder="请选择">
+                <el-select size="mini" v-model="item2.yqq" placeholder="请选择">
                   <el-option label="CGCS2000" value="CGCS2000"></el-option>
                   <el-option label="北京54" value="北京54"></el-option>
                   <el-option label="西安80" value="西安80"></el-option>
@@ -106,12 +106,12 @@
                 </el-select>
               </el-form-item>
               <el-form-item label-width="120px" label="目标坐标系">
-                <el-select size="small" v-model="item2.zb" placeholder="请选择">
+                <el-select size="mini" v-model="item2.zb" placeholder="请选择">
                   <el-option label="BLH" value="BLH"></el-option>
                   <el-option label="XYZ" value="XYZ"></el-option>
                   <el-option label="xyh" value="xyh"></el-option>
                 </el-select>
-                <el-select size="small" :disabled="item2.zb != 'BLH'" v-model="item2.dd" placeholder="请选择">
+                <el-select size="mini" :disabled="item2.zb != 'BLH'" v-model="item2.dd" placeholder="请选择">
                   <el-option label="DD.MMSS" value="DD.MMSS"></el-option>
                   <el-option label="DD.DDDD" value="DD.DDDD"></el-option>
                   <el-option label="DD°MM'SS''" value="DD°MM'SS''"></el-option>
@@ -119,16 +119,16 @@
                 </el-select>
               </el-form-item>
               <el-form-item label-width="120px" label="目标高程">
-                <el-select size="small" v-model="item2.mb" placeholder="请选择">
+                <el-select size="mini" :disabled="item2.zb == 'XYZ'" v-model="item2.mb" placeholder="请选择">
                   <el-option label="85国家高程" value="85国家高程"></el-option>
                   <el-option label="56黄海高程" value="56黄海高程"></el-option>
                   <el-option label="大地高" value="大地高"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :xs="24" :xl="12" :sm="18" :md="24">
+            <el-col :xs="24" :xl="12" :lg="12" :sm="18" :md="24">
               <el-form-item label-width="120px" v-if="item2.zb == 'xyh'">
-                <el-select size="small" v-model="item2.zyzw" placeholder="请选择">
+                <el-select size="mini" v-model="item2.zyzw" placeholder="请选择">
                   <el-option label="高斯3度带" value="高斯3度带"></el-option>
                   <el-option label="高斯6度带" value="高斯6度带"></el-option>
                   <el-option label="高斯自定义" value="高斯自定义"></el-option>
@@ -137,25 +137,25 @@
               <el-form-item label-width="120px" label="中央子午线">
                 <el-row>
                   <el-col :span="8">
-                    <el-input size="small" :disabled="item2.zb != 'xyh'" v-model="item2.zw1"></el-input>
+                    <el-input size="mini" :disabled="item2.zb != 'xyh'" v-model="item2.zw1"></el-input>
                   </el-col>
                   <el-col :span="8">
-                    <el-input size="small" :disabled="item2.zb != 'xyh'" v-model="item2.zw2"></el-input>
+                    <el-input size="mini" :disabled="item2.zb != 'xyh'" v-model="item2.zw2"></el-input>
                   </el-col>
                   <el-col :span="8">
-                    <el-input size="small" :disabled="item2.zb != 'xyh'" v-model="item2.zw3"></el-input>
+                    <el-input size="mini" :disabled="item2.zb != 'xyh'" v-model="item2.zw3"></el-input>
                   </el-col>
                 </el-row>
               </el-form-item>
               <el-form-item label-width="120px" label="x/N加常数(km)">
-                <el-input size="small" :disabled="item2.zb != 'xyh'" v-model="item2.x" style="width:250px"></el-input>
+                <el-input size="mini" :disabled="item2.zb != 'xyh'" v-model="item2.x" style="width:250px"></el-input>
               </el-form-item>
               <el-form-item label-width="120px" label="y/E加常数(km)">
-                <el-input size="small" :disabled="item2.zb != 'xyh'" style="width:250px" v-model="item2.y"></el-input>
+                <el-input size="mini" :disabled="item2.zb != 'xyh'" style="width:250px" v-model="item2.y"></el-input>
               </el-form-item>
               
               <el-form-item label-width="120px" label="投影面高(m)">
-                <el-input size="small" :disabled="item2.zb != 'xyh'" style="width:250px" v-model="item2.t"></el-input>
+                <el-input size="mini" :disabled="item2.zb != 'xyh'" style="width:250px" v-model="item2.t"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -164,7 +164,7 @@
       <el-form-item label="数据上传">
         <div>
           <el-row>
-            <el-col :xs="24" :xl="18" :sm="18" :md="24">
+            <el-col :xs="24" :xl="18" :lg="18" :sm="18" :md="24">
                 <el-form-item label-width="120px">
                   <el-switch
                     v-model="fileUpload"
@@ -191,16 +191,16 @@
                   
                 </el-form-item> -->
                 <el-form-item v-if="!fileUpload" label="坐标转换内容" label-width="120px">
-                  <el-input style="width:400px" v-model="content" type="textarea" :rows="3"></el-input>
+                  <el-input style="width:400px" v-model="content" size="mini" :autosize="{ minRows: 2}" type="textarea" :rows="3"></el-input>
                 </el-form-item>
                 <el-form-item label="手机号" label-width="120px">
                   <span v-text="thisPhone"></span>
                 </el-form-item>
                 <el-form-item label="短信验证" label-width="120px">
-                  <el-input style="width:250px" v-model="checkcode" size="small"></el-input> <el-button size="small">发送验证码</el-button>
+                  <el-input style="width:250px" v-model="checkcode" size="mini"></el-input> <el-button size="mini">发送验证码</el-button>
                 </el-form-item>
                 <el-form-item label-width="120px">
-                  <el-button type="primary" size="small">开始转换坐标</el-button>
+                  <el-button type="primary" size="mini">开始转换坐标</el-button>
                 </el-form-item>
             </el-col>
           </el-row>
@@ -218,7 +218,7 @@
                 
               </el-form-item>
               <el-form-item label-width="120px">
-                <el-button type="primary" size="small">查询结果</el-button>
+                <el-button type="primary" size="mini">查询结果</el-button>
               </el-form-item>
               </el-col>
           </el-row>

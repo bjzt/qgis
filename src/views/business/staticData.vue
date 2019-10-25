@@ -3,20 +3,26 @@
     <div style="position:absolute;right:20px;top:20px;z-index:9">
 
       <el-button type="primary" size="small">模板下载</el-button>
-      <el-button type="primary" size="small">文件上传<i class="el-icon-upload el-icon--right"></i></el-button>
+      <el-button type="primary" @click="dialogVisible = true" size="small">上传</el-button>
+      
 
     </div>
     <el-tabs type="card">
-      <el-tab-pane label="GNSS数据申请">
+      <el-tab-pane label="数据上传申请">
         <el-table
         :data="tableData"
         border
         :header-cell-style="{background:'#eef1f6',color:'#606266'}"
         style="width: 100%">
           <el-table-column
-              prop="filename"
+              prop="fileName"
               align="right"
               label="文件名">
+          </el-table-column>
+          <el-table-column
+              prop="fileType"
+              align="right"
+              label="数据类型">
           </el-table-column>
           <el-table-column
               prop="created"
@@ -26,7 +32,16 @@
           <el-table-column
               prop="note"
               align="right"
+              label="数据说明">
+          </el-table-column>
+          <el-table-column
+              prop="note"
+              align="right"
               label="操作">
+            <template slot-scope="scope">
+              <span v-if="scope.row.status == 0">审核中</span>
+              <el-button v-if="scope.row.status == 1" @click="download(scope.row.id)">下载</el-button>
+            </template>
           </el-table-column>
         </el-table>
         <el-pagination
@@ -40,15 +55,51 @@
         </el-pagination>
       </el-tab-pane>
     </el-tabs>
+
+    <el-dialog
+      title="文件上传"
+      :visible.sync="dialogVisible"
+      width="30%">
+
+      <el-form ref="file" :model="file">
+        <el-form-item label="文件类型">
+          <el-input v-model="file.fileType" placeholder="请输入文件类型"></el-input>
+        </el-form-item>
+        <el-form-item label="数据说明">
+          <el-input v-model="file.note" ></el-input>
+        </el-form-item>
+      </el-form>
+      <el-upload
+        class="upload-demo"
+        ref="upload"
+        :action="url"
+        style="display: inline-block"
+        :on-success="handlePreview"
+        :on-remove="handleRemove"
+        :auto-upload="false"
+        :data="file"
+        :headers="importHeaders">
+        <el-button slot="trigger" size="small" type="primary">选择文件</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+      </el-upload>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import request from '@/utils/request'
+import { getToken } from '@/utils/auth'
 export default {
   data() {
     return {
+      url: "http://localhost:8080/file/upload",
+      importHeaders: {
+        'X-Token': getToken()
+      },
+      file: {},
       tableData: [],
+      fileList: [],
+      dialogVisible: false,
       listLoading: false,//数据加载等待动画
       listQuery: {
         currentPage: 1,
@@ -88,6 +139,20 @@ export default {
     handleCurrentChange(val) {
       this.listQuery.currentPage = val
       this.getList()
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview(file) {
+      this.dialogVisible = false
+      this.getList()
+    },
+    //文件上传
+    submitUpload() {
+      this.$refs.upload.submit();
+    },
+    download(id){
+
     }
   }
 }

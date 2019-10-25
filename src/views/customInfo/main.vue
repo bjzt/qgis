@@ -38,7 +38,7 @@
             <el-input disabled v-model="customInfo.end"></el-input>
           </el-form-item>
           <el-form-item label="余额" label-width="120px">
-            <el-input v-model="customInfo.balance"></el-input>
+            <el-input disabled v-model="customInfo.balance"></el-input>
           </el-form-item>
           <h4 style="margin-left: 50px;color:red">上传营业执照、资质证书、开票信息，一般纳税人请提供一般纳税人证明</h4>
           <el-form-item label="公司文件" label-width="120px">

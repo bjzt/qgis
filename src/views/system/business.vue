@@ -1,55 +1,56 @@
 <template>
   <div style="margin: 20px">
     <el-row>
-      <el-col :span="20">
+      <el-col :span="22">
         <el-form :inline="true">
           <el-form-item label-width="20px">
-              <el-input v-model="map.name" size="small" placeholder="用户姓名">
+              <el-input v-model="map.name" placeholder="公司名称">
                   <el-button slot="append" @click="selectByName" icon="el-icon-search"></el-button>
               </el-input>
           </el-form-item>
         </el-form>
       </el-col>
+      <el-col :span="2">
+        <el-button type="primary" @click="getList" size="small" icon="el-icon-refresh"></el-button>
+      </el-col>
     </el-row>
-    <div style="position:absolute;right:20px;top:20px;z-index:9">
-      <el-button type="primary" @click="getList" size="small" icon="el-icon-refresh"></el-button>
-    </div>
     <el-table
       :data="tableData"
-      v-loading.body="listLoading" 
-      element-loading-text="拼命加载中"
       :header-cell-style="{background:'#eef1f6',color:'#606266'}"
       size="small"
       style="width: 100%">
       <el-table-column
-        type="index"
-        width="50">
-      </el-table-column>
+      type="index"
+      width="50">
+    </el-table-column>
       <el-table-column
-        prop="username"
-        label="主账号"
+        prop="companyName"
+        label="公司名称"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="name"
-        label="负责人姓名"
+        prop="oldBalance"
+        label="充值前金额"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="operation"
-        label="操作"
+        prop="nowMoney"
+        label="本次充值金额"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="method"
-        label="方法"
+        prop="playLabel"
+        label="消费类型"
         width="180">
       </el-table-column>
-      <el-table-column prop="ip" label="IP地址" width="180">
+      <el-table-column
+        prop="created"
+        width="180"
+        label="充值时间">
       </el-table-column>
       <el-table-column
-        prop="gmtCreate"
-        label="创建时间">
+        prop="note"
+        label="备注">
       </el-table-column>
     </el-table>
     <el-pagination
@@ -66,11 +67,11 @@
 
 <script>
 import request from '@/utils/request'
-
 export default {
   data() {
     return {
       tableData: [],
+      linkPhone: {}, //联系人
       listLoading: false,//数据加载等待动画
       listQuery: {
         currentPage: 1,
@@ -80,7 +81,6 @@ export default {
       linkPhoneVisible: false, //弹窗默认关闭
       map: {
         name: "",
-        status: 0
       }//查询条件
     }
   },
@@ -95,9 +95,10 @@ export default {
       //查询列表
       this.listLoading = true;
       request({
-        url: "/log/list",
-        method: "get",
+        url: "/userOrder/all",
+        method: "post",
         params: this.listQuery,
+        data: this.map
       }).then(data => {
         this.listLoading = false;
         this.tableData = data.data.rows;
@@ -106,34 +107,6 @@ export default {
     },
     selectByName(){
       this.getList()
-    },
-    /**
-     * 修改联系人状态
-     */
-    update(userLink){
-      request({
-        url: `/userLink`,
-        method: "put",
-        data: userLink
-      }).then(data => {
-        this.$message({
-          showClose: true,
-          message: '修改成功',
-          type: 'success'
-        });
-        this.getList()
-      })
-    },
-    addLinkPhone(){
-      this.linkPhone.userId = '10'
-      this.api({
-        url: "/userLink",
-        method: "post",
-        data: this.linkPhone
-      }).then(data => {
-        this.linkPhoneVisible = false
-        this.getList()
-      })
     },
     handleSizeChange(val) {
       this.listQuery.pageSize = val

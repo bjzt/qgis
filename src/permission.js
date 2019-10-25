@@ -44,7 +44,7 @@ router.beforeEach(async(to, from, next) => {
                 for(let item of asyncRouterMap){
                   constantRoutes.push(item)
                 }
-                // router.addRoutes(asyncRouterMap) // 动态添加可访问路由表
+                router.addRoutes(asyncRouterMap) // 动态添加可访问路由表
               }
             }
             next()

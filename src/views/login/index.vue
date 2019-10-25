@@ -56,13 +56,6 @@
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (value == "") {
-        callback(new Error('用户名不能为空'))
-      } else {
-        callback()
-      }
-    }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
         callback(new Error('密码不能少于6位'))
@@ -76,7 +69,7 @@ export default {
         password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        username: [{ required: true, trigger: 'blur', message: "用户名不能为空" }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       loading: false,

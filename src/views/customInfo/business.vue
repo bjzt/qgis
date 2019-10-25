@@ -24,30 +24,24 @@
       width="50">
     </el-table-column>
       <el-table-column
-        prop="conpanyName"
+        prop="companyName"
         label="公司名称"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="oldbalance"
+        prop="oldBalance"
         label="充值前金额"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="money"
+        prop="nowMoney"
         label="本次充值金额"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="play"
+        prop="playLabel"
         label="充值类型"
         width="180">
-        <template slot-scope="scope">
-          <span v-if="scope.row.play==1">按点按次支付</span>
-          <span v-if="scope.row.play==2">包月</span>
-          <span v-if="scope.row.play==3">包季</span>
-          <span v-if="scope.row.play==4">包年</span>
-        </template>
       </el-table-column>
       <el-table-column
         prop="created"
@@ -76,6 +70,7 @@ import request from '@/utils/request'
 export default {
   data() {
     return {
+      playEnum: [],//支付方式 枚举
       tableData: [],
       linkPhone: {}, //联系人
       listLoading: false,//数据加载等待动画
