@@ -161,6 +161,11 @@ export const asyncRouterMap = [
         meta: { role: ['admin'],title: '客户消费管理' }
       },
       {
+        path: 'setting',
+        component: () => import('@/views/system/setting'),
+        meta: { role: ['admin'],title: '系统配置' }
+      },
+      {
         path: 'userLinkMange',
         component: () => import('@/views/system/linkPhoneManage'),
         meta: { role: ['admin'],title: '客户联系人管理' }

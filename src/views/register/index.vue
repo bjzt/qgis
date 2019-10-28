@@ -13,8 +13,36 @@
         <el-input
           ref="username"
           v-model="registerForm.username"
-          placeholder="用户名/手机号/邮箱"
+          placeholder="用户名"
           name="username"
+          type="text"
+          tabindex="1"
+          auto-complete="on"
+        />
+      </el-form-item>
+      <el-form-item prop="">
+        <span class="svg-container">
+          <svg-icon icon-class="user" />
+        </span>
+        <el-input
+          ref=""
+          v-model="registerForm.phone"
+          placeholder="手机号"
+          name="phone"
+          type="text"
+          tabindex="1"
+          auto-complete="on"
+        />
+      </el-form-item>
+      <el-form-item prop="email">
+        <span class="svg-container">
+          <svg-icon icon-class="user" />
+        </span>
+        <el-input
+          ref="email"
+          v-model="registerForm.email"
+          placeholder="邮箱"
+          name="email"
           type="text"
           tabindex="1"
           auto-complete="on"

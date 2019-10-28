@@ -3,7 +3,7 @@
     <h1 style="text-align:center;">密码修改配置内容</h1>
     <el-form size="mini">
       <el-form-item label="用户名" label-width="120px">
-        <el-input v-model="user.username"></el-input>
+        <el-input disabled v-model="user.username"></el-input>
       </el-form-item>
       <el-form-item label="图片地址" label-width="120px">
         <el-upload
@@ -20,7 +20,7 @@
         </el-upload>
       </el-form-item>
       <el-form-item label="手机号码" label-width="120px">
-        <el-input v-model="user.phone"></el-input>
+        <el-input disabled v-model="user.phone"></el-input>
       </el-form-item>
       <el-form-item label="短信验证码" label-width="120px">
         <el-input v-model="user.code" style="width:500px;"></el-input>
@@ -61,7 +61,21 @@ export default {
       })
     },
     submit(){
-      
+      request({
+        url: "/user/password",
+        method: "post",
+        data: {
+          password: this.user.password
+        }
+      }).then(res => {
+        if (res.flag) {
+          this.$message({
+            type: "success",
+            message: res.message
+          })
+          this.user.password = ""
+        }
+      })
     }
   }
 }

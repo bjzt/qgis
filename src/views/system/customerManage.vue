@@ -54,19 +54,16 @@
       </el-table-column>
       <el-table-column
         prop="play"
-        label="充值类型"
+        label="计费类型"
         width="180">
-        <template slot-scope="scope">
-          <span v-if="scope.row.play==1">按点按次支付</span>
-          <span v-if="scope.row.play==2">包月</span>
-          <span v-if="scope.row.play==3">包季</span>
-          <span v-if="scope.row.play==4">包年</span>
-        </template>
       </el-table-column>
       <el-table-column
         prop="address"
-        label="快递联系方式"
+        label="服务范围"
         width="180">
+        <template slot-scope="scope">
+          <div v-for="area in scope.row.userArea" :key="area.id" v-text="area.areaName"></div>
+        </template>
       </el-table-column>
       <el-table-column
         prop="balance"
@@ -96,13 +93,13 @@
       <el-form ref="customer" :model="customer" :rules="customerRules">
         <el-row>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
-            <el-form-item prop="text" label="用户名" :label-width="labelWidth">
-              <el-input ref="text" :disabled="!isCreate" v-model="customer.username"></el-input>
+            <el-form-item prop="username" label="用户名" :label-width="labelWidth">
+              <el-input ref="username" :disabled="!isCreate" v-model="customer.username"></el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
-            <el-form-item prop="money" label="手机号" :label-width="labelWidth">
-              <el-input ref="money" :disabled="!isCreate" v-model="customer.phone"></el-input>
+            <el-form-item prop="phone" label="手机号" :label-width="labelWidth">
+              <el-input ref="phone" :disabled="!isCreate" v-model.number="customer.phone"></el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
@@ -113,18 +110,18 @@
         </el-row>
         <el-row>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
-            <el-form-item prop="text" label="负责人" :label-width="labelWidth">
-              <el-input ref="text" :disabled="!isCreate" v-model="customer.name"></el-input>
+            <el-form-item prop="name" label="负责人" :label-width="labelWidth">
+              <el-input ref="name" :disabled="!isCreate" v-model="customer.name"></el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
-            <el-form-item prop="text" label="公司名称" :label-width="labelWidth">
-              <el-input ref="text" :disabled="!isCreate" v-model="customer.companyName"></el-input>
+            <el-form-item prop="companyName" label="公司名称" :label-width="labelWidth">
+              <el-input ref="companyName" :disabled="!isCreate" v-model="customer.companyName"></el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
-            <el-form-item prop="money" label="余额" :label-width="labelWidth">
-              <el-input ref="money" :disabled="!isCreate" v-model.number="customer.balance"></el-input>
+            <el-form-item prop="balance" label="余额" :label-width="labelWidth">
+              <el-input ref="balance" :disabled="!isCreate" v-model.number="customer.balance"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -152,7 +149,7 @@
             <!-- <el-button v-if="flag" slot="append" @click="selectDateFormat">月</el-button> -->
             <el-form-item v-if="!flag" label="购买次数" :label-width="labelWidth">
               <el-input :disabled="isCreate" v-model="customer.playNumber"></el-input>
-              <span>折扣 无</span>
+              <span>折扣 {{discount}}</span>
             </el-form-item>
             <el-form-item v-if="flag" label="购买时间" :label-width="labelWidth">
               <el-input :disabled="isCreate" v-model="customer.playDate">
@@ -166,9 +163,13 @@
           </el-col>
         </el-row>
       </el-form>
-      <span slot="footer" class="dialog-footer">
+      <span slot="footer" v-if="isCreate" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="createCustom">确 定</el-button>
+      </span>
+      <span slot="footer" v-if="!isCreate" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="playSubmit">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -219,8 +220,13 @@ export default {
     return {
       customerRules: {
         money: [{ required: true, trigger: 'blur', message: '不能为空' }, { type: 'number', message: '格式不正确'}],
-        text: [{ required: true, trigger: 'blur', message: '不能为空' }]
+        username: [{ required: true, trigger: 'blur', message: '不能为空' }],
+        name: [{ required: true, trigger: 'blur', message: '不能为空' }],
+        companyName: [{ required: true, trigger: 'blur', message: '不能为空' }],
+        phone: [{ required: true, trigger: 'blur', message: '不能为空' }],
+        balance: [{ required: true, trigger: 'blur', message: '不能为空' }, { type: 'number', message: '格式不正确'}]
       },
+      data: [],
       flag: false,
       tableData: [],
       labelWidth: '80px',
@@ -230,6 +236,8 @@ export default {
       dialogVisible: false,//对话框默认关闭
       chargeDialogVisible: false,
       customer: {},
+      discount: "无",
+      discountList: [],
       selectProps:{
         lazy: true,
         multiple: true, 
@@ -237,7 +245,7 @@ export default {
         lazyLoad(node, resolve) {
           
           if(node.level == 0){
-            node.data = { id: 0}
+            node.data = { id: 100000}
           }
           request({
             url: `/area`,
@@ -282,12 +290,38 @@ export default {
   created() {
     this.fetchData()
   },
+  watch:{
+    customer:{
+      deep: true,
+      handler(newV){
+        if (!this.flag) {
+          this.discount = "无"
+          for(let discount of this.discountList){
+            if (newV.playNumber >= discount.number) {
+              this.discount = discount.discount
+            }
+          }
+        }
+      }
+    }
+  },
   methods: {
     fetchData() {
       this.getList()
+      this.getDiscount()
+    },
+    getDiscount(){
+      request({
+        url: "/discount",
+        method: "get"
+      }).then(res => {
+        if (res.flag) {
+          this.discountList = res.data;
+        }
+      })
     },
     getList() {
-      //查询列表
+      //查询用户列表
       this.listLoading = true;
       request({
         url: "/user/list",
@@ -317,6 +351,7 @@ export default {
     },
     //创建用户
     createCustom(){
+      
       this.$refs.customer.validate(valid => {
         if (valid) {
           this.customer.password = "123456"
@@ -383,7 +418,36 @@ export default {
       this.customer = this.multipleSelection[0]
       this.dialogVisible = true
       this.isCreate = false
-    }
+    },
+    //购买实现
+    playSubmit(){
+      
+      let area = []
+      this.data.map(item => {
+        area.push({areaId: item.pop()})
+      })
+      this.$refs.customer.validate(valid => {
+        if (valid) {
+          request({
+            url: "/userArea",
+            method: "post",
+            data: {
+              userId: this.customer.id,
+              userArea: area
+            }
+          }).then(res => {
+            this.$message({
+              type: "success",
+              message: res.message
+            })
+            this.getList()
+            this.dialogVisible = false
+          })
+        }else {
+          return false
+        }
+      })
+    },
   }
 }
 </script>

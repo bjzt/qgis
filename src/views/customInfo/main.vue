@@ -4,25 +4,25 @@
       <el-tab-pane label="基本信息">
         <el-form v-model="customInfo" size="small">
           <el-form-item label="公司名称" label-width="120px">
-            <el-input v-model="customInfo.companyName"></el-input>
+            <el-input v-model="customInfo.companyName" placeholder="请填写公司名称"></el-input>
           </el-form-item>
           <el-form-item label="信用代码" label-width="120px">
-            <el-input v-model="customInfo.credit"></el-input>
+            <el-input disabled v-model="customInfo.credit"></el-input>
           </el-form-item>
           <el-form-item label="主账号" label-width="120px">
             <el-input v-model="customInfo.username"></el-input>
           </el-form-item>
           <el-form-item label="负责人姓名" label-width="120px">
-            <el-input v-model="customInfo.name"></el-input>
+            <el-input v-model="customInfo.name" placeholder="请填写负责人姓名"></el-input>
           </el-form-item>
           <el-form-item label="负责人电话" label-width="120px">
             <el-input v-model="customInfo.phone"></el-input>
           </el-form-item>
           <el-form-item label="快递联系方式" label-width="120px">
-            <el-input v-model="customInfo.address"></el-input>
+            <el-input v-model="customInfo.userArea[0].area"></el-input>
           </el-form-item>
           <el-form-item label="坐标转换支付" label-width="120px">
-            <el-select disabled v-model="customInfo.play" placeholder="请选择">
+            <el-select disabled v-model="customInfo.userArea[0].play" placeholder="请选择">
               <el-option
                 v-for="item in playList"
                 :key="item.value"
@@ -31,11 +31,11 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="包年服务开始" label-width="120px">
-            <el-input disabled v-model="customInfo.start"></el-input>
+          <el-form-item label="服务开始时间" label-width="120px">
+            <el-input disabled v-model="customInfo.userArea[0].start"></el-input>
           </el-form-item>
-          <el-form-item label="包年服务结束" label-width="120px">
-            <el-input disabled v-model="customInfo.end"></el-input>
+          <el-form-item label="服务结束结束" label-width="120px">
+            <el-input disabled v-model="customInfo.userArea[0].end"></el-input>
           </el-form-item>
           <el-form-item label="余额" label-width="120px">
             <el-input disabled v-model="customInfo.balance"></el-input>
@@ -46,8 +46,6 @@
               class="upload-demo"
               action="https://jsonplaceholder.typicode.com/posts/"
               :on-preview="handlePreview"
-              :on-remove="handleRemove"
-              :before-remove="beforeRemove"
               multiple
               :limit="3"
               :file-list="fileList">
@@ -75,7 +73,9 @@ export default {
   data() {
     return {
       customInfo: {
-        play: 1
+        userArea: [{
+          play: 1
+        }]
       },
       playList: [{
         label: '按次按点结算',
