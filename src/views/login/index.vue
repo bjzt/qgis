@@ -34,25 +34,47 @@
           name="password"
           tabindex="2"
           auto-complete="on"
-          @keyup.enter.native="handleLogin"
+          @keyup.enter.native="dialogVisible=true"
         />
         <span class="show-pwd" @click="showPwd">
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录系统</el-button>
-
+      <el-button 
+        :loading="loading" type="primary" 
+        style="width:100%;margin-bottom:30px;" 
+        @click.native.prevent="dialogVisible=true"
+        >登录系统</el-button>
+<!-- @click.native.prevent="handleLogin" -->
       <div class="tips">
         <span style="margin-right:20px;"><router-link to="register">新用户注册</router-link></span>
         <span><router-link to="forget">忘记密码？</router-link></span>
       </div>
 
     </el-form>
+
+    <el-dialog
+      title="手机验证"
+      :visible.sync="dialogVisible"
+      width="300px"
+      center>
+      <el-form>
+        <el-form-item>
+          <el-input v-model="loginForm.code" size="mini"></el-input>
+          <el-button style="width:100%;" @click="getCode" v-text="content"></el-button>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleLogin">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import request from '@/utils/request'
 export default {
   name: 'Login',
   data() {
@@ -66,10 +88,16 @@ export default {
     return {
       loginForm: {
         username: '',
-        password: ''
+        password: '',
+        code: ""
       },
+      canClick: true, //添加canClick
+      codeTime: 60, //按钮的倒计时
+      content: "发送验证码",
+      dialogVisible: false,
       loginRules: {
         username: [{ required: true, trigger: 'blur', message: "用户名不能为空" }],
+        code: [{ required: true, trigger: 'blur', message: "验证码不能为空" }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       loading: false,
@@ -96,12 +124,46 @@ export default {
         this.$refs.password.focus()
       })
     },
+    getCode(){
+      if (this.loginForm.username == null || this.loginForm.username == "") {
+        this.$message({
+          type: "waring",
+          message: "用户名不能为空"
+        })
+        return
+      }
+      if (!this.canClick) return;
+      request({
+        url: "/user/loginCode",
+        method: 'post',
+        data: this.loginForm
+      }).then(res => {
+        if (res.flag) {
+          this.$message({
+            type: "success",
+            message: res.message
+          })
+        }
+      })
+      this.canClick = false
+      this.content = this.codeTime + 's后重新发送'
+      let clock = window.setInterval(() => {
+        this.codeTime --
+        this.content = this.codeTime + 's后重新发送'
+        if (this.codeTime < 0) {     //当倒计时小于0时清除定时器
+        window.clearInterval(clock)
+          this.content = '重新发送验证码'
+          this.codeTime = 60
+          this.canClick = true
+        }
+      },1000);
+    },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+            this.$router.push({ path: '/' })
             this.loading = false
           }).catch(() => {
             this.loading = false

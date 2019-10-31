@@ -30,7 +30,7 @@
       </el-table-column>
       <el-table-column
         prop="number"
-        label="最低购买次数"
+        label="最低数据量"
         width="100">
       </el-table-column>
       <el-table-column
@@ -74,7 +74,7 @@
             <el-input v-model="discount.discount"></el-input>
         </el-form-item>
     
-        <el-form-item label="最低购买次数">
+        <el-form-item label="最低数据量">
             <el-input v-model.number="discount.number"></el-input>
         </el-form-item>
       </el-form>

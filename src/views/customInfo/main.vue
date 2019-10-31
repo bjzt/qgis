@@ -1,5 +1,8 @@
 <template>
   <div style="margin: 20px;">
+    <div style="position:absolute;right:20px;top:20px;z-index:9">
+      <el-button type="primary" size="small" >点击修改</el-button>
+    </div>
     <el-tabs type="card">
       <el-tab-pane label="基本信息">
         <el-form v-model="customInfo" size="small">
@@ -18,10 +21,11 @@
           <el-form-item label="负责人电话" label-width="120px">
             <el-input v-model="customInfo.phone"></el-input>
           </el-form-item>
-          <el-form-item label="快递联系方式" label-width="120px">
-            <el-input v-model="customInfo.userArea[0].area"></el-input>
+          <el-form-item label="服务范围" label-width="120px">
+            <el-input v-model="customInfo.userArea[0].areaName"></el-input>
+            <span> </span>
           </el-form-item>
-          <el-form-item label="坐标转换支付" label-width="120px">
+          <!-- <el-form-item label="坐标转换支付" label-width="120px">
             <el-select disabled v-model="customInfo.userArea[0].play" placeholder="请选择">
               <el-option
                 v-for="item in playList"
@@ -36,7 +40,7 @@
           </el-form-item>
           <el-form-item label="服务结束结束" label-width="120px">
             <el-input disabled v-model="customInfo.userArea[0].end"></el-input>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="余额" label-width="120px">
             <el-input disabled v-model="customInfo.balance"></el-input>
           </el-form-item>
@@ -62,11 +66,11 @@
               fit="scale-down"></el-image>
           </el-form-item>
         </el-form>
+        
       </el-tab-pane>
     </el-tabs>
   </div>
 </template>
-
 <script>
 import request from '@/utils/request'
 export default {

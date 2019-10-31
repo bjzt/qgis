@@ -12,6 +12,9 @@
             <el-button @click="customer={};dialogVisible=true;isCreate=true" size="small" type="primary">创建用户</el-button>
           </el-form-item>
           <el-form-item>
+            <el-button @click="dialogVisible=true;isCreate=true" size="small" type="primary">修改用户</el-button>
+          </el-form-item>
+          <el-form-item>
             <el-button @click="recharge" size="small" type="success">充值</el-button>
           </el-form-item>
           <el-form-item>
@@ -23,74 +26,110 @@
         <el-button type="primary" @click="getList" size="small" icon="el-icon-refresh"></el-button>
       </el-col>
     </el-row>
-    <el-table
-      :data="tableData"
-      :header-cell-style="{background:'#eef1f6',color:'#606266'}"
-      size="small"
-      @selection-change="handleSelectionChange"
-      style="width: 100%">
-      <el-table-column
-        type="selection"
-        width="55">
-      </el-table-column>
-      <el-table-column
-        prop="companyName"
-        label="公司名称"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="username"
-        label="主账号"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="name"
-        width="180"
-        label="负责人姓名">
-      </el-table-column>
-      <el-table-column
-        prop="phone"
-        label="负责人电话">
-      </el-table-column>
-      <el-table-column
-        prop="play"
-        label="计费类型"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="address"
-        label="服务范围"
-        width="180">
-        <template slot-scope="scope">
-          <div v-for="area in scope.row.userArea" :key="area.id" v-text="area.areaName"></div>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="balance"
-        label="余额"
-        width="180">
-      </el-table-column>
-      <el-table-column
-          prop="end"
-          label="服务结束时间"
-          width="180">
-        </el-table-column>
-      </el-table>
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="listQuery.currentPage"
-      :page-sizes="[5, 10, 20, 50]"
-      :page-size="listQuery.pageSize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total">
-    </el-pagination>
+    <el-row>
+      <el-col :xs="24" :xl="14" :lg="14" :sm="24" :md="24">
+        <el-table
+          :data="tableData"
+          highlight-current-row
+          @current-change="select"
+          @cell-click="chargecell"
+          :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+          size="small"
+          @selection-change="handleSelectionChange"
+          style="width: 100%">
+          <el-table-column
+            type="selection"
+            width="55">
+          </el-table-column>
+          <el-table-column
+            prop="companyName"
+            label="公司名称"
+            width="180">
+          </el-table-column>
+          <el-table-column
+            prop="username"
+            label="主账号"
+            width="180">
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            width="180"
+            label="负责人姓名">
+          </el-table-column>
+          <el-table-column
+            prop="phone"
+            label="负责人电话">
+          </el-table-column>
+          <el-table-column
+            prop="balance"
+            label="余额"
+            width="180">
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="listQuery.currentPage"
+          :page-sizes="[5, 10, 20, 50]"
+          :page-size="listQuery.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total">
+        </el-pagination>
+      </el-col>
+      <el-col :xs="24" :xl="10" :lg="10" :sm="24" :md="24">
+        <el-table 
+          :data="userAreaList"
+          :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+          size="small"
+          @selection-change="handleSelectionChange"
+          style="width: 100%;padding-left:10px">
+          <el-table-column
+            type="selection"
+            width="30">
+          </el-table-column>
+          <el-table-column
+            prop="play"
+            label="计费类型"
+            width="140">
+            <template slot-scope="scope">
+              <span v-if="scope.row.play == 1" >按点按次计费</span>
+              <span v-if="scope.row.play == 2" >包时</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="areaName"
+            label="服务范围"
+            width="180">
+          </el-table-column>
+          <el-table-column
+            prop="playNumber"
+            label="剩余次数">
+          </el-table-column>
+          <el-table-column
+            prop="end"
+            label="服务结束时间"
+            width="150">
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="listQuery.currentPage"
+          :page-sizes="[5, 10, 20, 50]"
+          :page-size="listQuery.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total">
+        </el-pagination>
+      </el-col>
+    </el-row>
+    
 
     <el-dialog
       title="用户数据"
       :visible.sync="dialogVisible"
       width="50%">
       <el-form ref="customer" :model="customer" :rules="customerRules">
+        <h3 v-if="isCreate" style="color: red">用户密码默认为创建时的手机号,然后可以自己修改密码</h3>
         <el-row>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
             <el-form-item prop="username" label="用户名" :label-width="labelWidth">
@@ -215,6 +254,7 @@
 
 <script>
 import request from '@/utils/request'
+import { log } from 'util'
 export default {
   data() {
     return {
@@ -238,6 +278,7 @@ export default {
       customer: {},
       discount: "无",
       discountList: [],
+      userAreaList: [],
       selectProps:{
         lazy: true,
         multiple: true, 
@@ -320,6 +361,11 @@ export default {
         }
       })
     },
+    chargecell(row, column, cell, event){
+      console.log(cell);
+      console.log(column);
+      
+    },
     getList() {
       //查询用户列表
       this.listLoading = true;
@@ -333,6 +379,13 @@ export default {
         this.tableData = data.data.rows;
         this.total = data.data.total;
       })
+    },
+    //table选中事件
+    select(rowData){
+        this.userAreaList = rowData.userArea
+        
+        // this.rowId = rowData.id
+        
     },
     //table发生选中事件时
     handleSelectionChange(val){
@@ -421,20 +474,28 @@ export default {
     },
     //购买实现
     playSubmit(){
-      
-      let area = []
+      let data = {
+        userId: this.customer.id,
+        userArea: []
+      }
       this.data.map(item => {
-        area.push({areaId: item.pop()})
+        data.userArea.push({areaId: item.pop()})
       })
+      if (this.flag) {
+        data.play = 2
+        //这是这里是月数
+        data.playDate = this.customer.playDate
+      } else {
+        data.play = 1
+        data.playNumber = this.customer.playNumber
+      }
+      
       this.$refs.customer.validate(valid => {
         if (valid) {
           request({
             url: "/userArea",
             method: "post",
-            data: {
-              userId: this.customer.id,
-              userArea: area
-            }
+            data: data
           }).then(res => {
             this.$message({
               type: "success",

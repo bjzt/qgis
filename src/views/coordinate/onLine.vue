@@ -38,8 +38,8 @@
                 </el-select>
               </el-form-item>
               <el-form-item label-width="120px" label="源坐标系">
-                <el-select size="mini" v-model="item1.zb" placeholder="请选择">
-                  <el-option label="BLH" value="BLH"></el-option>
+                <el-select size="mini" @change="select1" v-model="item1.zb" placeholder="请选择">
+                  <el-option label="BLH" value="BLH" ></el-option>
                   <el-option label="XYZ" value="XYZ"></el-option>
                   <el-option label="xyh" value="xyh"></el-option>
                 </el-select>
@@ -69,13 +69,19 @@
               <el-form-item label-width="120px" label="中央子午线">
                 <el-row>
                   <el-col :xs="6" :xl="8" :lg="8" :sm="8" :md="6">
-                    <el-input size="mini" :disabled="item1.zb != 'xyh'" v-model="item1.zw1"></el-input>
+                    <el-input size="mini" :disabled="item1.zb != 'xyh'" v-model="item1.zw1">
+                      <el-button slot="append">°</el-button>
+                    </el-input>
                   </el-col>
                   <el-col :xs="6" :xl="8" :lg="8" :sm="8" :md="6">
-                    <el-input size="mini" :disabled="item1.zb != 'xyh'" v-model="item1.zw2"></el-input>
+                    <el-input size="mini" :disabled="item1.zb != 'xyh'" v-model="item1.zw2">
+                      <el-button slot="append">°</el-button>
+                    </el-input>
                   </el-col>
                   <el-col :xs="6" :xl="8" :lg="8" :sm="8" :md="6">
-                    <el-input size="mini" :disabled="item1.zb != 'xyh'" v-model="item1.zw3"></el-input>
+                    <el-input size="mini" :disabled="item1.zb != 'xyh'" v-model="item1.zw3">
+                      <el-button slot="append">°</el-button>
+                    </el-input>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -106,7 +112,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item label-width="120px" label="目标坐标系">
-                <el-select size="mini" v-model="item2.zb" placeholder="请选择">
+                <el-select size="mini" @change="select2" v-model="item2.zb" placeholder="请选择">
                   <el-option label="BLH" value="BLH"></el-option>
                   <el-option label="XYZ" value="XYZ"></el-option>
                   <el-option label="xyh" value="xyh"></el-option>
@@ -137,13 +143,19 @@
               <el-form-item label-width="120px" label="中央子午线">
                 <el-row>
                   <el-col :span="8">
-                    <el-input size="mini" :disabled="item2.zb != 'xyh'" v-model="item2.zw1"></el-input>
+                    <el-input size="mini" :disabled="item2.zb != 'xyh'" v-model="item2.zw1">
+                      <el-button slot="append">°</el-button>
+                    </el-input>
                   </el-col>
                   <el-col :span="8">
-                    <el-input size="mini" :disabled="item2.zb != 'xyh'" v-model="item2.zw2"></el-input>
+                    <el-input size="mini" :disabled="item2.zb != 'xyh'" v-model="item2.zw2">
+                      <el-button slot="append">°</el-button>
+                    </el-input>
                   </el-col>
                   <el-col :span="8">
-                    <el-input size="mini" :disabled="item2.zb != 'xyh'" v-model="item2.zw3"></el-input>
+                    <el-input size="mini" :disabled="item2.zb != 'xyh'" v-model="item2.zw3">
+                      <el-button slot="append">°</el-button>
+                    </el-input>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -196,6 +208,10 @@
                 <el-form-item label="手机号" label-width="120px">
                   <span v-text="thisPhone"></span>
                 </el-form-item>
+                <el-form-item label="结算方式" label-width="120px">
+                  <span v-if="paly == 1">按点按次结算</span>
+                  <span v-if="paly == 2">处于服务时间</span>
+                </el-form-item>
                 <el-form-item label="短信验证" label-width="120px">
                   <el-input style="width:250px" v-model="checkcode" size="mini"></el-input> <el-button size="mini">发送验证码</el-button>
                 </el-form-item>
@@ -233,6 +249,7 @@ import request from '@/utils/request'
 export default {
   data() {
     return {
+      paly: 1,
         fileUpload: true,//文件上传与文本上传切换
         checkcode: '',//验证码
         thisPhone: '',//当前选择的手机号
@@ -279,7 +296,7 @@ export default {
     item1: {
       deep: true,
       handler(newV){
-        this.fetchData()
+        // this.fetchData()
       }
     },
     userLink: {
@@ -290,7 +307,6 @@ export default {
             this.thisPhone = item.phone
           }
         }
-        
       }
     }
   },
@@ -304,6 +320,20 @@ export default {
         case 'xyh': this.name = '点名,x,y,h.txt / 点名,y,x,h.dat';break;
         case 'XYZ': this.name = '点名,X,Y,Z.txt';break;
         case 'BLH': this.name = `点名,B(${this.item1.dd}),L(${this.item1.dd}),H,未修正的天线高.txt`;break;
+      }
+    },
+    select1(value){
+      if (value == 'BLH') {
+        this.item1.mb = '85国家高程'
+      }else if (value == 'xyh'){
+        this.item1.mb = '大地高'
+      }
+    },
+    select2(value){
+      if (value == 'BLH') {
+        this.item2.mb = '85国家高程'
+      }else if (value == 'xyh'){
+        this.item2.mb = '大地高'
       }
     },
     getUserLink(){

@@ -24,7 +24,7 @@
       </el-form-item>
       <el-form-item label="短信验证码" label-width="120px">
         <el-input v-model="user.code" style="width:500px;"></el-input>
-        <el-button type="primary" plain>获取短信验证码</el-button>
+        <el-button type="primary" plain @click="passwordCode">获取短信验证码</el-button>
       </el-form-item>
       <el-form-item label="新密码" label-width="120px">
         <el-input v-model="user.password"></el-input>
@@ -60,12 +60,40 @@ export default {
         this.user = data.data;
       })
     },
+    passwordCode(){
+      if (!this.canClick) return;
+      this.canClick = false
+      this.content = this.codeTime + 's后重新发送'
+      let clock = window.setInterval(() => {
+        this.codeTime--
+        this.content = this.codeTime + 's后重新发送'
+        if (this.codeTime < 0) {     //当倒计时小于0时清除定时器
+        window.clearInterval(clock)
+          this.content = '重新发送验证码'
+          this.codeTime = 60
+          this.canClick = true
+        }
+      },1000);
+      
+      request({
+        url: "/user/passwordCode",
+        method: "get"
+      }).then(res => {
+        if (res.flag) {
+          this.$message({
+            type: "success",
+            message: res.message
+          })
+        }
+      })
+    },
     submit(){
       request({
         url: "/user/password",
         method: "post",
         data: {
-          password: this.user.password
+          password: this.user.password,
+          code: this.user.code
         }
       }).then(res => {
         if (res.flag) {

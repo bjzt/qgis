@@ -66,10 +66,15 @@
       center>
       <el-form>
         <el-form-item label="联系人姓名">
-          <el-input v-model="linkPhone.name"></el-input>
+          <el-input v-model="linkPhone.name" size="small"></el-input>
         </el-form-item>
         <el-form-item label="联系人手机号">
-          <el-input v-model="linkPhone.phone"></el-input>
+          <el-input v-model="linkPhone.phone" size="small"></el-input>
+        </el-form-item>
+        <el-form-item label="验证码">
+          <el-input v-model="linkPhone.code" size="small">
+            <el-button slot="append" size="small" @click="getCode" v-text="content"></el-button>
+          </el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -89,6 +94,9 @@ export default {
       tableData: [],
       linkPhone: {}, //联系人
       listLoading: false,//数据加载等待动画
+      canClick: true, //添加canClick
+      codeTime: 60, //按钮的倒计时
+      content: "发送验证码", //按钮的内容
       listQuery: {
         currentPage: 1,
         pageSize: 5,
@@ -127,6 +135,22 @@ export default {
     //下载模板按钮
     downloadTemplate(){
       
+    },
+    //获取验证码
+    getCode(){
+      if (!this.canClick) return;
+      this.canClick = false
+      this.content = this.codeTime + 's后重新发送'
+      let clock = window.setInterval(() => {
+        this.codeTime --
+        this.content = this.codeTime + 's后重新发送'
+        if (this.codeTime < 0) {     //当倒计时小于0时清除定时器
+        window.clearInterval(clock)
+          this.content = '重新发送验证码'
+          this.codeTime = 60
+          this.canClick = true
+        }
+      },1000);
     },
     addLinkPhone(){
       this.linkPhone.userId = '10'
