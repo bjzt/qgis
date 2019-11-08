@@ -1,29 +1,39 @@
 <template>
   <div style="margin: 20px;">
-    <div style="position:absolute;right:20px;top:20px;z-index:9">
-      <el-button type="primary" size="small" >点击修改</el-button>
-    </div>
+    <!-- <div style="position:absolute;right:20px;top:20px;z-index:9">
+      <el-button type="primary" v-if="isUpdate==false" size="small" @click="isUpdate = true" >点击修改</el-button>
+      <el-button type="primary" v-if="isUpdate==true" size="small" @click="isUpdate=false;update()" >确认修改</el-button>
+    </div> -->
     <el-tabs type="card">
       <el-tab-pane label="基本信息">
         <el-form v-model="customInfo" size="small">
           <el-form-item label="公司名称" label-width="120px">
-            <el-input v-model="customInfo.companyName" placeholder="请填写公司名称"></el-input>
+            <el-input v-if="isUpdate" v-model="customInfo.companyName" placeholder="请填写公司名称"></el-input>
+            <span v-else v-text="customInfo.companyName"></span>
           </el-form-item>
           <el-form-item label="信用代码" label-width="120px">
-            <el-input disabled v-model="customInfo.credit"></el-input>
+            <el-input v-if="isUpdate" disabled v-model="customInfo.credit"></el-input>
+            <span v-else v-text="customInfo.credit"></span>
           </el-form-item>
           <el-form-item label="主账号" label-width="120px">
-            <el-input v-model="customInfo.username"></el-input>
+            <el-input v-if="isUpdate" v-model="customInfo.username"></el-input>
+            <span v-else v-text="customInfo.username"></span>
           </el-form-item>
           <el-form-item label="负责人姓名" label-width="120px">
-            <el-input v-model="customInfo.name" placeholder="请填写负责人姓名"></el-input>
+            <el-input v-if="isUpdate" v-model="customInfo.name" placeholder="请填写负责人姓名"></el-input>
+            <span v-else v-text="customInfo.name"></span>
           </el-form-item>
           <el-form-item label="负责人电话" label-width="120px">
-            <el-input v-model="customInfo.phone"></el-input>
+            <el-input v-if="isUpdate" v-model="customInfo.phone"></el-input>
+            <span v-else v-text="customInfo.phone"></span>
           </el-form-item>
           <el-form-item label="服务范围" label-width="120px">
-            <el-input v-model="customInfo.userArea[0].areaName"></el-input>
-            <span> </span>
+            <table>
+              <tr v-for="userArea of customInfo.userArea" :key="userArea.id">
+                <td style="padding-right: 10px">{{userArea.areaName}}</td>
+                <td>{{userArea.end}}</td>
+              </tr>
+            </table>
           </el-form-item>
           <!-- <el-form-item label="坐标转换支付" label-width="120px">
             <el-select disabled v-model="customInfo.userArea[0].play" placeholder="请选择">
@@ -42,7 +52,8 @@
             <el-input disabled v-model="customInfo.userArea[0].end"></el-input>
           </el-form-item> -->
           <el-form-item label="余额" label-width="120px">
-            <el-input disabled v-model="customInfo.balance"></el-input>
+            <el-input v-if="isUpdate" disabled v-model="customInfo.balance"></el-input>
+            <span v-else v-text="customInfo.balance"></span>
           </el-form-item>
           <h4 style="margin-left: 50px;color:red">上传营业执照、资质证书、开票信息，一般纳税人请提供一般纳税人证明</h4>
           <el-form-item label="公司文件" label-width="120px">
@@ -76,6 +87,7 @@ import request from '@/utils/request'
 export default {
   data() {
     return {
+      isUpdate: false,
       customInfo: {
         userArea: [{
           play: 1
@@ -112,6 +124,21 @@ export default {
         this.customInfo = data.data;
         if (this.customInfo.images != null) {
           this.customInfo.imagesList = this.customInfo.images.split(";")
+        }
+      })
+    },
+    update(){
+      request({
+        url: "/user",
+        method: "put",
+        data: this.customInfo
+      }).then(data => {
+        if (data.flag) {
+          this.$message({
+            type:"success",
+            message: data.message
+          })
+          this.getUser()
         }
       })
     },

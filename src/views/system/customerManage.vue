@@ -133,34 +133,34 @@
         <el-row>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
             <el-form-item prop="username" label="用户名" :label-width="labelWidth">
-              <el-input ref="username" :disabled="!isCreate" v-model="customer.username"></el-input>
+              <el-input size="samll" ref="username" :disabled="!isCreate" v-model="customer.username"></el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
             <el-form-item prop="phone" label="手机号" :label-width="labelWidth">
-              <el-input ref="phone" :disabled="!isCreate" v-model.number="customer.phone"></el-input>
+              <el-input size="samll" ref="phone" :disabled="!isCreate" v-model.number="customer.phone"></el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
             <el-form-item label="邮箱" :label-width="labelWidth">
-              <el-input :disabled="!isCreate" v-model="customer.email"></el-input>
+              <el-input size="samll" :disabled="!isCreate" v-model="customer.email"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
             <el-form-item prop="name" label="负责人" :label-width="labelWidth">
-              <el-input ref="name" :disabled="!isCreate" v-model="customer.name"></el-input>
+              <el-input size="samll" ref="name" :disabled="!isCreate" v-model="customer.name"></el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
             <el-form-item prop="companyName" label="公司名称" :label-width="labelWidth">
-              <el-input ref="companyName" :disabled="!isCreate" v-model="customer.companyName"></el-input>
+              <el-input size="samll" ref="companyName" :disabled="!isCreate" v-model="customer.companyName"></el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
             <el-form-item prop="balance" label="余额" :label-width="labelWidth">
-              <el-input ref="balance" :disabled="!isCreate" v-model.number="customer.balance"></el-input>
+              <el-input size="samll" ref="balance" :disabled="!isCreate" v-model.number="customer.balance"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -168,12 +168,19 @@
           <el-col :xs="24" v-if="!isCreate" :xl="8" :lg="8" :sm="8" :md="8">
             <el-form-item label="服务范围" :label-width="labelWidth">
             <!-- <el-input v-model="customer.address"></el-input> -->
-            <el-cascader v-model="data" :props="selectProps"></el-cascader>
+            <el-cascader size="samll" v-model="data" :props="selectProps"></el-cascader>
           </el-form-item>
           </el-col>
         
           <el-col :xs="24" v-if="!isCreate" :xl="8" :lg="8" :sm="8" :md="8">
-            <el-form-item label="计费方式" :label-width="labelWidth">
+            <el-form-item label="购买时间" :label-width="labelWidth">
+              <el-input size="samll" :disabled="isCreate" v-model="customer.playDate">
+                <el-button size="samll" slot="append" @click="selectDateFormat">月</el-button>
+              </el-input>
+              <span>时间最少一个月</span>
+            </el-form-item>
+          </el-col>
+            <!-- <el-form-item label="计费方式" :label-width="labelWidth">
               <el-switch
                 :disabled="isCreate"
                 v-model="flag"
@@ -181,26 +188,14 @@
                 inactive-text="按点按次计费">
               </el-switch>
             </el-form-item>
-          </el-col>
+          </el-col> -->
         </el-row>
-        <el-row>
-          <el-col v-if="!isCreate" :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
             <!-- <el-button v-if="flag" slot="append" @click="selectDateFormat">月</el-button> -->
-            <el-form-item v-if="!flag" label="购买次数" :label-width="labelWidth">
-              <el-input :disabled="isCreate" v-model="customer.playNumber"></el-input>
+            <!-- <el-form-item v-if="!flag" label="购买次数" :label-width="labelWidth">
+              <el-input size="samll" :disabled="isCreate" v-model="customer.playNumber"></el-input>
               <span>折扣 {{discount}}</span>
-            </el-form-item>
-            <el-form-item v-if="flag" label="购买时间" :label-width="labelWidth">
-              <el-input :disabled="isCreate" v-model="customer.playDate">
-                <el-button slot="append" @click="selectDateFormat">月</el-button>
-              </el-input>
-              <span>时间最少一个月</span>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
-            <div v-if="!isCreate" style="color:red;margin:10px;font-size:32px">120元</div>
-          </el-col>
-        </el-row>
+            </el-form-item> -->
+
       </el-form>
       <span slot="footer" v-if="isCreate" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
@@ -215,32 +210,36 @@
     <el-dialog
       title="用户充值"
       :visible.sync="chargeDialogVisible"
-      width="50%">
+      width="500px">
       <el-form ref="customer" :model="customer" :rules="customerRules">
         <el-row>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
             <el-form-item label="公司名称" :label-width="labelWidth">
-              <el-input disabled v-model="customer.companyName"></el-input>
+              <el-input disabled size="samll" v-model="customer.companyName"></el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
             <el-form-item label="手机号" :label-width="labelWidth">
-              <el-input disabled v-model.number="customer.phone"></el-input>
+              <el-input disabled size="samll" v-model.number="customer.phone"></el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
             <el-form-item label="余额" :label-width="labelWidth">
-              <el-input disabled v-model="customer.balance"></el-input>
+              <el-input disabled size="samll" v-model="customer.balance"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
             <el-form-item prop="money" label="充值金额" :label-width="labelWidth">
-              <el-input ref="money" v-model.number="customer.money"></el-input>
+              <el-input ref="money" size="samll" v-model.number="customer.money"></el-input>
             </el-form-item>
           </el-col>
-          
+          <el-col :xs="24" :xl="16" :lg="16" :sm="16" :md="16">
+            <el-form-item label="备注" :label-width="labelWidth">
+              <el-input size="samll" v-model="customer.note"></el-input>
+            </el-form-item>
+          </el-col>
           
         </el-row>
       </el-form>
@@ -267,7 +266,6 @@ export default {
         balance: [{ required: true, trigger: 'blur', message: '不能为空' }, { type: 'number', message: '格式不正确'}]
       },
       data: [],
-      flag: false,
       tableData: [],
       labelWidth: '80px',
       isCreate: true,//是否创建用户
@@ -407,7 +405,7 @@ export default {
       
       this.$refs.customer.validate(valid => {
         if (valid) {
-          this.customer.password = "123456"
+          this.customer.password = this.customer.phone
           request({
             url: "user/register",
             method: "post",
@@ -481,14 +479,10 @@ export default {
       this.data.map(item => {
         data.userArea.push({areaId: item.pop()})
       })
-      if (this.flag) {
-        data.play = 2
-        //这是这里是月数
-        data.playDate = this.customer.playDate
-      } else {
-        data.play = 1
-        data.playNumber = this.customer.playNumber
-      }
+      data.play = 2
+      //这是这里是月数
+      data.playDate = this.customer.playDate
+      
       
       this.$refs.customer.validate(valid => {
         if (valid) {

@@ -22,17 +22,28 @@
           <el-table-column
               prop="fileType"
               align="right"
-              label="数据类型">
+              label="数据类型"
+              width="100">
           </el-table-column>
-          <el-table-column
-              prop="created"
-              align="right"
-              label="上传时间">
-          </el-table-column>
+          
           <el-table-column
               prop="note"
               align="right"
               label="数据说明">
+          </el-table-column>
+          <el-table-column
+              prop="fileSize"
+              align="right"
+              label="文件大小">
+              <template slot-scope="scope">
+                <span v-if="scope.row.fileSize != null"> {{scope.row.fileSize}}Mb </span>
+              </template>
+          </el-table-column>
+          <el-table-column
+              prop="created"
+              align="right"
+              label="上传时间"
+              width="180">
           </el-table-column>
           <el-table-column
               prop="note"
@@ -40,7 +51,14 @@
               label="操作">
             <template slot-scope="scope">
               <span v-if="scope.row.status == 0">审核中</span>
-              <el-button v-if="scope.row.status == 1" @click="download(scope.row.id)">下载</el-button>
+              
+              <el-button-group v-if="scope.row.status == 1" >
+                <a :href="`${baseUrl}/file/upload/download?filePath=${scope.row.filePath}`" style="display: inline-block;">
+                  <el-button size="mini" type="primary">下载</el-button>
+                </a>
+                <el-button size="mini" @click="del(scope.row.id)" type="danger">删除</el-button>
+              </el-button-group>
+              
             </template>
           </el-table-column>
         </el-table>
@@ -92,10 +110,11 @@ import { getToken } from '@/utils/auth'
 export default {
   data() {
     return {
-      url: "http://localhost:8080/file/upload",
+      url: process.env.VUE_APP_BASE_API+"/file/upload/file",
       importHeaders: {
         'X-Token': getToken()
       },
+      baseUrl: process.env.VUE_APP_BASE_API,
       file: {},
       tableData: [],
       fileList: [],
@@ -151,8 +170,19 @@ export default {
     submitUpload() {
       this.$refs.upload.submit();
     },
-    download(id){
-
+    del(id){
+      request({
+        url: `/fileRecord/${id}`,
+        method: "delete"
+      }).then(data => {
+        if (data.flag) {
+          this.getList()
+          this.$message({
+            type: "success",
+            message: data.message
+          })
+        }
+      })
     }
   }
 }

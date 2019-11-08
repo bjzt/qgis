@@ -36,16 +36,25 @@
         width="180">
       </el-table-column>
       <el-table-column
-        prop="name"
-        label="联系人姓名"
-        width="180">
+        prop="fileName"
+        label="文件名">
       </el-table-column>
       <el-table-column
-        prop="phone"
-        label="联系人电话"
-        width="180">
+        prop="fileType"
+        label="数据类型">
       </el-table-column>
-      <el-table-column prop="status" label="审核状态" width="180">
+      <el-table-column
+        prop="note"
+        label="数据说明">
+      </el-table-column>
+      <el-table-column
+        prop="fileSize"
+        label="文件大小">
+        <template slot-scope="scope">
+            <span v-if="scope.row.fileSize != null"> {{scope.row.fileSize}}Mb </span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="status" label="审核状态">
         <template slot-scope="scope">
           <span v-if="scope.row.status==-1">未通过</span>
           <span v-if="scope.row.status==0">审核中</span>
@@ -54,7 +63,7 @@
       </el-table-column>
       <el-table-column
         prop="created"
-        label="创建时间">
+        label="上传时间">
       </el-table-column>
       <el-table-column
         label="操作">
@@ -93,7 +102,6 @@ export default {
       total: 0,
       linkPhoneVisible: false, //弹窗默认关闭
       map: {
-        indexName: "",
         status: 0
       }//查询条件
     }
@@ -109,7 +117,7 @@ export default {
       //查询列表
       this.listLoading = true;
       request({
-        url: "/userLink/list",
+        url: "/fileRecord/list/all",
         method: "post",
         params: this.listQuery,
         data: this.map
@@ -123,13 +131,13 @@ export default {
       this.getList()
     },
     /**
-     * 修改联系人状态
+     * 修改文件状态
      */
-    update(userLink){    
+    update(fileRecord){    
       request({
-        url: `/userLink`,
+        url: `/fileRecord`,
         method: "put",
-        data: userLink
+        data: fileRecord
       }).then(data => {
         this.$message({
           showClose: true,

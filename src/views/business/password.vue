@@ -9,13 +9,11 @@
         <el-upload
           class="upload-demo"
           action="https://jsonplaceholder.typicode.com/posts/"
-          :on-preview="handlePreview"
+          
+          multiple>
+          <!-- :on-preview="handlePreview"
           :on-remove="handleRemove"
-          :before-remove="beforeRemove"
-          multiple
-          :limit="3"
-          :on-exceed="handleExceed"
-          :file-list="fileList">
+          :before-remove="beforeRemove" -->
           <el-button size="mini" type="primary" plain>添加图片</el-button>
         </el-upload>
       </el-form-item>
@@ -24,7 +22,7 @@
       </el-form-item>
       <el-form-item label="短信验证码" label-width="120px">
         <el-input v-model="user.code" style="width:500px;"></el-input>
-        <el-button type="primary" plain @click="passwordCode">获取短信验证码</el-button>
+        <el-button type="primary" plain @click="passwordCode">{{content}}</el-button>
       </el-form-item>
       <el-form-item label="新密码" label-width="120px">
         <el-input v-model="user.password"></el-input>
@@ -42,7 +40,10 @@ import request from '@/utils/request'
 export default {
   data() {
     return {
-      user: {}
+      user: {},
+      content: "获取短信验证码",
+      canClick: true,
+      codeTime: 60
     }
   },
   created() {
@@ -62,6 +63,17 @@ export default {
     },
     passwordCode(){
       if (!this.canClick) return;
+      request({
+        url: "/user/passwordCode",
+        method: "get"
+      }).then(res => {
+        if (res.flag) {
+          this.$message({
+            type: "success",
+            message: res.message
+          })
+        }
+      })
       this.canClick = false
       this.content = this.codeTime + 's后重新发送'
       let clock = window.setInterval(() => {
@@ -75,17 +87,6 @@ export default {
         }
       },1000);
       
-      request({
-        url: "/user/passwordCode",
-        method: "get"
-      }).then(res => {
-        if (res.flag) {
-          this.$message({
-            type: "success",
-            message: res.message
-          })
-        }
-      })
     },
     submit(){
       request({
