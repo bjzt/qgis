@@ -30,12 +30,12 @@
       </el-table-column>
       <el-table-column
         prop="oldBalance"
-        label="充值前金额"
+        label="操作前金额"
         width="180">
       </el-table-column>
       <el-table-column
         prop="nowMoney"
-        label="本次充值金额"
+        label="本次消费金额"
         width="180">
       </el-table-column>
       <el-table-column

@@ -225,6 +225,7 @@
                   
                   <el-switch
                     v-model="fileUpload"
+                    @change="point.number=0"
                     active-text="上传文件"
                     inactive-text="文本框输入">
                   </el-switch>
@@ -234,7 +235,6 @@
                   <span v-text="name" ></span>
                 </el-form-item>
                 <el-form-item v-if="fileUpload" label="上传文件" label-width="120px">
-                  <!-- v-if="point.number == null" -->
                   <el-upload
                   
                     class="upload-demo"
@@ -245,7 +245,6 @@
                     :show-file-list="false">
                     <el-button size="mini">上传文件</el-button>
                   </el-upload>
-                  <!-- <span style="color:red" v-text="textError"></span> -->
                 </el-form-item>
                 <el-form-item v-if="fileUpload" label="待转换文件" label-width="120px">
                   <span v-text="filePath"></span>
@@ -269,7 +268,7 @@
                   </el-switch>
                 </el-form-item>
                 <el-form-item label-width="120px">
-                  <span v-if="point.number != null && !flag">{{point.number}}个点,{{price}} 元</span>
+                  <span v-if="point.number != null && !flag"> 价格预览 {{point.number}}个点,{{price}} 元</span>
                 </el-form-item>
                 <el-row>
                   <el-col :xs="24" :xl="8" :lg="8" :sm="18" :md="8">
@@ -299,7 +298,10 @@
                 <span v-text="res"></span>
               </el-form-item>
               <el-form-item label-width="120px">
-                <el-button type="primary" @click="download" size="mini">查询结果</el-button>
+                <a v-if="downloadPath != null" :href="`${baseUrl}/file/upload/download?filePath=${downloadPath}`">
+                  <el-button type="primary" size="mini">查询结果</el-button>
+                </a>
+                <el-button v-else type="primary" size="mini">查询结果</el-button>
               </el-form-item>
               </el-col>
           </el-row>
@@ -366,11 +368,13 @@ export default {
         t: [{ required: true, trigger: 'blur', validator: isnumber }]
       },
       config:{},//系统的配置
+      discountList: [], //折扣配置
       flag: true,
       uploadUrl: `${process.env.VUE_APP_BASE_API}/file/upload/changeFile`,
       importHeaders: {
         'X-Token': getToken()
       },
+      baseUrl: process.env.VUE_APP_BASE_API,
       fileUpload: true,//文件上传与文本上传切换
       checkcode: '',//验证码
       thisPhone: '',//当前选择的手机号
@@ -418,7 +422,8 @@ export default {
         status: 1 //审核通过的联系人
       },
       message: "",
-      res: ""
+      res: "",
+      downloadPath: null //处理完成后的文件路径
     }
   },
   watch:{
@@ -435,7 +440,6 @@ export default {
     text(newText){
       let points = newText.split("\n") 
       this.point.number = points.length
-      console.log(points.length);
     },
     thisPhone(newV){
       this.userLink.phone = newV
@@ -443,9 +447,17 @@ export default {
   },
   computed: {
     price(){
-      if(this.point.number < 10){
-        return 10 * this.config.price;
-      } 
+      for(let discount of this.discountList){
+        if(this.point.number >= discount.number){
+          if (discount.price == null) {
+            return this.point.number * this.config.price * discount.discount;
+          }else {
+            return discount.price;
+          }
+          
+        } 
+      }
+      
     }
   },
   created() {
@@ -459,6 +471,7 @@ export default {
         case 'XYZ': this.name = '点名,X,Y,Z.txt';break;
         case 'BLH': this.name = `点名,B(${this.item1.dd}),L(${this.item1.dd}),H,未修正的天线高.txt`;break;
       }
+      //获取系统设置
       request({
         url: "/data/config",
         method: "get"
@@ -466,6 +479,13 @@ export default {
         if (res.flag) {
           this.config = res.data
         }
+      })
+      //获取折扣配置
+      request({
+        url: "/discount",
+        method: "get"
+      }).then(data => {
+        this.discountList = data.data;
       })
       request({
         url: "/user/one",
@@ -583,6 +603,14 @@ export default {
     },
     //提交表单
     commit(){
+      if (!/^\S/.test(this.item1.name) ) {
+        this.$message({
+          type: "error",
+          message: "项目名不能为空"
+        })
+        return
+      }
+      this.downloadPath = null
       let item1 = this.item(this.item1)
       let item2 = this.item(this.item2)
       
@@ -605,6 +633,7 @@ export default {
           message: res.message
         })
         if (res.flag) {
+          this.downloadPath = res.data.url
           this.res = res.message
         }else {
           this.textError = res.message
@@ -663,9 +692,6 @@ export default {
         }
       })
     },
-    download(){
-
-    }
   }
 }
 </script>

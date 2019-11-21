@@ -6,9 +6,6 @@
           <el-form-item label="公司名称" label-width="120px">
             <span v-text="customInfo.companyName"></span>
           </el-form-item>
-          <el-form-item label="信用代码" label-width="120px">
-            <span  v-text="customInfo.credit"></span>
-          </el-form-item>
           <el-form-item label="主账号" label-width="120px">
             <span v-text="customInfo.username"></span>
           </el-form-item>

@@ -79,11 +79,14 @@
     <el-dialog
       title="文件上传"
       :visible.sync="dialogVisible"
-      width="30%">
+      width="500px">
 
       <el-form ref="file" :model="file">
         <el-form-item label="文件类型">
-          <el-input v-model="file.fileType" placeholder="请输入文件类型"></el-input>
+          <el-select v-model="file.fileType" placeholder="请选择文件类型">
+            <el-option label="GNSS/PPK/PPP" value="GNSS/PPK/PPP"></el-option>
+            <el-option label="PTK原始文件夹" value="PTK原始文件夹"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="数据说明">
           <el-input v-model="file.note" ></el-input>

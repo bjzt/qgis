@@ -37,6 +37,11 @@
         width="100">
       </el-table-column>
       <el-table-column
+        prop="projectName"
+        label="项目名称"
+        width="100">
+      </el-table-column>
+      <el-table-column
         prop="name"
         label="使用人">
       </el-table-column>
@@ -134,6 +139,19 @@ export default {
     handleCurrentChange(val) {
       this.listQuery.currentPage = val
       this.getList()
+    },
+    del(id){
+      request({
+        url: `/changeFileRecord/${id}`,
+        method: "delete"
+      }).then(data => {
+        if (data.flag) {
+          this.$message({
+            type: "success",
+            message: data.message
+          })
+        }
+      })
     }
   }
 }

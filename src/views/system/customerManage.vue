@@ -112,20 +112,20 @@
           <el-table-column
             prop="end"
             label="操作">
-            <template>
+            <template slot-scope="scope">
               <el-button type="text">续费</el-button>
-              <el-button type="text">删除</el-button>
+              <el-button @click="delService(scope.row.id)" type="text">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
         <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="listQuery.currentPage"
+          @size-change="serviceSizeChange"
+          @current-change="serviceCurrentChange"
+          :current-page="serviceListQuery.currentPage"
           :page-sizes="[5, 10, 20, 50]"
-          :page-size="listQuery.pageSize"
+          :page-size="serviceListQuery.pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total">
+          :total="serviceTotal">
         </el-pagination>
       </el-col>
     </el-row>
@@ -313,7 +313,12 @@ export default {
         currentPage: 1,
         pageSize: 5,
       },
+      serviceListQuery: {
+        currentPage: 1,
+        pageSize: 5,
+      },
       total: 0,
+      serviceTotal: 0,
       linkPhoneVisible: false, //弹窗默认关闭
       map: {
         companyName: "",
@@ -375,13 +380,10 @@ export default {
     //table选中事件
     select(rowData){
         this.userAreaList = rowData.userArea
-        
-        // this.rowId = rowData.id
-        
     },
     //table发生选中事件时
     handleSelectionChange(val){
-      this.multipleSelection = val;    
+      this.multipleSelection = val;
     },
     selectByName(){
       this.getList()
@@ -393,6 +395,12 @@ export default {
     handleCurrentChange(val) {
       this.listQuery.currentPage = val
       this.getList()
+    },
+    serviceSizeChange(val){
+      this.serviceListQuery.pageSize = val
+    },
+    serviceCurrentChange(val) {
+      this.serviceListQuery.currentPage = val
     },
     //创建用户
     createCustom(){
@@ -549,6 +557,20 @@ export default {
         this.multipleSelection.map(user => {
           this.delUser(user.id)
         })
+      })
+    },
+    delService(id){
+      request({
+        url: `/userArea/${id}`,
+        method: "delete"
+      }).then(res => {
+        if (res.flag) {
+          this.$message({
+            type: "success",
+            message: res.message
+          })
+          this.getList()
+        }
       })
     },
     delUser(id){
