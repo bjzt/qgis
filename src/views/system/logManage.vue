@@ -49,7 +49,7 @@
       </el-table-column>
       <el-table-column
         prop="gmtCreate"
-        label="创建时间">
+        label="操作时间">
       </el-table-column>
     </el-table>
     <el-pagination

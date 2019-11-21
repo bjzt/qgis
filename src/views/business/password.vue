@@ -2,35 +2,48 @@
   <div style="margin: 20px">
     <h1 style="text-align:center;">密码修改配置内容</h1>
     <el-form size="mini">
-      <el-form-item label="用户名" label-width="120px">
-        <el-input disabled v-model="user.username"></el-input>
-      </el-form-item>
+      <el-row>
+        <el-col :xs="24" :xl="8" :lg="12" :sm="12" :md="12">
+          <el-form-item label="用户名" label-width="120px">
+            <el-input disabled v-model="user.username"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
       <el-form-item label="图片地址" label-width="120px">
         <el-upload
           class="upload-demo"
           action="https://jsonplaceholder.typicode.com/posts/"
-          
-          multiple>
-          <!-- :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :before-remove="beforeRemove" -->
+          >
           <el-button size="mini" type="primary" plain>添加图片</el-button>
         </el-upload>
       </el-form-item>
-      <el-form-item label="手机号码" label-width="120px">
-        <el-input disabled v-model="user.phone"></el-input>
-      </el-form-item>
-      <el-form-item label="短信验证码" label-width="120px">
-        <el-input v-model="user.code" style="width:500px;"></el-input>
-        <el-button type="primary" plain @click="passwordCode">{{content}}</el-button>
-      </el-form-item>
-      <el-form-item label="新密码" label-width="120px">
-        <el-input v-model="user.password"></el-input>
+      <el-row>
+        <el-col :xs="24" :xl="8" :lg="12" :sm="12" :md="12">
+          <el-form-item label="手机号码" label-width="120px">
+            <el-input disabled v-model="user.phone"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :xs="24" :xl="8" :lg="12" :sm="12" :md="12">  
+          <el-form-item label="短信验证码" label-width="120px">
+            <el-input v-model="user.code">
+              <el-button type="primary" slot="append" plain @click="passwordCode">{{content}}</el-button>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :xs="24" :xl="8" :lg="12" :sm="12" :md="12">
+          <el-form-item label="新密码" label-width="120px">
+            <el-input v-model="user.password"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-form-item label-width="120px">
+        <el-button @click="submit" type="primary">确定</el-button>
       </el-form-item>
     </el-form>
-    <div style="text-align:center;">
-      <el-button @click="submit" type="primary">确定</el-button>
-    </div>
   </div>
 </template>
 

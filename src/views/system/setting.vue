@@ -14,58 +14,94 @@
         <div style="position:absolute;right:20px;top:20px;z-index:9">
           <el-button type="primary" @click="getList" size="small" icon="el-icon-refresh"></el-button>
         </div>
-        <el-table
-          :data="tableData"
-          v-loading.body="listLoading" 
-          element-loading-text="拼命加载中"
-          :header-cell-style="{background:'#eef1f6',color:'#606266'}"
-          size="small"
-          style="width: 100%">
-          <el-table-column
-            type="index"
-            width="50">
-          </el-table-column>
-          <el-table-column
-            prop="discount"
-            label="折扣"
-            width="100">
-          </el-table-column>
-          <el-table-column
-            prop="number"
-            label="最低数据量"
-            width="100">
-          </el-table-column>
-          <el-table-column
-            prop="created"
-            label="创建时间"
-            width="180">
-          </el-table-column>
-          <el-table-column
-            prop="updated"
-            label="更新时间"
-            width="180">
-          </el-table-column>
-          <el-table-column
-            prop="id"
-            label="操作">
-            <template slot-scope="scope">
-              <el-button-group>
-                <el-button @click="discount=scope.row;dialogVisible=true;isCreate=false" size="mini" type="primary">修改</el-button>
-                <el-button @click="del(scope.row.id)" size="mini" type="danger">删除</el-button>
-              </el-button-group>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="listQuery.currentPage"
-          :page-sizes="[5, 10, 20, 50]"
-          :page-size="listQuery.pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total">
-        </el-pagination>
-
+        <el-row> 
+          <el-col :xs="24" :xl="16" :lg="16" :sm="24" :md="24">
+            <el-table
+              :data="tableData"
+              v-loading.body="listLoading" 
+              element-loading-text="拼命加载中"
+              :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+              size="small"
+              style="width: 100%">
+              <el-table-column
+                type="index"
+                width="50">
+              </el-table-column>
+              <el-table-column
+                prop="discount"
+                label="折扣"
+                width="100">
+              </el-table-column>
+              <el-table-column
+                prop="price"
+                label="价格"
+                width="100">
+              </el-table-column>
+              <el-table-column
+                prop="number"
+                label="最低数据量"
+                width="100">
+              </el-table-column>
+              <el-table-column
+                prop="created"
+                label="创建时间"
+                width="180">
+              </el-table-column>
+              <el-table-column
+                prop="updated"
+                label="更新时间"
+                width="180">
+              </el-table-column>
+              <el-table-column
+                prop="id"
+                label="操作">
+                <template slot-scope="scope">
+                  <el-button-group>
+                    <el-button @click="discount=scope.row;dialogVisible=true;isCreate=false" size="mini" type="primary">修改</el-button>
+                    <el-button @click="del(scope.row.id)" size="mini" type="danger">删除</el-button>
+                  </el-button-group>
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="listQuery.currentPage"
+              :page-sizes="[5, 10, 20, 50]"
+              :page-size="listQuery.pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="total">
+            </el-pagination>
+          </el-col>
+          <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
+        <el-form :model="config">
+          <el-row>
+            <el-col :xs="18" :xl="18" :lg="18" :sm="24" :md="24">
+              <el-form-item label="单位价格" :label-width="inputWidth">
+                <el-input size="small" v-model="config.price">
+                  <el-button size="small" slot="append">元</el-button>
+                </el-input>
+              </el-form-item>
+            <!-- </el-col>
+            <el-col :xs="24" :xl="8" :lg="8" :sm="18" :md="24"> -->
+              <el-form-item label="最大上传点数量" :label-width="inputWidth">
+                <el-input size="small" v-model="config.maxPointNumber">
+                  <el-button size="small" slot="append">个</el-button>
+                </el-input>
+              </el-form-item>
+              <el-form-item label="最大跨度" :label-width="inputWidth">
+                <el-input size="small" v-model="config.maxKD">
+                  <el-button size="small" slot="append">km</el-button>
+                </el-input>
+              </el-form-item>
+              <el-form-item :label-width="inputWidth">
+                <el-button size="small" type="primary">修改</el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+          </el-col>
+        </el-row>
         <el-dialog
           title="折扣信息"
           :visible.sync="dialogVisible"
@@ -74,6 +110,10 @@
               <!-- :rules="customerRules" -->
             <el-form-item label="折扣">
                 <el-input v-model="discount.discount"></el-input>
+            </el-form-item>
+
+            <el-form-item label="价格">
+                <el-input v-model="discount.price"></el-input>
             </el-form-item>
         
             <el-form-item label="最低数据量">
@@ -87,29 +127,6 @@
           </span>
         </el-dialog>
       </el-tab-pane>
-      <el-tab-pane label="坐标单价设置">
-        <el-form :model="point">
-          <el-row>
-            <el-col :xs="18" :xl="4" :lg="6" :sm="10" :md="8">
-              <el-form-item label="坐标单价" :label-width="inputWidth">
-                <el-input size="small" v-model="point.price">
-                  <el-button size="small" slot="append">元</el-button>
-                </el-input>
-              </el-form-item>
-            <!-- </el-col>
-            <el-col :xs="24" :xl="8" :lg="8" :sm="18" :md="24"> -->
-              <el-form-item label="最低消费点数" :label-width="inputWidth">
-                <el-input size="small" v-model="point.number">
-                  <el-button size="small" slot="append">个</el-button>
-                </el-input>
-              </el-form-item>
-              <el-form-item :label-width="inputWidth">
-                <el-button size="small" type="primary">修改</el-button>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -122,8 +139,7 @@ export default {
     return {
       tableData: [],
       discount: {},//折扣
-      point: {},//点设置
-      inputWidth: '100px',
+      inputWidth: '110px',
       isCreate: true, 
       dialogVisible: false, 
       listLoading: false,//数据加载等待动画
@@ -131,6 +147,7 @@ export default {
         currentPage: 1,
         pageSize: 5,
       },
+      config: {},
       total: 0,
       linkPhoneVisible: false, //弹窗默认关闭
       map: {
@@ -145,6 +162,15 @@ export default {
   methods: {
     fetchData() {
       this.getList()
+      this.getConfig()
+    },
+    getConfig(){
+      request({
+        url: "/data/config",
+        method: "get",
+      }).then(data => {
+        this.config = data.data;
+      })
     },
     getList() {
       //查询列表
@@ -186,7 +212,7 @@ export default {
         url: "/discount",
         method: "post",
         data: this.discount
-      }).then(data => {
+      }).then(res => {
         if (res.flag) {
           this.$message({
             type: "success",
@@ -196,6 +222,27 @@ export default {
           this.getList()
         }
       })
+    },
+    del(id){
+      this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+      }).then(() => {
+        request({
+          url: `/discount/${id}`,
+          method: "delete"
+        }).then(res => {
+          if (res.flag) {
+            this.$message({
+              type: "success",
+              message: res.message
+            })
+            this.getList()
+          }
+        })
+      })
+      
     },
     handleSizeChange(val) {
       this.listQuery.pageSize = val

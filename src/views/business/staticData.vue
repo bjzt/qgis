@@ -1,11 +1,8 @@
 <template>
   <div style="margin: 20px">
     <div style="position:absolute;right:20px;top:20px;z-index:9">
-
       <el-button type="primary" size="small">模板下载</el-button>
       <el-button type="primary" @click="dialogVisible = true" size="small">上传</el-button>
-      
-
     </div>
     <el-tabs type="card">
       <el-tab-pane label="数据上传申请">
@@ -58,7 +55,12 @@
                 </a>
                 <el-button size="mini" @click="del(scope.row.id)" type="danger">删除</el-button>
               </el-button-group>
-              
+              <el-button-group v-if="scope.row.status == -1" >
+                <a :href="`${baseUrl}/file/upload/download?filePath=${scope.row.filePath}`" style="display: inline-block;">
+                  <el-button size="mini" type="primary">下载</el-button>
+                </a>
+                <el-button size="mini" @click="del(scope.row.id)" type="danger">删除</el-button>
+              </el-button-group>
             </template>
           </el-table-column>
         </el-table>
@@ -95,6 +97,7 @@
         :on-success="handlePreview"
         :on-remove="handleRemove"
         :auto-upload="false"
+        :show-file-list="false"
         :data="file"
         :headers="importHeaders">
         <el-button slot="trigger" size="small" type="primary">选择文件</el-button>

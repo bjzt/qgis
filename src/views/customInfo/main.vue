@@ -1,31 +1,22 @@
 <template>
   <div style="margin: 20px;">
-    <!-- <div style="position:absolute;right:20px;top:20px;z-index:9">
-      <el-button type="primary" v-if="isUpdate==false" size="small" @click="isUpdate = true" >点击修改</el-button>
-      <el-button type="primary" v-if="isUpdate==true" size="small" @click="isUpdate=false;update()" >确认修改</el-button>
-    </div> -->
     <el-tabs type="card">
       <el-tab-pane label="基本信息">
         <el-form v-model="customInfo" size="small">
           <el-form-item label="公司名称" label-width="120px">
-            <el-input v-if="isUpdate" v-model="customInfo.companyName" placeholder="请填写公司名称"></el-input>
-            <span v-else v-text="customInfo.companyName"></span>
+            <span v-text="customInfo.companyName"></span>
           </el-form-item>
           <el-form-item label="信用代码" label-width="120px">
-            <el-input v-if="isUpdate" disabled v-model="customInfo.credit"></el-input>
-            <span v-else v-text="customInfo.credit"></span>
+            <span  v-text="customInfo.credit"></span>
           </el-form-item>
           <el-form-item label="主账号" label-width="120px">
-            <el-input v-if="isUpdate" v-model="customInfo.username"></el-input>
-            <span v-else v-text="customInfo.username"></span>
+            <span v-text="customInfo.username"></span>
           </el-form-item>
           <el-form-item label="负责人姓名" label-width="120px">
-            <el-input v-if="isUpdate" v-model="customInfo.name" placeholder="请填写负责人姓名"></el-input>
-            <span v-else v-text="customInfo.name"></span>
+            <span v-text="customInfo.name"></span>
           </el-form-item>
           <el-form-item label="负责人电话" label-width="120px">
-            <el-input v-if="isUpdate" v-model="customInfo.phone"></el-input>
-            <span v-else v-text="customInfo.phone"></span>
+            <span v-text="customInfo.phone"></span>
           </el-form-item>
           <el-form-item label="服务范围" label-width="120px">
             <table>
@@ -35,46 +26,35 @@
               </tr>
             </table>
           </el-form-item>
-          <!-- <el-form-item label="坐标转换支付" label-width="120px">
-            <el-select disabled v-model="customInfo.userArea[0].play" placeholder="请选择">
-              <el-option
-                v-for="item in playList"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="服务开始时间" label-width="120px">
-            <el-input disabled v-model="customInfo.userArea[0].start"></el-input>
-          </el-form-item>
-          <el-form-item label="服务结束结束" label-width="120px">
-            <el-input disabled v-model="customInfo.userArea[0].end"></el-input>
-          </el-form-item> -->
           <el-form-item label="余额" label-width="120px">
-            <el-input v-if="isUpdate" disabled v-model="customInfo.balance"></el-input>
-            <span v-else v-text="customInfo.balance"></span>
+            <span v-text="customInfo.balance"></span>
           </el-form-item>
           <h4 style="margin-left: 50px;color:red">上传营业执照、资质证书、开票信息，一般纳税人请提供一般纳税人证明</h4>
           <el-form-item label="公司文件" label-width="120px">
             <el-upload
               class="upload-demo"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :on-preview="handlePreview"
-              multiple
-              :limit="3"
-              :file-list="fileList">
+              :action="uploadUrl"
+              :show-file-list="false"
+              :headers="importHeaders"
+              :on-success="success">
               <el-button size="mini">添加图片</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+              <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
             </el-upload>
           </el-form-item>
           <el-form-item label="预览" label-width="120px">
+            <!-- <img v-for="item in this.customInfo.imagesList" :src="item" :key="item" /> -->
             <el-image
-              v-for="item in this.customInfo.imagesList"
+              v-for="item in customInfo.imagesList"
               :key="item"
               style="width: 100px; height: 100px"
               :src="item"
+              @mouseover="showDel(item)"
+              :preview-src-list="customInfo.imagesList"
               fit="scale-down"></el-image>
+              <br/>
+              <div style="display: inline-block;width: 100px;text-align: center"  v-for="item in customInfo.imagesList" :key="item">
+                <span style="display: none;" :ref="item"><el-button  size="mini" type="danger" @click="changedel(item)">删除</el-button></span>
+              </div>
           </el-form-item>
         </el-form>
         
@@ -82,12 +62,17 @@
     </el-tabs>
   </div>
 </template>
+
 <script>
 import request from '@/utils/request'
+import { getToken } from '@/utils/auth'
 export default {
   data() {
     return {
-      isUpdate: false,
+      uploadUrl: process.env.VUE_APP_BASE_API+"/file/upload/img",
+      importHeaders: {
+        'X-Token': getToken()
+      },
       customInfo: {
         userArea: [{
           play: 1
@@ -123,15 +108,40 @@ export default {
       }).then(data => {
         this.customInfo = data.data;
         if (this.customInfo.images != null) {
-          this.customInfo.imagesList = this.customInfo.images.split(";")
-        }
+          
+          let imgList = this.customInfo.images.split(";")
+          this.customInfo.imagesList = []
+          for (let img of imgList){
+            this.customInfo.imagesList.push(`${process.env.VUE_APP_BASE_API}/file/upload/download?filePath=${img}`)
+          }
+        }      
       })
     },
-    update(){
+    //图片上传成功
+    success(res, file, fileList) {
+      if (res.flag) {
+        this.$message({
+          type:"success",
+          message: res.message
+        })
+        this.getUser()
+      }
+    },
+    showDel(key){
+      let mask = this.$refs[key][0];
+      
+      if(mask.style.display == 'none') {
+        mask.style.display = 'inline-block';
+      }else {
+        mask.style.display = 'none';
+      }
+    },
+    changedel(url){
+      let base = `${process.env.VUE_APP_BASE_API}/file/upload/download?filePath=`
+      url = url.substring(base.length)
       request({
-        url: "/user",
-        method: "put",
-        data: this.customInfo
+        url: `/user/image?filePath=${url}`,
+        method: "delete"
       }).then(data => {
         if (data.flag) {
           this.$message({
@@ -141,15 +151,6 @@ export default {
           this.getUser()
         }
       })
-    },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-    },
-    handlePreview(file) {
-      console.log(file);
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${ file.name }？`);
     }
   }
 }

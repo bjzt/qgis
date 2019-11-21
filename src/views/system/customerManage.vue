@@ -9,16 +9,19 @@
               </el-input>
           </el-form-item>
           <el-form-item>
-            <el-button @click="customer={};dialogVisible=true;isCreate=true" size="small" type="primary">创建用户</el-button>
+            <el-button @click="customer={};dialogVisible=true;isCreate=true;isUpate=false" size="small" type="primary">创建用户</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button @click="dialogVisible=true;isCreate=true" size="small" type="primary">修改用户</el-button>
+            <el-button @click="update" size="small" type="primary">修改用户</el-button>
           </el-form-item>
           <el-form-item>
             <el-button @click="recharge" size="small" type="success">充值</el-button>
           </el-form-item>
           <el-form-item>
             <el-button @click="playService" size="small" type="success">购买服务</el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-button @click="del" size="small" type="danger">删除</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -93,7 +96,7 @@
             width="140">
             <template slot-scope="scope">
               <span v-if="scope.row.play == 1" >按点按次计费</span>
-              <span v-if="scope.row.play == 2" >包时</span>
+              <span v-if="scope.row.play == 2" >包月</span>
             </template>
           </el-table-column>
           <el-table-column
@@ -102,13 +105,17 @@
             width="180">
           </el-table-column>
           <el-table-column
-            prop="playNumber"
-            label="剩余次数">
-          </el-table-column>
-          <el-table-column
             prop="end"
             label="服务结束时间"
             width="150">
+          </el-table-column>
+          <el-table-column
+            prop="end"
+            label="操作">
+            <template>
+              <el-button type="text">续费</el-button>
+              <el-button type="text">删除</el-button>
+            </template>
           </el-table-column>
         </el-table>
         <el-pagination
@@ -127,9 +134,8 @@
     <el-dialog
       title="用户数据"
       :visible.sync="dialogVisible"
-      width="50%">
+      width="800px">
       <el-form ref="customer" :model="customer" :rules="customerRules">
-        <h3 v-if="isCreate" style="color: red">用户密码默认为创建时的手机号,然后可以自己修改密码</h3>
         <el-row>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
             <el-form-item prop="username" label="用户名" :label-width="labelWidth">
@@ -164,10 +170,12 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-form-item label="密码" v-if="isCreate" :label-width="labelWidth">
+          <el-input size="samll" v-model.number="customer.password"></el-input>
+        </el-form-item>
         <el-row>
           <el-col :xs="24" v-if="!isCreate" :xl="8" :lg="8" :sm="8" :md="8">
             <el-form-item label="服务范围" :label-width="labelWidth">
-            <!-- <el-input v-model="customer.address"></el-input> -->
             <el-cascader size="samll" v-model="data" :props="selectProps"></el-cascader>
           </el-form-item>
           </el-col>
@@ -180,30 +188,15 @@
               <span>时间最少一个月</span>
             </el-form-item>
           </el-col>
-            <!-- <el-form-item label="计费方式" :label-width="labelWidth">
-              <el-switch
-                :disabled="isCreate"
-                v-model="flag"
-                active-text="按时间计费"
-                inactive-text="按点按次计费">
-              </el-switch>
-            </el-form-item>
-          </el-col> -->
+
         </el-row>
-            <!-- <el-button v-if="flag" slot="append" @click="selectDateFormat">月</el-button> -->
-            <!-- <el-form-item v-if="!flag" label="购买次数" :label-width="labelWidth">
-              <el-input size="samll" :disabled="isCreate" v-model="customer.playNumber"></el-input>
-              <span>折扣 {{discount}}</span>
-            </el-form-item> -->
 
       </el-form>
-      <span slot="footer" v-if="isCreate" class="dialog-footer">
+      <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="createCustom">确 定</el-button>
-      </span>
-      <span slot="footer" v-if="!isCreate" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="playSubmit">确 定</el-button>
+        <el-button type="primary" v-if="isUpate" @click="updateUser">确 定</el-button>
+        <el-button type="primary" v-if="isCreate && !isUpate" @click="createCustom">确 定</el-button>
+        <el-button type="primary" v-if="!isCreate && !isUpate" @click="playSubmit">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -268,6 +261,7 @@ export default {
       data: [],
       tableData: [],
       labelWidth: '80px',
+      isUpate: false,
       isCreate: true,//是否创建用户
       listLoading: false,//数据加载等待动画
       multipleSelection: [],//被选中的项
@@ -405,7 +399,6 @@ export default {
       
       this.$refs.customer.validate(valid => {
         if (valid) {
-          this.customer.password = this.customer.phone
           request({
             url: "user/register",
             method: "post",
@@ -457,6 +450,42 @@ export default {
         }
       })
     },
+    //修改用户
+    update(){
+      if(this.multipleSelection.length != 1){
+        this.$message({
+          type: "warning",
+          message: "只能选中一个用户"
+        })
+        return
+      }
+      this.customer = this.multipleSelection[0]
+      this.dialogVisible=true;
+      this.isCreate=true;
+      this.isUpate=true
+    },
+    updateUser(){
+      this.$refs.customer.validate(valid => {
+        if (valid) {
+          request({
+            url: "/user",
+            method: "put",
+            data: this.customer
+          }).then(res => {
+            this.$message({
+              type: "success",
+              message: res.message
+            })
+            this.getList()
+            this.dialogVisible = false
+            this.isCreate=false;
+            this.isUpate=false
+          })
+        }else {
+          return false
+        }
+      })
+    },
     //购买服务
     playService(){
       if(this.multipleSelection.length != 1){
@@ -469,6 +498,7 @@ export default {
       this.customer = this.multipleSelection[0]
       this.dialogVisible = true
       this.isCreate = false
+      this.isUpate=false
     },
     //购买实现
     playSubmit(){
@@ -482,7 +512,6 @@ export default {
       data.play = 2
       //这是这里是月数
       data.playDate = this.customer.playDate
-      
       
       this.$refs.customer.validate(valid => {
         if (valid) {
@@ -503,6 +532,38 @@ export default {
         }
       })
     },
+    //删除用户
+    del(){
+      if(this.multipleSelection.length < 1){
+        this.$message({
+          type: "warning",
+          message: "至少选中一个用户"
+        })
+        return
+      }
+      this.$confirm('此操作将永久删除该用户及其所有记录, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+      }).then(() => {
+        this.multipleSelection.map(user => {
+          this.delUser(user.id)
+        })
+      })
+    },
+    delUser(id){
+      request({
+        url: `/user/${id}`,
+        method: "delete"
+      }).then(res => {
+        if (res.flag) {
+          this.$message({
+            type: "success",
+            message: res.message
+          })
+        }
+      })
+    }
   }
 }
 </script>

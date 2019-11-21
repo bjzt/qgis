@@ -28,45 +28,53 @@
     </el-row>
     <el-table
       :data="tableData"
+      size="mini"
       :header-cell-style="{background:'#eef1f6',color:'#606266'}"
       style="width: 100%">
       <el-table-column
-      type="index"
-      width="50">
-    </el-table-column>
-      <el-table-column
-        prop="conpanyName"
+        prop="companyName"
         label="公司名称"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="username"
-        label="公司账号"
-        width="180">
+        width="100">
       </el-table-column>
       <el-table-column
         prop="name"
-        label="使用人"
-        width="180">
+        label="使用人">
       </el-table-column>
       <el-table-column
         prop="phone"
         label="使用人电话"
-        width="180">
+        width="100">
       </el-table-column>
       <el-table-column
         prop="oldFile"
-        label="源文件"
-        width="180">
+        label="源文件">
+        <template slot-scope="scope">
+          <a :href="`${baseUrl}/file/upload/download?filePath=${scope.row.oldFile}`" style="display: inline-block;">
+            <el-button size="mini" type="text">下载源文件</el-button>
+          </a>
+        </template>
       </el-table-column>
       <el-table-column
         prop="newFile"
-        label="转换文件"
-        width="180">
+        label="转换文件">
+        <template slot-scope="scope">
+          <a :href="`${baseUrl}/file/upload/download?filePath=${scope.row.newFile}`" style="display: inline-block;">
+            <el-button size="mini" type="text">下载转换文件</el-button>
+          </a>
+        </template>
       </el-table-column>
       <el-table-column
         prop="created"
+        width="135"
+        style="padding: 0"
         label="转换时间">
+      </el-table-column>
+      <el-table-column
+        prop="created"
+        label="操作">
+        <template slot-scope="scope">
+          <el-button size="mini" @click="del(scope.row.id)" type="text">删除</el-button>
+        </template>
       </el-table-column>
     </el-table>
     <el-pagination
@@ -86,6 +94,7 @@ import request from '@/utils/request'
 export default {
   data() {
     return {
+      baseUrl: process.env.VUE_APP_BASE_API,
       tableData: [],
       listQuery: {
         currentPage: 1,

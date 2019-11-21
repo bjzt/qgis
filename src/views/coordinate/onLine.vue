@@ -1,19 +1,21 @@
 <template>
   <div style="margin: 20px">
-    <el-form>
+    <div style="position:absolute;right:20px;top:20px;z-index:9">
+      <el-input size="mini" v-model="pointName">
+        <el-button type="primary" slot="append" @click="submitData" size="small">名单下载</el-button>
+      </el-input>
+    </div>
+    <el-form ref="data">
       <el-form-item label="基本信息">
         <div>
           <el-row>
             <el-col :xs="24" :xl="12" :lg="18" :sm="24" :md="24" >
               <el-form-item label-width="120px" label="联系人(必填)">
                 <el-select size="mini" v-model="thisPhone" placeholder="请选择">
-                  <el-option :label="customer.name" :value="customer.phone">
-                    <span style="float: left">{{ customer.name }}</span>
-                    <span style="float: right; color: #8492a6; font-size: 13px">{{ customer.phone }}</span>
-                  </el-option>
+                  <el-option :label="`${customer.name}_${customer.phone}`" :value="customer.phone"></el-option>
                   <el-option
                     v-for="item in userLinkOption"
-                    :key="item.value"
+                    :key="item.id"
                     :label="item.label"
                     :value="item.value">
                   </el-option>
@@ -49,11 +51,11 @@
                 <el-select size="mini" v-if="item1.zb == 'BLH'" v-model="item1.dd" placeholder="请选择">
                   <el-option label="DD.MMSS" value="DD.MMSS"></el-option>
                   <el-option label="DD.DDDD" value="DD.DDDD"></el-option>
-                  <el-option label="DD°MM'SS''" value="DD°MM'SS''"></el-option>
+                  <el-option label="DD°MM′SS″" value="DD°MM′SS″"></el-option>
                   <el-option label="DD:MM:SS" value="DD:MM:SS"></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item v-if="item1.zb != 'XYZ'" label-width="120px" label="原高程">
+              <el-form-item label-width="120px" label="原高程">
                 <el-select size="mini" v-model="item1.mb" placeholder="请选择">
                   <el-option label="85国家高程" value="85国家高程"></el-option>
                   <el-option label="56黄海高程" value="56黄海高程"></el-option>
@@ -69,22 +71,28 @@
                   <el-option label="高斯自定义" value="高斯自定义"></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item prop="zw1" v-if="item1.zyzw=='高斯自定义' && item1.zb == 'xyh'" label-width="120px" label="中央子午线">
+              <el-form-item v-if="item1.zyzw=='高斯自定义' && item1.zb == 'xyh'" label-width="120px" label="中央子午线">
                 <el-row>
-                  <el-col :xs="6" :xl="6" :lg="6" :sm="6" :md="6">
-                    <el-input ref="zw1" size="mini"  v-model.number="item1.zw1">
-                      <el-button slot="append" style="font-size:20px;padding:0px;">°</el-button>
-                    </el-input>
+                  <el-col :xs="8" :xl="6" :lg="6" :sm="6" :md="6">
+                    <el-form-item prop="zw1">
+                      <el-input ref="zw1" size="mini"  v-model.number="item1.zw1">
+                        <el-button slot="append" style="font-size:20px;padding:0px;">°</el-button>
+                      </el-input>
+                    </el-form-item>
                   </el-col>
-                  <el-col :xs="6" :xl="6" :lg="6" :sm="6" :md="6">
+                  <el-col :xs="8" :xl="6" :lg="6" :sm="6" :md="6">
+                    <el-form-item prop="zw2">
                     <el-input ref="zw2" size="mini" v-model.number="item1.zw2">
                       <el-button slot="append" style="font-size:20px;padding:0px;">′</el-button>
                     </el-input>
+                    </el-form-item>
                   </el-col>
-                  <el-col :xs="6" :xl="6" :lg="6" :sm="6" :md="6">
-                    <el-input ref="zw3" size="mini" v-model.number="item1.zw3">
+                  <el-col :xs="8" :xl="6" :lg="6" :sm="6" :md="6">
+                    <el-form-item prop="zw3">
+                    <el-input ref="zw3" size="mini" v-model="item1.zw3">
                       <el-button slot="append" style="font-size:20px;padding:0px;">″</el-button>
                     </el-input>
+                    </el-form-item>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -105,7 +113,7 @@
               <el-form-item prop="t" v-if="item1.zyzw=='高斯自定义' && item1.zb == 'xyh'" label-width="120px" label="投影面高(m)">
                 <el-row>
                   <el-col :xs="18" :xl="6" :lg="6" :sm="6" :md="8">
-                    <el-input ref="t" size="mini" v-model.number="item1.t"></el-input>
+                    <el-input ref="t" size="mini" v-model="item1.t"></el-input>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -117,6 +125,7 @@
 
       <el-form-item label="目标参数">
         <div class="onLine">
+          <el-form :model="item2" ref="item2" :rules="itemRules1">
           <el-row>
             <el-col :xs="24" :xl="8" :lg="8" :sm="18" :md="24">
               <el-form-item label-width="120px" label="目标确球">
@@ -136,11 +145,11 @@
                 <el-select size="mini" v-if="item2.zb == 'BLH'" v-model="item2.dd" placeholder="请选择">
                   <el-option label="DD.MMSS" value="DD.MMSS"></el-option>
                   <el-option label="DD.DDDD" value="DD.DDDD"></el-option>
-                  <el-option label="DD°MM'SS''" value="DD°MM'SS''"></el-option>
+                  <el-option label="DD°MM′SS″" value="DD°MM′SS″"></el-option>
                   <el-option label="DD:MM:SS" value="DD:MM:SS"></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item v-if="item2.zb != 'XYZ'" label-width="120px" label="目标高程">
+              <el-form-item label-width="120px" label="目标高程">
                 <el-select size="mini" v-model="item2.mb" placeholder="请选择">
                   <el-option label="85国家高程" value="85国家高程"></el-option>
                   <el-option label="56黄海高程" value="56黄海高程"></el-option>
@@ -158,54 +167,61 @@
               </el-form-item>
               <el-form-item v-if="item2.zyzw=='高斯自定义' && item2.zb == 'xyh'" label-width="120px" label="中央子午线">
                 <el-row>
-                  <el-col :xs="6" :xl="6" :lg="6" :sm="8" :md="6">
-                    <el-input size="mini" v-model="item2.zw1">
-                      <el-button slot="append" style="font-size:20px;padding:0px;">°</el-button>
+                  <el-col :xs="8" :xl="6" :lg="6" :sm="8" :md="6">
+                    <el-form-item prop="zw1">
+                    <el-input size="mini" v-model.number="item2.zw1">
+                      <el-button ref="zw1" slot="append" style="font-size:20px;padding:0px;">°</el-button>
                     </el-input>
+                    </el-form-item>
                   </el-col>
-                  <el-col :xs="6" :xl="6" :lg="6" :sm="8" :md="6">
-                    <el-input size="mini" v-model="item2.zw2">
+                  <el-col :xs="8" :xl="6" :lg="6" :sm="8" :md="6">
+                    <el-form-item prop="zw2">
+                    <el-input size="mini" v-model.number="item2.zw2">
                       <el-button slot="append" style="font-size:20px;padding:0">′</el-button>
                     </el-input>
+                    </el-form-item>
                   </el-col>
-                  <el-col :xs="6" :xl="6" :lg="6" :sm="8" :md="6">
+                  <el-col :xs="8" :xl="6" :lg="6" :sm="8" :md="6">
+                    <el-form-item prop="zw3">
                     <el-input size="mini" v-model="item2.zw3">
                       <el-button slot="append" style="font-size:20px;padding:0">″</el-button>
                     </el-input>
+                    </el-form-item>
                   </el-col>
                 </el-row>
               </el-form-item>
-              <el-form-item v-if="item2.zyzw=='高斯自定义' && item2.zb == 'xyh'" label-width="120px" label="x常数(km)">
+              <el-form-item prop="x" v-if="item2.zyzw=='高斯自定义' && item2.zb == 'xyh'" label-width="120px" label="x常数(km)">
                 <el-row>
                   <el-col :xs="18" :xl="6" :lg="6" :sm="6" :md="8">
-                    <el-input size="mini" v-model="item2.x"></el-input>
+                    <el-input ref="x" size="mini" v-model="item2.x"></el-input>
                   </el-col>
                 </el-row>
               </el-form-item>
-              <el-form-item v-if="item2.zyzw=='高斯自定义' && item2.zb == 'xyh'" label-width="120px" label="y常数(km)">
+              <el-form-item prop="y" v-if="item2.zyzw=='高斯自定义' && item2.zb == 'xyh'" label-width="120px" label="y常数(km)">
                 <el-row>
                   <el-col :xs="18" :xl="6" :lg="6" :sm="6" :md="8">
-                <el-input size="mini" v-model="item2.y"></el-input>
+                    <el-input ref="y" size="mini" v-model="item2.y"></el-input>
                   </el-col>
                 </el-row>
               </el-form-item>
               
-              <el-form-item v-if="item2.zyzw=='高斯自定义' && item2.zb == 'xyh'" label-width="120px" label="投影面高(m)">
+              <el-form-item prop="t" v-if="item2.zyzw=='高斯自定义' && item2.zb == 'xyh'" label-width="120px" label="投影面高(m)">
                 <el-row>
                   <el-col :xs="18" :xl="6" :lg="6" :sm="6" :md="8">
-                <el-input size="mini" v-model="item2.t"></el-input>
+                    <el-input ref="t" size="mini" v-model="item2.t"></el-input>
                   </el-col>
                 </el-row>
               </el-form-item>
             </el-col>
           </el-row>
+          </el-form>
         </div>
       </el-form-item>
       <el-form-item label="数据上传">
         <div>
           <el-row>
             <el-col :xs="24" :xl="18" :lg="18" :sm="18" :md="24">
-                <el-form-item label-width="120px">
+                <el-form-item label-width="80px">
                   
                   <el-switch
                     v-model="fileUpload"
@@ -214,28 +230,31 @@
                   </el-switch>
                   
                 </el-form-item>
-                <el-form-item label="文件格式" label-width="120px">
-                  <span v-text="name"></span>
+                <el-form-item label="文件格式" label-width="100px">
+                  <span v-text="name" ></span>
                 </el-form-item>
                 <el-form-item v-if="fileUpload" label="上传文件" label-width="120px">
+                  <!-- v-if="point.number == null" -->
                   <el-upload
-                  v-if="point.number == null"
+                  
                     class="upload-demo"
                     :action="uploadUrl"
                     :on-success="success"
+                    :data="{item1: JSON.stringify(item1), item2: JSON.stringify(item2)}"
                     :headers="importHeaders"
                     :show-file-list="false">
                     <el-button size="mini">上传文件</el-button>
                   </el-upload>
-                  <span v-else>已上传</span>
+                  <!-- <span style="color:red" v-text="textError"></span> -->
                 </el-form-item>
-                <!-- <el-form-item v-if="fileUpload" label="数据上传地址" label-width="120px">
-                  
-                </el-form-item> -->
+                <el-form-item v-if="fileUpload" label="待转换文件" label-width="120px">
+                  <span v-text="filePath"></span>
+                </el-form-item>
                 <el-form-item v-if="!fileUpload" label="坐标转换内容">
                   <el-row>
                   <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
-                  <el-input v-model="text" size="mini" :autosize="{ minRows: 2}" type="textarea" :rows="3"></el-input>
+                  <el-input placeholder="请按照txt的格式来写" v-model="text" size="mini" :autosize="{ minRows: 2}" type="textarea" :rows="3"></el-input>
+                  <el-button size="mini" @click="uploadText">上传文本</el-button>
                   </el-col>
                   </el-row>
                 </el-form-item>
@@ -250,13 +269,17 @@
                   </el-switch>
                 </el-form-item>
                 <el-form-item label-width="120px">
-                  <span v-if="point.number != null">{{point.number}}个点,{{point.number * 30 * 0.8}} 元</span>
+                  <span v-if="point.number != null && !flag">{{point.number}}个点,{{price}} 元</span>
                 </el-form-item>
-                <el-form-item label="短信验证" label-width="120px">
-                  <el-input style="width:250px" v-model="checkcode" size="mini">
-                    <el-button slot="append" size="mini" @click="getCode">{{content}}</el-button>
-                  </el-input> 
-                </el-form-item>
+                <el-row>
+                  <el-col :xs="24" :xl="8" :lg="8" :sm="18" :md="8">
+                    <el-form-item label="短信验证" label-width="120px">
+                      <el-input v-model="checkcode" size="mini">
+                        <el-button slot="append" size="mini" @click="getCode">{{content}}</el-button>
+                      </el-input>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
                 <el-form-item label-width="120px">
                   <el-button type="primary" @click="commit" size="mini">开始转换坐标</el-button>
                 </el-form-item>
@@ -270,13 +293,13 @@
           <el-row>
             <el-col :xs="24" :xl="18" :sm="18" :md="24">
               <el-form-item label="写入数据" label-width="120px">
-                
+                <span style="color:red" v-text="textError"></span>
               </el-form-item>
               <el-form-item label="转换处理" label-width="120px">
-                
+                <span v-text="res"></span>
               </el-form-item>
               <el-form-item label-width="120px">
-                <el-button type="primary" size="mini">查询结果</el-button>
+                <el-button type="primary" @click="download" size="mini">查询结果</el-button>
               </el-form-item>
               </el-col>
           </el-row>
@@ -298,8 +321,33 @@
 <script>
 import request from '@/utils/request'
 import { getToken } from '@/utils/auth'
+
 export default {
   data() {
+    var isnumber = (rule, value, callback) => {
+        if (!value) {
+            callback();
+        } else {
+            var reg = /^-?\d{1,16}(?:\.\d{1,4})?$/;//小数点左边最高16位，小数点右边最多4位
+            if (reg.test(value)) {
+                callback();
+            } else {
+                callback(new Error("输入正确的数字,小数点后可1到4位"));
+            }
+        }
+    };
+    var isNumber = (rule, value, callback) => {
+        if (!value) {
+            callback();
+        } else {
+            var reg = /^\d{1,16}(?:\.\d{1,4})?$/;//小数点左边最高16位，小数点右边最多4位
+            if (reg.test(value)) {
+                callback();
+            } else {
+                callback(new Error("请输入正整数,小数点后可1到4位"));
+            }
+        }
+    };
     return {
       customer: {
         name: "admin",
@@ -312,11 +360,12 @@ export default {
         name: [{ required: true, trigger: 'blur', message: '不能为空' }],
         zw1: [{ required: true, trigger: 'blur', message: '不能为空' }, { type: 'number', message: '只能是数字'}],
         zw2: [{ required: true, trigger: 'blur', message: '不能为空' }, { type: 'number', message: '只能是数字'}],
-        zw3: [{ required: true, trigger: 'blur', message: '不能为空' }, { type: 'number', message: '只能是数字'}],
+        zw3: [{ required: true, trigger: 'blur', validator: isNumber }],
         x: [{ required: true, trigger: 'blur', message: '不能为空' }, { type: 'number', message: '只能是数字'}],
         y: [{ required: true, trigger: 'blur', message: '不能为空' }, { type: 'number', message: '只能是数字'}],
-        t: [{ required: true, trigger: 'blur', message: '不能为空' }, { type: 'number', message: '只能是数字'}]
+        t: [{ required: true, trigger: 'blur', validator: isnumber }]
       },
+      config:{},//系统的配置
       flag: true,
       uploadUrl: `${process.env.VUE_APP_BASE_API}/file/upload/changeFile`,
       importHeaders: {
@@ -327,7 +376,7 @@ export default {
       thisPhone: '',//当前选择的手机号
       text: '',//文本内容
       name: "",
-      fileList: [],
+      filePath: "",
       userLinkOption: [],//联系人选项
       userLink: {
         phone: null
@@ -347,8 +396,9 @@ export default {
         zw3: 0,
         y: 500,
         x: 0,
-        t: 0
+        t: 0.0
       },
+      filePath: null,
       item2: {//目标对象
         yqq: 'CGCS2000',
         zb: 'xyh',
@@ -360,11 +410,15 @@ export default {
         zw3: 0,
         y: 500,
         x: 0,
-        t: 0
+        t: 0.0
       },
+      pointName: "",
+      textError: "",
       map: {
         status: 1 //审核通过的联系人
-      }
+      },
+      message: "",
+      res: ""
     }
   },
   watch:{
@@ -372,7 +426,7 @@ export default {
       deep: true,
       handler(newV){
         switch(this.item1.zb){
-        case 'xyh': this.name = '点名,x,y,h.txt / 点名,y,x,h.dat';break;
+        case 'xyh': this.name = '点名,x,y,h.txt / 点名,,y,x,h.dat';break;
         case 'XYZ': this.name = '点名,X,Y,Z.txt';break;
         case 'BLH': this.name = `点名,B(${this.item1.dd}),L(${this.item1.dd}),H,未修正的天线高.txt`;break;
         }
@@ -387,6 +441,13 @@ export default {
       this.userLink.phone = newV
     }
   },
+  computed: {
+    price(){
+      if(this.point.number < 10){
+        return 10 * this.config.price;
+      } 
+    }
+  },
   created() {
     this.fetchData()
     this.getUserLink()
@@ -394,10 +455,18 @@ export default {
   methods: {
     fetchData() {
       switch(this.item1.zb){
-        case 'xyh': this.name = '点名,x,y,h.txt / 点名,y,x,h.dat';break;
+        case 'xyh': this.name = '点名,x,y,h.txt / 点名,,y,x,h.dat';break;
         case 'XYZ': this.name = '点名,X,Y,Z.txt';break;
         case 'BLH': this.name = `点名,B(${this.item1.dd}),L(${this.item1.dd}),H,未修正的天线高.txt`;break;
       }
+      request({
+        url: "/data/config",
+        method: "get"
+      }).then(res => {
+        if (res.flag) {
+          this.config = res.data
+        }
+      })
       request({
         url: "/user/one",
         method: "get"
@@ -423,7 +492,7 @@ export default {
           message: "请上传待转换的文件"
         })
         return;
-      }else if(!this.flag && this.point.number == null) {
+      } else if (!this.flag && this.point.number == null) {
         this.$message({
           type: "warning",
           message: "请填写坐标内容"
@@ -431,7 +500,7 @@ export default {
         return;
       }
       request({
-        url: "/fileRecord/fileRecordCode",
+        url: "/changeFileRecord/fileCode",
         method: "get",
         params: {
           phone: this.thisPhone
@@ -483,29 +552,76 @@ export default {
         this.userLinkOption = userLink
       })
     },
+    //文件上传成功的回调函数
     success(res,file, fileList){
       if (res.flag) {
-        this.point.number = res.data;
+        this.point.number = res.data.size;
+        this.filePath = res.data.filePath;
+        this.textError = "数据上传成功！"
+        if (res.data.isKD) {
+          this.textError += " 三度带 "+ res.data.三度带
+          this.textError += ",六度带 " + res.data.六度带
+        }else {
+          this.$message({
+            type: "success",
+            message: res.message
+          })
+        }
         
       }else{
+        this.textError = res.message
+        this.filePath = res.message
         this.$message({
           type: "error",
           message: res.message
         })
       }
     },
+    //上传文本内容
+    uploadText(){
+      // this.commit(this.text)
+    },
     //提交表单
     commit(){
+      let item1 = this.item(this.item1)
+      let item2 = this.item(this.item2)
+      
+      item1.filePath = this.filePath
+      item1.code = this.checkcode
+      if (!this.fileUpload) {
+        item1.text = this.text
+      }
+      this.res = "正在转换中"
+      request({
+        url: "/changeFileRecord",
+        method: "post",
+        data: {
+          item1: item1,
+          item2: item2
+        }
+      }).then(res => {
+        this.$message({
+          type: "success",
+          message: res.message
+        })
+        if (res.flag) {
+          this.res = res.message
+        }else {
+          this.textError = res.message
+        }
+      }).catch(err => {
+        this.textError = err
+      })
+      
+    },
+    item(item){
       //深拷贝
-      let item1 = JSON.parse(JSON.stringify(this.item1))
+      let item1 = JSON.parse(JSON.stringify(item))
       //选择规则
-      if (this.item1.zb != 'BLH') {
+      if (item.zb != 'BLH') {
         delete item1.dd
       }
-      if (this.item1.zb == 'XYZ') {
-        delete item1.mb
-      }
-      if (this.item1.zb != 'xyh') {
+      if (item.zb != 'xyh') {
         delete item1.zw1
         delete item1.zw2
         delete item1.zw3
@@ -514,10 +630,41 @@ export default {
         delete item1.t
         delete item1.zyzw
       }
-      console.log(this.item1);
-      console.log(item1);
-      
-      // this.item1
+      return item1
+    },
+    submitData(){
+      let item1 = this.item(this.item1)
+      let item2 = this.item(this.item2)
+
+      item1.name = this.pointName
+      request({
+        url: "/data/point",
+        method: "post",
+        data: {
+          item1: item1,
+          item2: item2
+        },
+        responseType: 'blob'
+      }).then(data => {
+        const content = data
+        const blob = new Blob([content])
+        const fileName = '名单.txt'
+        if ('download' in document.createElement('a')) { // 非IE下载
+          const elink = document.createElement('a')
+          elink.download = fileName
+          elink.style.display = 'none'
+          elink.href = URL.createObjectURL(blob)
+          document.body.appendChild(elink)
+          elink.click()
+          URL.revokeObjectURL(elink.href) // 释放URL 对象
+          document.body.removeChild(elink)
+        } else { // IE10+下载
+          navigator.msSaveBlob(blob, fileName)
+        }
+      })
+    },
+    download(){
+
     }
   }
 }
