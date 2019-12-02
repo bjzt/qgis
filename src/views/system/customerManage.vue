@@ -171,7 +171,7 @@
           </el-col>
         </el-row>
         <el-form-item label="密码" v-if="isCreate" :label-width="labelWidth">
-          <el-input size="samll" v-model.number="customer.password"></el-input>
+          <el-input size="samll" type="password" v-model="customer.password"></el-input>
         </el-form-item>
         <el-row>
           <el-col :xs="24" v-if="!isCreate" :xl="8" :lg="8" :sm="8" :md="8">
@@ -557,6 +557,7 @@ export default {
         this.multipleSelection.map(user => {
           this.delUser(user.id)
         })
+        this.getList()
       })
     },
     delService(id){

@@ -96,7 +96,7 @@ export const constantRoutes = [
       },
       {
         path: 'aviation',
-        component: () => import('@/views/business/null'),
+        component: () => import('@/views/business/aviation'),
         meta: { title: '航空设计' }
       },
       {

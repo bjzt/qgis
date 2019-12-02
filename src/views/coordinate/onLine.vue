@@ -448,6 +448,8 @@ export default {
   computed: {
     price(){
       for(let discount of this.discountList){
+        console.log(discount);
+        
         if(this.point.number >= discount.number){
           if (discount.price == null) {
             return this.point.number * this.config.price * discount.discount;
