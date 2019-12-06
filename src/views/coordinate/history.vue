@@ -150,6 +150,7 @@ export default {
             type: "success",
             message: data.message
           })
+          this.getList()
         }
       })
     }

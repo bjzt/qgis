@@ -1,12 +1,31 @@
 <template>
   <div style="margin: 20px">
+    <el-form :inline="true">
+      <h2>基本信息：</h2>
+      <el-form-item  label="联系人">
+        <el-select size="mini" v-model="oldItem.phone" placeholder="请选择">
+          <el-option :label="`${customer.name}_${customer.phone}`" :value="customer.phone"></el-option>
+          <el-option
+            v-for="item in userLinkOption"
+            :key="item.id"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <span>联系人手机接收短信验证码</span>
+      </el-form-item>
+      <el-form-item label="项目名称(必填)">
+        <el-input size="mini" v-model="oldItem.name" style="width: 200px" show-word-limit maxlength="50" placeholder="50字以内"></el-input>
+      </el-form-item>
+    </el-form>
+
       <el-form :inline="true">
         <el-form-item label-width="300px">
           <span style="font-size: 30px">相机参数：</span>
         </el-form-item>
         <el-form-item label="选择相机">
-          <el-select v-model="camera">
-              <el-option label="自定义"></el-option>
+          <el-select v-model="camera" @change="cameraChange">
+              <el-option label="自定义" :value="null"></el-option>
             <el-option 
             v-for="item in cameraList" 
             :label="item.name"
@@ -99,7 +118,7 @@
       <el-row>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="飞机类型" :label-width="labelWidth">
-              <el-select v-model="oldItem.flexType">
+              <el-select v-model="oldItem.flexType" @change="typeChange">
                 <el-option label="固定翼" :value="0"></el-option>
                 <el-option label="多旋翼" :value="1"></el-option>
               </el-select>
@@ -107,12 +126,14 @@
           </el-col>
           <el-col v-if="oldItem.flexType == 0" :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="航线航向外扩" :label-width="labelWidth">
-              <el-input value="两条基线"></el-input>
+              <el-input value="2">
+                <template slot="append">条基线</template>
+              </el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
         <el-form-item label="采集数据" :label-width="labelWidth">
-          <el-select v-model="oldItem.dataType">
+          <el-select v-model="oldItem.dataType" @change="dataChange">
             <el-option label="正射影像" :value="0"></el-option>
             <el-option label="倾斜影像" :value="1"></el-option>
             <el-option label="Lidar激光雷达" :value="2"></el-option>
@@ -121,7 +142,7 @@
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="建筑物类型" :label-width="labelWidth">
-              <el-select v-model="oldItem.bliudType">
+              <el-select v-model="oldItem.buildType" @change="buildChange">
                 <el-option label="建筑物稀少" :value="0"></el-option>
                 <el-option label="建筑物密集" :value="1"></el-option>
                 <el-option label="高层建筑区" :value="2"></el-option>
@@ -143,7 +164,14 @@
           <el-input v-model="oldItem.airStrips"></el-input>
         </el-form-item>
           </el-col>
-          
+          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+            <el-form-item label="曝光时间" :label-width="labelWidth">
+              <el-input v-model.number="oldItem.time">
+                <template slot="prepend">1/</template>
+                <template slot="append">s</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="盘旋半径" :label-width="labelWidth">
               <el-input v-model="oldItem.radius">
@@ -156,18 +184,18 @@
       <el-row>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="航向重叠" :label-width="labelWidth">
-              <el-input v-model="oldItem.course">
+              <el-input v-model.number="oldItem.course">
                 <template slot="append">%</template>
               </el-input>
-              <el-slider :show-tooltip="false" v-model="value1.courseValue"></el-slider>
+              <el-slider :show-tooltip="false" v-model="value.courseValue"></el-slider>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
         <el-form-item label="旁向重叠" :label-width="labelWidth">
-          <el-input v-model="oldItem.sideDirection">
+          <el-input v-model.number="oldItem.sideDirection">
               <template slot="append">%</template>
           </el-input>
-          <el-slider :show-tooltip="false" v-model="value1.sideDirectionValue"></el-slider>
+          <el-slider :show-tooltip="false" v-model="value.sideDirectionValue"></el-slider>
         </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
@@ -175,15 +203,15 @@
               <el-input v-model="oldItem.resolution">
                 <template slot="append">cm</template>
               </el-input>
-              <el-slider :show-tooltip="false" v-model="value1.resolutionValue" :min="50" :max="32000"></el-slider>
+              <el-slider :show-tooltip="false" v-model="value.resolutionValue" :min="50" :max="32000"></el-slider>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="飞行速度" :label-width="labelWidth">
-              <el-input v-model="oldItem.speed">
+              <el-input v-model.number="oldItem.speed">
                 <template slot="append">m/s</template>
               </el-input>
-              <el-slider :show-tooltip="false" v-model="value1.speedValue"></el-slider>
+              <el-slider :show-tooltip="false" v-model="value.speedValue"></el-slider>
             </el-form-item>
           </el-col>
       </el-row>
@@ -200,21 +228,21 @@
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
         <el-form-item label="高处地面分辨率" :label-width="labelWidth">
-          <el-input v-model="oldItem.highResolution">
+          <el-input v-model="newItem.highResolution">
             <template slot="append">cm</template>
           </el-input>
         </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="低处地面分辨率" :label-width="labelWidth">
-              <el-input v-model="oldItem.groundResolution">
+              <el-input v-model="newItem.groundResolution">
                 <template slot="append">cm</template>
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="测图比例尺" :label-width="labelWidth">
-              <el-input v-model="oldItem.scaleSurvey"></el-input>
+              <el-input v-model="newItem.scaleSurvey"></el-input>
             </el-form-item>
           </el-col>
       </el-row>
@@ -222,28 +250,28 @@
       <el-row>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="图幅大小" :label-width="labelWidth">
-              <el-input v-model="oldItem.mapSize">
+              <el-input v-model="newItem.mapSize">
                 <template slot="append">m</template>
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-        <el-form-item label="高出航向重叠" :label-width="labelWidth">
-          <el-input v-model="oldItem.highCourse">
+        <el-form-item label="高处航向重叠" :label-width="labelWidth">
+          <el-input v-model="newItem.highCourse">
               <template slot="append">%</template>
           </el-input>
         </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="高出旁向重叠" :label-width="labelWidth">
-              <el-input v-model.number="oldItem.highSideDirection">
+            <el-form-item label="高处旁向重叠" :label-width="labelWidth">
+              <el-input v-model.number="newItem.highSideDirection">
                 <template slot="append">%</template>
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="航测比例尺" :label-width="labelWidth">
-              <el-input v-model="oldItem.aerialSurvey"></el-input>
+              <el-input v-model="newItem.aerialSurvey"></el-input>
             </el-form-item>
           </el-col>
       </el-row>
@@ -251,28 +279,28 @@
       <el-row>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="摄影基线" :label-width="labelWidth">
-              <el-input v-model="oldItem.baseline">
+              <el-input v-model="newItem.baseline">
                 <template slot="append">m</template>
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
         <el-form-item label="航线间距" :label-width="labelWidth">
-          <el-input v-model="oldItem.routeSpacing">
+          <el-input v-model="newItem.routeSpacing">
               <template slot="append">m</template>
           </el-input>
         </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="航拍间隔" :label-width="labelWidth">
-              <el-input v-model="oldItem.spacing">
+              <el-input v-model="newItem.spacing">
                 <template slot="append">s</template>
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="像控间距" :label-width="labelWidth">
-              <el-input v-model="oldItem.ImgSpacing">
+              <el-input v-model="newItem.imgSpacing">
                 <template slot="append">m</template>
               </el-input>
             </el-form-item>
@@ -282,25 +310,24 @@
       <el-row>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="像点位移" :label-width="labelWidth">
-              <el-input v-model="oldItem.displacement">
+              <el-input v-model="newItem.displacement">
                 <template slot="append">pixels</template>
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
         <el-form-item label="基高比" :label-width="labelWidth">
-          <el-input v-model="oldItem.basalRatio"></el-input>
+          <el-input v-model="newItem.basalRatio"></el-input>
         </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="照片张数" :label-width="labelWidth">
-              <el-input v-model="oldItem.imgNum"></el-input>
+              <el-input v-model="newItem.imgNum"></el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="大概飞行时间" :label-width="labelWidth">
-              <el-input v-model="oldItem.flexTime">
-                <!-- <template slot="append">m</template> -->
+              <el-input v-model="newItem.flexTime">
               </el-input>
             </el-form-item>
           </el-col>
@@ -308,23 +335,21 @@
       <el-row>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="航线外扩" :label-width="labelWidth">
-              <el-input v-model="oldItem.basalRatio">
+              <el-input v-model="newItem.basalRatio">
                   <template slot="append">m</template>
               </el-input>
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="曝光时间" :label-width="labelWidth">
-              <el-input v-model="newItem.time">
-                <template slot="prepend">1/</template>
-                <template slot="append">s</template>
-              </el-input>
+          <el-col v-if="oldItem.dataType == 1" :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+            <el-form-item label="倾斜高程精度" :label-width="labelWidth">
+              <el-input v-model="newItem.basalRatio"></el-input>
             </el-form-item>
           </el-col>
       </el-row>
     </el-form>
-    <div style="width: 120px; margin: auto">
-      <el-button  @click="toReport" type="primary">生成报告</el-button>
+    <div style="width: 220px; margin: auto">
+      <el-button @click="compute" type="primary">点击计算</el-button>
+      <el-button v-if="computButton" @click="toReport" type="success">生成报告</el-button>
     </div>
   </div>
 </template>
@@ -337,102 +362,90 @@ export default {
     return {
       camera: null,
       cameraList: [],
-      value1: {
-        courseValue: 53,
-        sideDirectionValue: 8,
+      customer: {},
+      userLinkOption: [],
+      value: {
+        courseValue: 75,
+        sideDirectionValue: 65,
         resolutionValue: 50,
-        speedValue: 0
+        speedValue: 18
+      },
+      computButton: false,
+      standardOldItemValue: {
+        time: 1000,
+        course: 75,
+        sideDirection: 65,
+        speed: 18
       },
       cameraItem: {},
       oldItem: {
-        course: 60,
-        sideDirection: 15,
+        course: 75,
+        sideDirection: 65,
         resolution: 50,
         speed: 18,
         radius: 150,
         flexType: 0,
         dataType: 0,
-        bliudType: 0
+        buildType: 0,
+        time: 1000
       },
       newItem: {},
       labelWidth: '110px'
     }
   },
   watch:{
-    value1: {
+    value: {
       deep: true,
       handler(val){
         this.oldItem.course = val.courseValue
-        console.log(this.oldItem.course, val.courseValue);
-        
         this.oldItem.sideDirection = val.sideDirectionValue
         this.oldItem.resolution = val.resolutionValue /100
         this.oldItem.speed = val.speedValue
-        console.log(this.oldItem);
-        
       }
     },
     oldItem: {
       deep: true,
-      handler(value){
-        if (value.flexType == 0) {
-          this.oldItem.speed = 18
-        }else if (value.flexType == 1) {
-          this.oldItem.speed = 10
+      handler(val){
+        let standard = this.standardOldItemValue
+        if (val.speed < standard.speed) {
+          this.$message({
+            type: "warning",
+            message: "建议飞行速度根据出厂飞行速度范围设置，以免失速坠机风险"
+          })
         }
-        switch(value.dataType){
-          case 0: {
-            this.oldItem.course = 60
-            this.oldItem.sideDirection = 15
-            break
-          }
-          case 1:{
-            switch(value.bliudType){
-              case 0: {
-                this.oldItem.course = 70
-                this.oldItem.sideDirection = 70
-                break
-              }
-              case 1: {
-                this.oldItem.course = 80
-                this.oldItem.sideDirection = 80
-                break
-              }
-              case 2: {
-                this.oldItem.course = 90
-                this.oldItem.sideDirection = 90
-                break
-              }
-            }
-            break
-          }
-          case 2: {
-            this.oldItem.course = 53
-            this.oldItem.sideDirection = 8
-            break
-          }
+        if (val.time > standard.time) {
+          this.$message({
+            type: "warning",
+            message: "请根据相机出厂曝光时间范围设定，航测通常使用 1/1000 s"
+          })
         }
-      }
-    },
-    camera(value){
-        if (value == null) {
-          this.cameraItem = {}
-          return
-        }
-      for (let item of this.cameraList){
-        if (value == item.id) {
-          this.cameraItem.width = item.width
-          this.cameraItem.height = item.height
-          this.cameraItem.sensorWidth = item.sensorWidth
-          this.cameraItem.sensorHeight = item.sensorHeight
-          this.cameraItem.pixel = item.pixel
-          this.cameraItem.focalLength = item.focalLength
+        if (val.dataType == 0) {
+          if (val.course < standard.course) {
+            this.$message({
+              type: "warning",
+              message: "建议无人机航向重叠度：70% ~ 80%"
+            })
+          }
+          if (val.sideDirection < standard.sideDirection) {
+            this.$message({
+              type: "warning",
+              message: "建议无人机旁向重叠度：65% ~ 80%"
+            })
+          }
+        }else if(val.dataType == 1){
+          if (val.course < standard.course || val.sideDirection < standard.sideDirection) {
+            this.$message({
+              type: "warning",
+              message: `建议无人机倾斜摄影重叠度：${standard.course}%`
+            })
+          }
         }
       }
     }
   },
   created() {
     this.fetchData()
+    this.getUserLink()
   },
   methods: {
     fetchData() {
@@ -445,6 +458,113 @@ export default {
       }).then(data => {
         this.cameraList = data.data;
       })
+    },
+    cameraChange(value){
+      if (value == null) {
+        this.cameraItem = {}
+        return
+      }
+      
+      for (let item of this.cameraList){
+        if (value == item.id) {
+          this.cameraItem.width = item.width
+          this.cameraItem.height = item.height
+          this.cameraItem.sensorWidth = item.sensorWidth
+          this.cameraItem.sensorHeight = item.sensorHeight
+          this.cameraItem.pixel = item.pixel
+          this.cameraItem.focalLength = item.focalLength
+        }
+      }
+    },
+    typeChange(value){
+      if (value == 0) {
+        this.standardOldItemValue.speed = 18
+        this.oldItem.speed = 18
+      }else if (value == 1) {
+        this.standardOldItemValue.speed = 10
+        this.oldItem.speed = 10
+      }
+    },
+    dataChange(value){
+      switch(value){
+        case 0: {
+          this.standardOldItemValue.course = 75
+          this.standardOldItemValue.sideDirection = 65
+          this.value.courseValue = 75
+          this.value.sideDirectionValue = 65
+          break
+        }
+        case 1:{
+          this.buildChange(this.oldItem.buildType)
+          break
+        }
+        case 2: {
+          this.standardOldItemValue.course = 53
+          this.standardOldItemValue.sideDirection = 8
+          this.value.courseValue = 53
+          this.value.sideDirectionValue = 8
+          break
+        }
+      }
+    },
+    buildChange(value){
+      if (this.oldItem.dataType == 1) {
+        switch(value){
+          case 0: {
+            this.standardOldItemValue.course = 70
+            this.standardOldItemValue.sideDirection = 70
+            this.value.courseValue = 70
+            this.value.sideDirectionValue = 70
+            break
+          }
+          case 1: {
+            this.standardOldItemValue.course = 80
+            this.standardOldItemValue.sideDirection = 80
+            this.value.courseValue = 80
+            this.value.sideDirectionValue = 80
+            break
+          }
+          case 2: {
+            this.standardOldItemValue.course = 90
+            this.standardOldItemValue.sideDirection = 90
+            this.value.courseValue = 90
+            this.value.sideDirectionValue = 90
+            break
+          }
+        }
+      }
+    },
+    getUserLink(){
+      request({
+        url: "/userLink/all",
+        method: "post",
+        data: {
+          status: 1
+        }
+      }).then(data => {
+        let userLink = data.data;
+        userLink.map(link => {
+          link.label = link.name +"_" + link.phone
+          link.value = link.phone
+        })
+        this.userLinkOption = userLink
+      })
+      request({
+        url: "/user/one",
+        method: "get"
+      }).then(res => {
+        if (res.flag) {
+          this.customer = res.data
+        }
+      })
+    },
+    compute(){
+      let json = {
+        camera: this.cameraItem,
+        oldItem: this.oldItem
+      }
+      console.log(json);
+      
     },
     toReport(){
 

@@ -82,8 +82,8 @@ export const constantRoutes = [
       },
       {
         path: 'dataFormat',
-        component: () => import('@/views/business/null'),
-        meta: { title: '数据格式' }
+        component: () => import('@/views/business/areaChange'),
+        meta: { title: '区域参数' }
       },{
         path: 'parems',
         component: () => import('@/views/business/null'),
@@ -91,7 +91,7 @@ export const constantRoutes = [
       },
       {
         path: 'number',
-        component: () => import('@/views/business/null'),
+        component: () => import('@/views/business/accuracy'),
         meta: { title: '数学精度' }
       },
       {

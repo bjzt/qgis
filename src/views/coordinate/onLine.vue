@@ -113,7 +113,7 @@
               <el-form-item prop="t" v-if="item1.zyzw=='高斯自定义' && item1.zb == 'xyh'" label-width="120px" label="投影面高(m)">
                 <el-row>
                   <el-col :xs="18" :xl="6" :lg="6" :sm="6" :md="8">
-                    <el-input ref="t" size="mini" v-model="item1.t"></el-input>
+                    <el-input ref="t" size="mini" v-model.number="item1.t"></el-input>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -193,14 +193,14 @@
               <el-form-item prop="x" v-if="item2.zyzw=='高斯自定义' && item2.zb == 'xyh'" label-width="120px" label="x常数(km)">
                 <el-row>
                   <el-col :xs="18" :xl="6" :lg="6" :sm="6" :md="8">
-                    <el-input ref="x" size="mini" v-model="item2.x"></el-input>
+                    <el-input ref="x" size="mini" v-model.number="item2.x"></el-input>
                   </el-col>
                 </el-row>
               </el-form-item>
               <el-form-item prop="y" v-if="item2.zyzw=='高斯自定义' && item2.zb == 'xyh'" label-width="120px" label="y常数(km)">
                 <el-row>
                   <el-col :xs="18" :xl="6" :lg="6" :sm="6" :md="8">
-                    <el-input ref="y" size="mini" v-model="item2.y"></el-input>
+                    <el-input ref="y" size="mini" v-model.number="item2.y"></el-input>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -208,7 +208,7 @@
               <el-form-item prop="t" v-if="item2.zyzw=='高斯自定义' && item2.zb == 'xyh'" label-width="120px" label="投影面高(m)">
                 <el-row>
                   <el-col :xs="18" :xl="6" :lg="6" :sm="6" :md="8">
-                    <el-input ref="t" size="mini" v-model="item2.t"></el-input>
+                    <el-input ref="t" size="mini" v-model.number="item2.t"></el-input>
                   </el-col>
                 </el-row>
               </el-form-item>
