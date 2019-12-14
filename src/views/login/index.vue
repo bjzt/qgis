@@ -11,6 +11,7 @@
           <svg-icon icon-class="user" />
         </span>
         <el-input
+          class="el-input-login"
           ref="username"
           v-model="loginForm.username"
           placeholder="用户名/手机号/邮箱"
@@ -26,6 +27,7 @@
           <svg-icon icon-class="password" />
         </span>
         <el-input
+          class="el-input-login"
           :key="passwordType"
           ref="password"
           v-model="loginForm.password"
@@ -61,8 +63,10 @@
       center>
       <el-form>
         <el-form-item>
-          <el-input v-model="loginForm.code" size="mini"></el-input>
-          <el-button style="width:100%;" @click="getCode" v-text="content"></el-button>
+          <el-input placeholder="请输入验证码" v-model="loginForm.code" size="mini">
+            <el-button slot="append" @click="getCode" v-text="content"></el-button>
+          </el-input>
+          
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -191,10 +195,16 @@ $cursor: #fff;
     color: $cursor;
   }
 }
-
+.el-dialog{
+  input {
+    color: black !important;
+    caret-color: black;
+    height: 40px !important;
+  }
+}
 /* reset element-ui css */
 .login-container {
-  .el-input {
+  .el-input-login {
     display: inline-block;
     height: 47px;
     width: 85%;

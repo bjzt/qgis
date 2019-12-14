@@ -45,8 +45,12 @@ service.interceptors.response.use(
   response => {
     const res = response.data
     const headers = response.headers
+    
     if (headers['content-type'] === 'application/octet-stream;charset=utf-8') {
-      return response.data
+      return {
+        filename: headers['filename'],
+        content: res
+      }
     }
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 20000) {

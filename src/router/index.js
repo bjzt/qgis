@@ -86,8 +86,8 @@ export const constantRoutes = [
         meta: { title: '区域参数' }
       },{
         path: 'parems',
-        component: () => import('@/views/business/null'),
-        meta: { title: '参数计算' }
+        component: () => import('@/views/map/mapDemo'),
+        meta: { title: '在线地图' }
       },
       {
         path: 'number',

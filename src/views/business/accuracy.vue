@@ -3,7 +3,7 @@
       <el-row>
         <el-col :span="4">
       <el-menu 
-        :default-active="8"
+        default-active="8"
         @select="selectMenu"
         background-color="#545c64"
         text-color="#fff"
@@ -139,6 +139,7 @@
     <!-- 绝对精度 -->
     <el-table
       :data="tableData"
+      border
       v-if="tabelType == 1"
       :header-cell-style="{background:'#eef1f6',color:'#606266'}"
       size="small"
@@ -196,6 +197,7 @@
 
     <el-table
       :data="computeData"
+      border
       v-if="tabelType == 1"
       :header-cell-style="{background:'#eef1f6',color:'#606266'}"
       size="small"
@@ -241,6 +243,7 @@
     <!-- 相对精度 -->
     <el-table
       :data="tableData"
+      border
       v-if="tabelType == 2"
       :header-cell-style="{background:'#eef1f6',color:'#606266'}"
       size="small">
@@ -272,6 +275,7 @@
 
     <el-table
       :data="computeData"
+      border
       v-if="tabelType == 2"
       :header-cell-style="{background:'#eef1f6',color:'#606266'}"
       size="small">
@@ -316,6 +320,7 @@
     <!-- 高程精度 -->
     <el-table
       :data="tableData"
+      border
       v-if="tabelType == 3"
       :header-cell-style="{background:'#eef1f6',color:'#606266'}"
       size="small"
@@ -357,6 +362,7 @@
     </el-table>
 
     <el-table
+      border
       :data="computeData"
       v-if="tabelType == 3"
       :header-cell-style="{background:'#eef1f6',color:'#606266'}"
@@ -401,6 +407,7 @@
     <!-- 结果tabel start-->
     <el-table
       :data="result"
+      border
       size="small"
       :header-cell-style="{background:'#eef1f6',color:'#606266', 'border-color': '#C1CDCD '}"
       style="width: 100%">
@@ -497,25 +504,31 @@
         :before-close="handleClose">
         <el-form size="mini">
           <el-row>
-            <el-col :span="4">
+            <el-col :span="3">
               <el-form-item>
-                <el-button @click="" type="primary">保存当前格式</el-button>
+                <el-button @click="innerVisible=true;" type="primary">保存当前格式</el-button>
               </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="6">
               <el-form-item label="选择格式">
-                <el-select v-model="template">
+                <el-select @change="changeFormat" v-model="template">
                   <el-option label="自定义" :value="null"></el-option>
                   <el-option 
-                    v-for="item in templateList" 
-                    :label="item.name" 
-                    :value="item.id" 
-                    :key="item.id"
+                    v-for="(item,index) in formatList"
+                    :label="item.name"
+                    :value="index"
+                    :key="index"
                     ></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="6">
+              <el-form-item>
+                <el-button @click="updateFormat" type="success">更新当前格式</el-button>
+                <el-button @click="delFormat" type="danger">删除当前格式</el-button>
+              </el-form-item>
+            </el-col>
+            <el-col :span="3">
               <el-form-item>
                 <el-upload
                   class="upload-demo"
@@ -530,6 +543,17 @@
             </el-col>
           </el-row>
           <el-row>
+            <el-col :span="8">
+              <el-form-item label="选择分隔符">
+                <el-select v-model="symbol">
+                  <el-option 
+                  v-for="item in symbolOptions" 
+                  :key="item.value"
+                  :label="`${item.label}  ${item.value}`"
+                  :value="item.value"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
             <el-col :span="6">
               <el-form-item label="选择列">
                 <el-select v-model="lie">
@@ -549,17 +573,7 @@
                 </el-button-group>
               </el-form-item>
             </el-col>
-            <el-col :span="8">
-              <el-form-item label="选择分隔符">
-                <el-select v-model="symbol">
-                  <el-option 
-                  v-for="item in symbolOptions" 
-                  :key="item.value"
-                  :label="`${item.label}  ${item.value}`"
-                  :value="item.value"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
+            
             <el-col :span="6">
               <el-form-item label="选择开始行">
                 <el-input-number v-model="start"></el-input-number>
@@ -586,6 +600,17 @@
         <el-button size="mini" @click="handleClose">取 消</el-button>
         <el-button size="mini" type="primary" @click="addDataToTable()">确 定</el-button>
       </span>
+      <el-dialog
+        width="30%"
+        title="编辑格式名"
+        :visible.sync="innerVisible"
+        append-to-body>
+        <el-input v-model="format.name" placeholder="请输入格式名"></el-input>
+        <span slot="footer" class="dialog-footer">
+          <el-button size="mini" @click="innerVisible = false">取 消</el-button>
+          <el-button size="mini" type="primary" @click="saveFormat()">确 定</el-button>
+      </span>
+      </el-dialog>
     </el-dialog>
   </div>
 </template>
@@ -604,6 +629,7 @@ export default {
       total: 0,
       template: null,//格式模板
       tabelType: 1,
+      innerVisible: false,
       dialogVisible: false,
       isCollapse: false,
       lieOptions: [],//列名
@@ -611,7 +637,11 @@ export default {
           label: "点名",
           value: "0",
       },
+      format: {
+        type: 0
+      },
       start: 0,//开始计算的行
+      computeData: [],//计算的结果
       lieList: [],//模板的列
       scaleSurvey: [{ value: 500 },{ value: 1000 },{ value: 2000 },{ value: 5000 },
       { value: 10000 },{ value: 25000 },{ value: 50000 },{ value: 100000 },
@@ -622,7 +652,7 @@ export default {
       dataList: [],//上传的文件数据
       menuList: [],//格式化后的算法菜单列表
       menuAllList: [],//所有的菜单
-      templateList: [],//所有用户拥有的模板
+      formatList: [],//所有用户拥有的模板
       oldItem: {},
       tableData: [],//数据列表
       labelWidth: '120px',
@@ -698,17 +728,26 @@ export default {
       }) 
     },
     start(index){
-        for(let i=0;i<this.showData.length;i++){
-            this.showData[i].isSelect = false
-            if (i+1 == index) {
-                this.showData[i].isSelect = true
-            }
+      for(let i=0;i<this.showData.length;i++){
+        this.showData[i].isSelect = false
+        if (i+1 == index) {
+            this.showData[i].isSelect = true
         }
+      }
     }
   },
   methods: {
     fetchData() {
       this.getMenuList()
+      this.getFormat()
+    },
+    getFormat(){
+      request({
+        url: `/accuracyFormat/${this.format.type}`,
+        method: "get"
+      }).then(res => {
+        this.formatList = res.data
+      })
     },
     getMenuList() {
       //查询列表
@@ -726,6 +765,7 @@ export default {
         this.menuAllList = data.data;
       })
     },
+    //选中菜单
     selectMenu(index){
       for(let menu of this.menuAllList){
         if (index == menu.id) {
@@ -744,6 +784,7 @@ export default {
     handleChange(file, fileList) {
       this.fileList = fileList.slice(-1);
     },
+    //数据上传成功
     handleSuccess(res){
       if (res.flag) {
         this.dataList = res.data
@@ -753,6 +794,7 @@ export default {
         this.lieList=[]
       }
     },
+    //关闭提示
     handleClose(done) {
         this.dialogVisible = false
     //   this.$confirm('确认关闭？')
@@ -761,6 +803,17 @@ export default {
     //     })
     //     .catch(_ => {});
     },
+    //选择格式
+    changeFormat(index){
+      if (index != null) {
+        let format = this.formatList[index]
+        this.lieList = window.JSON.parse(format.lie)
+        this.symbol = format.symbol
+      }else {
+        this.lieList = []
+        this.symbol = null
+      }
+    },
     //将选号的数据传到tabel里
     addDataToTable(){
       this.tableData = []
@@ -768,14 +821,14 @@ export default {
       if (this.start > 0) {
         start = this.start -1
       }else if (this.start < 0) {
-        this.$messages({
+        this.$message({
           type: "error",
-          messages: "开始行数错误"
+          message: "开始行数错误"
         })
         return
       }
       
-        //循环数据
+      //循环数据
       for (let j=start;j< this.showData.length;j++){
         let data = this.showData[j].dataList
         let dto = {}
@@ -805,6 +858,67 @@ export default {
     computer(){
       
     },
+    //保存格式
+    saveFormat(){
+      this.format.lie= window.JSON.stringify(this.lieList),
+      this.format.symbol= this.symbol
+      
+      request({
+        url: "/accuracyFormat",
+        method: "post",
+        data: this.format
+      }).then(res => {
+        if (res.flag) {
+          this.$message({
+            type: "success",
+            message: res.message
+          })
+          this.getFormat()
+          this.innerVisible = false
+        }
+      })
+    },
+    updateFormat(){
+      let format = this.formatList[this.template]
+
+      format.lie=window.JSON.stringify(this.lieList),
+      format.symbol= this.symbol
+      
+      request({
+        url: "/accuracyFormat",
+        method: "put",
+        data: format
+      }).then(res => {
+        if (res.flag) {
+          this.$message({
+            type: "success",
+            message: res.message
+          })
+          this.getFormat()
+        }
+      })
+    },
+    delFormat(){
+      if (this.template == null) {
+
+        return
+      }
+      //获取当前所选中的格式id
+      let id = this.formatList[this.template].id
+      request({
+        url: `/accuracyFormat/${id}`,
+        method: "delete"
+      }).then(res => {
+        if (res.flag) {
+          this.$message({
+            type: "success",
+            message: res.message
+          })
+          this.template = null
+          this.getFormat()
+        }
+      })
+    }
   }
 }
 </script>

@@ -5,7 +5,7 @@
         {{item.name}}
       </el-menu-item>
     </template>
-    <el-submenu v-else :index="`${item.id}`">      
+    <el-submenu v-else :index="`${item.id}`">
       <template slot="title" >
         {{item.name}}
       </template>

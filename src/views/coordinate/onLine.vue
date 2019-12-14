@@ -1,10 +1,5 @@
 <template>
   <div style="margin: 20px">
-    <div style="position:absolute;right:20px;top:20px;z-index:9">
-      <el-input size="mini" v-model="pointName">
-        <el-button type="primary" slot="append" @click="submitData" size="small">名单下载</el-button>
-      </el-input>
-    </div>
     <el-form ref="data">
       <el-form-item label="基本信息">
         <div>
@@ -662,37 +657,6 @@ export default {
         delete item1.zyzw
       }
       return item1
-    },
-    submitData(){
-      let item1 = this.item(this.item1)
-      let item2 = this.item(this.item2)
-
-      item1.name = this.pointName
-      request({
-        url: "/data/point",
-        method: "post",
-        data: {
-          item1: item1,
-          item2: item2
-        },
-        responseType: 'blob'
-      }).then(data => {
-        const content = data
-        const blob = new Blob([content])
-        const fileName = '名单.txt'
-        if ('download' in document.createElement('a')) { // 非IE下载
-          const elink = document.createElement('a')
-          elink.download = fileName
-          elink.style.display = 'none'
-          elink.href = URL.createObjectURL(blob)
-          document.body.appendChild(elink)
-          elink.click()
-          URL.revokeObjectURL(elink.href) // 释放URL 对象
-          document.body.removeChild(elink)
-        } else { // IE10+下载
-          navigator.msSaveBlob(blob, fileName)
-        }
-      })
     },
   }
 }
