@@ -6,6 +6,16 @@
           <el-col :span="20">
             <el-form :inline="true">
               <el-form-item label-width="20px">
+                <el-select v-model="service">
+                  <el-option 
+                  v-for="(item,index) in serviceList"
+                  :key="index"
+                  :label="item.label"
+                  :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label-width="20px">
                   <el-button size="small" @click="discount = {};dialogVisible = true;isCreate = true" type="success">添加新折扣</el-button>
               </el-form-item>
             </el-form>
@@ -74,32 +84,31 @@
             </el-pagination>
           </el-col>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
-        <el-form :model="config">
-          <el-row>
-            <el-col :xs="18" :xl="18" :lg="18" :sm="24" :md="24">
-              <el-form-item label="单位价格" :label-width="inputWidth">
-                <el-input size="small" v-model="config.price">
-                  <el-button size="small" slot="append">元</el-button>
-                </el-input>
-              </el-form-item>
-            <!-- </el-col>
-            <el-col :xs="24" :xl="8" :lg="8" :sm="18" :md="24"> -->
-              <el-form-item label="最大上传点数量" :label-width="inputWidth">
-                <el-input size="small" v-model="config.maxPointNumber">
-                  <el-button size="small" slot="append">个</el-button>
-                </el-input>
-              </el-form-item>
-              <el-form-item label="最大跨度" :label-width="inputWidth">
-                <el-input size="small" v-model="config.maxKD">
-                  <el-button size="small" slot="append">km</el-button>
-                </el-input>
-              </el-form-item>
-              <el-form-item :label-width="inputWidth">
-                <el-button size="small" type="primary">修改</el-button>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
+            <el-form v-if="service==0" :model="config">
+              <el-row>
+                <el-col :xs="18" :xl="18" :lg="18" :sm="24" :md="24">
+                  <h2 style="text-align: center">在线坐标转换</h2>
+                  <el-form-item label="单位价格" :label-width="inputWidth">
+                    <el-input size="small" v-model="config.price">
+                      <el-button size="small" slot="append">元</el-button>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item label="最大上传点数量" :label-width="inputWidth">
+                    <el-input size="small" v-model="config.maxPointNumber">
+                      <el-button size="small" slot="append">个</el-button>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item label="最大跨度" :label-width="inputWidth">
+                    <el-input size="small" v-model="config.maxKD">
+                      <el-button size="small" slot="append">km</el-button>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item :label-width="inputWidth">
+                    <el-button size="small" type="primary">修改</el-button>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
           </el-col>
         </el-row>
         <el-dialog
@@ -140,6 +149,8 @@ export default {
       tableData: [],
       discount: {},//折扣
       inputWidth: '110px',
+      service: 0,
+      serviceList: [],
       isCreate: true, 
       dialogVisible: false, 
       listLoading: false,//数据加载等待动画
@@ -156,8 +167,32 @@ export default {
       }//查询条件
     }
   },
+  watch:{
+    service(){
+      this.getList()
+    }
+  },
   created() {
     this.fetchData()
+    this.serviceList = [{
+      label: "在线转换",
+      value: 0
+    },{
+      label: "验证导入",
+      value: 1
+    },{
+      label: "参数计算",
+      value: 2
+    },{
+      label: "区域计算",
+      value: 3
+    },{
+      label: "航空设计",
+      value: 4
+    },{
+      label: "精度检测",
+      value: 5
+    },]
   },
   methods: {
     fetchData() {
@@ -176,7 +211,7 @@ export default {
       //查询列表
       this.listLoading = true;
       request({
-        url: "/discount/list",
+        url: `/discount/list/${this.service}`,
         method: "post",
         params: this.listQuery,
       }).then(data => {
@@ -184,9 +219,6 @@ export default {
         this.tableData = data.data.rows;
         this.total = data.data.total;
       })
-    },
-    selectByName(){
-      this.getList()
     },
     /**
      * 修改
@@ -209,7 +241,7 @@ export default {
     },
     add(){
       request({
-        url: "/discount",
+        url: `/discount/${this.service}`,
         method: "post",
         data: this.discount
       }).then(res => {

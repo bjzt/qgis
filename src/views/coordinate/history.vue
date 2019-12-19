@@ -42,6 +42,11 @@
         width="100">
       </el-table-column>
       <el-table-column
+        prop="projectType"
+        label="项目类型"
+        width="100">
+      </el-table-column>
+      <el-table-column
         prop="name"
         label="使用人">
       </el-table-column>

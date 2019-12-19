@@ -32,11 +32,17 @@ export default {
       url: 'http://js.arcgis.com/4.7/init.js'
     }
 
-    esriLoader.loadModules ([ "esri/Map",'esri/views/MapView',], options)
-    .then (([ Map, MapView ]) => {
+    esriLoader.loadModules([ "esri/Map",'esri/views/MapView', "dojo/parser",], options)
+    .then (([ Map, MapView, parser ]) => {
       const map = new Map ({
-        basemap: "streets"
+        backgroundColor: "#eee",
+        basemap: "streets",
+        logo: false,
+        slider: false,
+        zoom: 7,
+        minZoom: 7,
       })
+      parser.parse(); 
       const mapview = new MapView ({
         container: "viewDiv",
         map: map,

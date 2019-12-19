@@ -87,133 +87,136 @@
     <h2>输入参数：</h2>
     <el-form size="mini" :model="oldItem">
       <el-row>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item :label-width="labelWidth">
-              <el-button type="primary">根据范围计高程</el-button>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-        <el-form-item label="高处高程" :label-width="labelWidth">
-          <el-input v-model="oldItem.maxHeight">
-            <template slot="append">m</template>
-          </el-input>
-        </el-form-item>
-          </el-col>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="低处高程" :label-width="labelWidth">
-              <el-input v-model="oldItem.minHeight">
-                <template slot="append">m</template>
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="测区平均高程" :label-width="labelWidth">
-              <el-input v-model="oldItem.averageHeight">
-                <template slot="append">m</template>
-              </el-input>
-            </el-form-item>
-          </el-col>
+        <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+          <el-form-item label="高处高程" :label-width="labelWidth">
+            <el-input v-model="oldItem.maxHeight">
+              <template slot="append">m</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+          <el-form-item label="低处高程" :label-width="labelWidth">
+            <el-input v-model="oldItem.minHeight">
+              <template slot="append">m</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+          <el-form-item label="测区平均高程" :label-width="labelWidth">
+            <el-input v-model="oldItem.averageHeight">
+              <template slot="append">m</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+          <el-form-item :label-width="labelWidth" label="曝光时间">
+            <el-input v-model="oldItem.time">
+              <template slot="prepend">1/</template>
+              <template slot="append">s</template> 
+            </el-input>
+          </el-form-item>
+        </el-col>
       </el-row>
 
       <el-row>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="飞机类型" :label-width="labelWidth">
-              <el-select v-model="oldItem.flexType" @change="typeChange">
-                <el-option label="固定翼" :value="0"></el-option>
-                <el-option label="多旋翼" :value="1"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col v-if="oldItem.flexType == 0" :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="航线航向外扩" :label-width="labelWidth">
-              <el-input value="2">
-                <template slot="append">条基线</template>
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-        <el-form-item label="采集数据" :label-width="labelWidth">
-          <el-select v-model="oldItem.dataType" @change="dataChange">
-            <el-option label="正射影像" :value="0"></el-option>
-            <el-option label="倾斜影像" :value="1"></el-option>
-            <el-option label="Lidar激光雷达" :value="2"></el-option>
-          </el-select>
-        </el-form-item>
-          </el-col>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="建筑物类型" :label-width="labelWidth">
-              <el-select v-model="oldItem.buildType" @change="buildChange">
-                <el-option label="建筑物稀少" :value="0"></el-option>
-                <el-option label="建筑物密集" :value="1"></el-option>
-                <el-option label="高层建筑区" :value="2"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
+        <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+          <el-form-item label="飞机类型" :label-width="labelWidth">
+            <el-select v-model="oldItem.flexType" @change="typeChange">
+              <el-option label="固定翼" :value="0"></el-option>
+              <el-option label="多旋翼" :value="1"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col v-if="oldItem.flexType == 0" :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+          <el-form-item label="航线航向外扩" :label-width="labelWidth">
+            <el-input value="2">
+              <template slot="append">条基线</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+          <el-form-item label="采集数据" :label-width="labelWidth">
+            <el-select v-model="oldItem.dataType" @change="dataChange">
+              <el-option label="正射影像" :value="0"></el-option>
+              <el-option label="倾斜影像" :value="1"></el-option>
+              <el-option label="Lidar激光雷达" :value="2"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+          <el-form-item v-if="oldItem.flexType == 1" label="建筑物类型" :label-width="labelWidth">
+            <el-select v-model="oldItem.buildType" @change="buildChange">
+              <el-option label="建筑物稀少" :value="0"></el-option>
+              <el-option label="建筑物密集" :value="1"></el-option>
+              <el-option label="高层建筑区" :value="2"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
       </el-row>
 
       <el-row>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="测区面积" :label-width="labelWidth">
-              <el-input v-model="oldItem.area">
-                <template slot="append">km</template>
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-        <el-form-item label="设计航带数" :label-width="labelWidth">
-          <el-input v-model="oldItem.airStrips"></el-input>
-        </el-form-item>
-          </el-col>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="曝光时间" :label-width="labelWidth">
-              <el-input v-model.number="oldItem.time">
-                <template slot="prepend">1/</template>
-                <template slot="append">s</template>
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="盘旋半径" :label-width="labelWidth">
-              <el-input v-model="oldItem.radius">
-                <template slot="append">m</template>
-              </el-input>
-            </el-form-item>
-          </el-col>
+        <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+          <el-form-item v-if="oldItem.flexType == 1" label="倾斜镜头焦距" :label-width="labelWidth">
+            <el-input v-model="oldItem.tiltFocal">
+              <template slot="append">mm</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+          <el-form-item v-if="oldItem.flexType == 1" label="倾斜镜头角度" :label-width="labelWidth">
+            <el-input v-model="oldItem.tiltAngle">
+              <template slot="append">度</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+          <el-form-item v-if="oldItem.flexType == 0"  label="地形类型" :label-width="labelWidth">
+            <el-select v-model="oldItem.terrainType" @change="buildChange">
+              <el-option label="平地" :value="0"></el-option>
+              <el-option label="丘陵" :value="1"></el-option>
+              <el-option label="山地" :value="2"></el-option>
+              <el-option label="高山地" :value="3"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
       </el-row>
 
       <el-row>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="航向重叠" :label-width="labelWidth">
-              <el-input v-model.number="oldItem.course">
-                <template slot="append">%</template>
-              </el-input>
-              <el-slider :show-tooltip="false" v-model="value.courseValue"></el-slider>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-        <el-form-item label="旁向重叠" :label-width="labelWidth">
-          <el-input v-model.number="oldItem.sideDirection">
+        <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+          <el-form-item label="航向重叠" :label-width="labelWidth">
+            <el-input v-model.number="oldItem.course">
               <template slot="append">%</template>
-          </el-input>
-          <el-slider :show-tooltip="false" v-model="value.sideDirectionValue"></el-slider>
-        </el-form-item>
-          </el-col>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="地面分辨率" :label-width="labelWidth">
-              <el-input v-model="oldItem.resolution">
-                <template slot="append">cm</template>
-              </el-input>
-              <el-slider :show-tooltip="false" v-model="value.resolutionValue" :min="50" :max="32000"></el-slider>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="飞行速度" :label-width="labelWidth">
-              <el-input v-model.number="oldItem.speed">
-                <template slot="append">m/s</template>
-              </el-input>
-              <el-slider :show-tooltip="false" v-model="value.speedValue"></el-slider>
-            </el-form-item>
-          </el-col>
+            </el-input>
+            <el-slider :show-tooltip="false" v-model="value.courseValue"></el-slider>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+          <el-form-item label="旁向重叠" :label-width="labelWidth">
+            <el-input v-model.number="oldItem.sideDirection">
+                <template slot="append">%</template>
+            </el-input>
+            <el-slider :show-tooltip="false" v-model="value.sideDirectionValue"></el-slider>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+          <el-form-item label="地面分辨率" :label-width="labelWidth">
+            <el-input v-model="oldItem.resolution">
+              <template slot="append">cm</template>
+            </el-input>
+            <el-slider :show-tooltip="false" v-model="value.resolutionValue" :min="50" :max="10000"></el-slider>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+          <el-form-item label="飞行速度" :label-width="labelWidth">
+            <el-input v-model.number="oldItem.speed">
+              <template slot="append">m/s</template>
+            </el-input>
+            <el-slider :show-tooltip="false" v-model="value.speedValue"></el-slider>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row style="text-align:center">
+        <el-button type="primary">根据范围计高程</el-button>
       </el-row>
     </el-form>
     <h2>计算参数：</h2>
@@ -227,9 +230,9 @@
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-        <el-form-item label="高处地面分辨率" :label-width="labelWidth">
-          <el-input v-model="newItem.highResolution">
-            <template slot="append">cm</template>
+        <el-form-item label="相对航高" :label-width="labelWidth">
+          <el-input v-model="newItem.relativeHeight">
+            <template slot="append">m</template>
           </el-input>
         </el-form-item>
           </el-col>
@@ -316,17 +319,13 @@
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-        <el-form-item label="基高比" :label-width="labelWidth">
-          <el-input v-model="newItem.basalRatio"></el-input>
-        </el-form-item>
-          </el-col>
-          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="照片张数" :label-width="labelWidth">
-              <el-input v-model="newItem.imgNum"></el-input>
+            <el-form-item label="基高比" :label-width="labelWidth">
+              <el-input v-model="newItem.basalRatio"></el-input>
             </el-form-item>
           </el-col>
+
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="大概飞行时间" :label-width="labelWidth">
+            <el-form-item label="最佳飞行时间" :label-width="labelWidth">
               <el-input v-model="newItem.flexTime">
               </el-input>
             </el-form-item>
@@ -335,14 +334,26 @@
       <el-row>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="航线外扩" :label-width="labelWidth">
-              <el-input v-model="newItem.basalRatio">
+              <el-input v-model="newItem.routeOutward">
                   <template slot="append">m</template>
               </el-input>
             </el-form-item>
           </el-col>
+          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+            <el-form-item label="航线角度" :label-width="labelWidth">
+              <el-input v-model="newItem.basalAngle">
+                  <template slot="append">度</template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
+            <el-form-item label="飞行方向" :label-width="labelWidth">
+              <el-input v-model="newItem.flightDirection"></el-input>
+            </el-form-item>
+          </el-col>
           <el-col v-if="oldItem.dataType == 1" :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
             <el-form-item label="倾斜高程精度" :label-width="labelWidth">
-              <el-input v-model="newItem.basalRatio"></el-input>
+              <el-input v-model="newItem.tiltHight"></el-input>
             </el-form-item>
           </el-col>
       </el-row>
@@ -356,6 +367,7 @@
 
 <script>
 import request from '@/utils/request'
+// import BMap from 'BMap'
 
 export default {
   data() {
@@ -367,12 +379,12 @@ export default {
       value: {
         courseValue: 75,
         sideDirectionValue: 65,
-        resolutionValue: 50,
+        resolutionValue: 1800,
         speedValue: 18
       },
       computButton: false,
       standardOldItemValue: {
-        time: 1000,
+        time: 1250,
         course: 75,
         sideDirection: 65,
         speed: 18
@@ -381,13 +393,14 @@ export default {
       oldItem: {
         course: 75,
         sideDirection: 65,
-        resolution: 50,
+        resolution: 18,
         speed: 18,
-        radius: 150,
         flexType: 0,
         dataType: 0,
         buildType: 0,
-        time: 1000
+        terrainType: 0,
+        time: 1250,
+        cd: null
       },
       newItem: {},
       labelWidth: '110px'
@@ -447,9 +460,25 @@ export default {
     this.fetchData()
     this.getUserLink()
   },
+  mounted(){
+    this.getCity()
+  },
   methods: {
     fetchData() {
       this.getCamera()
+    },
+    getCity(){
+      const geolocation = new BMap.Geolocation();
+      let that = this
+      geolocation.getCurrentPosition(function getinfo(position){
+        let city = position.address.city;             //获取城市信息
+        let province = position.address.province;     //获取省份信息
+        that.oldItem.city = city
+        console.log(province, city);
+        
+      }, function(e) {
+        this.LocationCity = "定位失败"
+      }, {provider: 'baidu'});        
     },
     getCamera(){
       request({
@@ -480,9 +509,17 @@ export default {
       if (value == 0) {
         this.standardOldItemValue.speed = 18
         this.oldItem.speed = 18
+        this.standardOldItemValue.time = 1250
+        this.oldItem.time = 1250
+        this.standardOldItemValue.resolutionValue = 1800
+        this.oldItem.resolution = 18
       }else if (value == 1) {
         this.standardOldItemValue.speed = 10
         this.oldItem.speed = 10
+        this.standardOldItemValue.time = 1000
+        this.oldItem.time = 1000
+        this.standardOldItemValue.resolutionValue = 150
+        this.oldItem.resolution = 1.5
       }
     },
     dataChange(value){
@@ -563,7 +600,16 @@ export default {
         camera: this.cameraItem,
         oldItem: this.oldItem
       }
-      console.log(json);
+      request({
+        url: "/aviation/camera",
+        method: "post",
+        data: json
+      }).then(res => {
+        if (res.flag) {
+          this.newItem = res.data
+        }
+        this.computButton = true
+      })
       
     },
     toReport(){

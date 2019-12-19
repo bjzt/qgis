@@ -272,8 +272,8 @@
               </el-select>
             </el-form-item>
             <el-form-item label="短信验证" :label-width="formWdth">
-              <el-input >
-                <el-button slot="append">发送验证码</el-button>
+              <el-input v-model="checkCode">
+                <el-button @click="getCode" slot="append">{{content}}</el-button>
               </el-input>
             </el-form-item>
             <el-form-item :label-width="formWdth">
@@ -448,11 +448,10 @@
             </el-col>
             <el-col :span="6">
               <el-form-item label="已知点等级" :label-width="formWdth">
-                <el-select v-model="level" @change="selectLevel">
-                  <el-option label="C级" :value="0"></el-option>
-                  <el-option label="D、E级" :value="1"></el-option>
-                  <el-option label="GNSS RTK图根" :value="2"></el-option>
-                </el-select>
+                <el-cascader
+                  v-model="level"
+                  :options="levelList"
+                  @change="selectLevel"></el-cascader>
               </el-form-item>
             </el-col>
             <el-col :span="4">
@@ -591,13 +590,111 @@
           
         </el-row>
       </el-tab-pane>
-      <el-tab-pane label="批量文件">批量文件</el-tab-pane>
+      <el-tab-pane label="批量文件">
+        <el-form size="mini">
+          <el-row>
+            <el-col :span="3">
+              <el-form-item>
+                <el-button @click="innerVisible=true;" type="primary">保存当前格式</el-button>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="选择格式">
+                <el-select @change="changeFormat" v-model="template">
+                  <el-option label="自定义" :value="null"></el-option>
+                  <el-option 
+                    v-for="(item,index) in formatList"
+                    :label="item.name"
+                    :value="index"
+                    :key="index"
+                    ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item>
+                <el-button @click="updateFormat" type="success">更新当前格式</el-button>
+                <el-button @click="delFormat" type="danger">删除当前格式</el-button>
+              </el-form-item>
+            </el-col>
+            <el-col :span="3">
+              <el-form-item>
+                <!-- :on-success="handleSuccess" -->
+                <el-upload
+                  class="upload-demo"
+                  :action="`${baseUrl}/file/upload/fileToText`"
+                  :on-preview="handlePreview"
+                  :on-remove="handleRemove"
+                  :before-remove="beforeRemove"
+                  :file-list="fileList"
+                  :headers="importHeaders">
+                  <el-button type="success">上传数据</el-button>
+                </el-upload>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="选择分隔符">
+                <el-select v-model="symbol">
+                  <el-option 
+                  v-for="item in symbolOptions" 
+                  :key="item.value"
+                  :label="`${item.label}  ${item.value}`"
+                  :value="item.value"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="选择列">
+                <el-select v-model="lie">
+                  <el-option 
+                  v-for="item in lieOptions" 
+                  :key="`${JSON.stringify(item)}`"
+                  :label="item.label"
+                  :value="item"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item>
+                <el-button-group>
+                  <el-button type="primary" @click="addLie">添加列</el-button>
+                  <el-button type="danger" @click="delLie">删除列</el-button>
+                </el-button-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div style="height: 300px; overflow: auto;">
+          <table style="text-align: center;border-collapse: collapse;">
+            <tr>
+              <th style="border: 2px solid #cad9ea;color: #666;padding:5px" v-for="(item,index) in lieList" :key="index" v-text="item.label"></th>
+            </tr>
+          </table>
+        </div>
+        <span slot="footer" >
+          <el-button size="mini" @click="dialogVisible1=false">取 消</el-button>
+          <el-button size="mini" type="primary" @click="addDataToTable1()">确 定</el-button>
+        </span>
+      
+        <el-dialog
+          width="30%"
+          title="编辑格式名"
+          :visible.sync="innerVisible">
+          <el-input v-model="format.name" placeholder="请输入格式名"></el-input>
+          <span slot="footer" class="dialog-footer">
+            <el-button size="mini" @click="innerVisible1 = false">取 消</el-button>
+            <el-button size="mini" type="primary" @click="saveFormat()">确 定</el-button>
+        </span>
+        </el-dialog>
+      </el-tab-pane>
       <el-tab-pane label="矢量文件">矢量文件</el-tab-pane>
     </el-tabs>
       </el-col>
       <el-col :span="8">
         <div style="width: 400px;margin: 10px auto">
-          <el-button @click="exportVisible=true;symbol=',';setExportLie()" type="primary">输出格式定义</el-button>
+          <el-button @click="exportVisible=true;symbol=',';setExportLie()" type="primary">输出</el-button>
           <el-button @click="exportVisibleKml=true" type="primary">输出kml</el-button>
         </div>
       </el-col>
@@ -1052,66 +1149,100 @@
         <el-row>
           <el-col :span="6">
             <el-form-item label="选择历史项目">
-              <el-cascader-panel :options="projectList"></el-cascader-panel>
+              <el-cascader-panel @change="selectProject" :options="projectList"></el-cascader-panel>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="8" v-if="project.item1 != null">
             <el-form size="mini">
               <el-form-item label="源坐标 椭球参数" :label-width="labelWdth">
-                <el-input v-model="item1.yqq" disabled></el-input>
+                <el-input v-model="project.item1.yqq" disabled></el-input>
               </el-form-item>
-              <el-form-item label="目标坐标 椭球参数" :label-width="labelWdth">
-                <el-input v-model="item2.yqq" disabled></el-input>
+              <el-form-item v-if="project.item1.zyzw != null" :label-width="labelWdth" label="投影方式">
+                <el-input v-model="project.item1.zyzw" disabled></el-input>
               </el-form-item>
-            </el-form>
-          </el-col>
-          <el-col :span="8">
-              <el-form-item :label-width="labelWdth" label="投影方式">
-                <el-input v-model="item.zyzw" disabled></el-input>
-              </el-form-item>
-              <el-form-item :label-width="labelWdth" label="中央子午线">
+              <el-form-item v-if="project.item1.zw1 != null" :label-width="labelWdth" label="中央子午线">
                 <el-row>
                   <el-col :xs="8" :xl="8" :lg="8" :sm="8" :md="8">
                     <el-form-item prop="zw1">
-                      <el-input ref="zw1" disabled v-model.number="item1.zw1">
+                      <el-input ref="zw1" disabled v-model.number="project.item1.zw1">
                       </el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :xs="8" :xl="8" :lg="8" :sm="8" :md="8">
                     <el-form-item prop="zw2">
-                      <el-input ref="zw2" disabled v-model.number="item1.zw2">
+                      <el-input ref="zw2" disabled v-model.number="project.item1.zw2">
                       </el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :xs="8" :xl="8" :lg="8" :sm="8" :md="8">
                     <el-form-item prop="zw3">
-                      <el-input ref="zw3" disabled v-model="item1.zw3">
+                      <el-input ref="zw3" disabled v-model="project.item1.zw3">
                       </el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
               </el-form-item>
-              <el-form-item :label-width="labelWdth" label="x常数">
-                <el-input v-model="item.x" disabled></el-input>
+              <el-form-item v-if="project.item1.x != null" :label-width="labelWdth" label="x常数">
+                <el-input v-model="project.item2.x" disabled></el-input>
               </el-form-item>
-              <el-form-item :label-width="labelWdth" label="y常数">
-                <el-input v-model="item.y" disabled></el-input>
+              <el-form-item v-if="project.item1.y != null" :label-width="labelWdth" label="y常数">
+                <el-input v-model="project.item2.y" disabled></el-input>
               </el-form-item>
-              <el-form-item :label-width="labelWdth" label="投影高">
-                <el-input v-model="item.t" disabled></el-input>
+              <el-form-item v-if="project.item1.t != null" :label-width="labelWdth" label="投影高">
+                <el-input v-model="project.item2.t" disabled></el-input>
+              </el-form-item>
+            </el-form>
+          </el-col>
+          <el-col :span="8" v-if="project.item2 != null">
+            <el-form-item label="目标坐标 椭球参数" :label-width="labelWdth">
+                <el-input v-model="project.item2.yqq" disabled></el-input>
+              </el-form-item>
+              <el-form-item v-if="project.item2.zyzw != null" :label-width="labelWdth" label="投影方式">
+                <el-input v-model="project.item2.zyzw" disabled></el-input>
+              </el-form-item>
+              <el-form-item v-if="project.item2.zw1 != null" :label-width="labelWdth" label="中央子午线">
+                <el-row>
+                  <el-col :xs="8" :xl="8" :lg="8" :sm="8" :md="8">
+                    <el-form-item prop="zw1">
+                      <el-input ref="zw1" disabled v-model.number="project.item2.zw1">
+                      </el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :xs="8" :xl="8" :lg="8" :sm="8" :md="8">
+                    <el-form-item prop="zw2">
+                      <el-input ref="zw2" disabled v-model.number="project.item2.zw2">
+                      </el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :xs="8" :xl="8" :lg="8" :sm="8" :md="8">
+                    <el-form-item prop="zw3">
+                      <el-input ref="zw3" disabled v-model="project.item2.zw3">
+                      </el-input>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </el-form-item>
+              <el-form-item v-if="project.item2.x != null" :label-width="labelWdth" label="x常数">
+                <el-input v-model="project.item2.x" disabled></el-input>
+              </el-form-item>
+              <el-form-item v-if="project.item2.y != null" :label-width="labelWdth" label="y常数">
+                <el-input v-model="project.item2.y" disabled></el-input>
+              </el-form-item>
+              <el-form-item v-if="project.item2.t != null" :label-width="labelWdth" label="投影高">
+                <el-input v-model="project.item2.t" disabled></el-input>
               </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button size="mini" @click="openProject=false">取 消</el-button>
-        <el-button size="mini" type="primary">确认打开该工程</el-button>
+        <el-button size="mini" @click="usePrject()" type="primary">确认打开该工程</el-button>
       </span>
     </el-dialog>
     <!-- 打开工程 -->
   </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 .onLine {
   .el-input-group__append {
     padding: 0;
@@ -1225,7 +1356,8 @@ export default {
       },
       flag: true,
       model: 0,//所选的参数模型
-      level: 0,//中误差点等级
+      level: [1,1],//中误差点等级
+      levelList: [],//中误差的选项list
       modelName: "布尔莎七参数",
       formWdth: '100px',
       labelWdth: '130px',
@@ -1248,9 +1380,10 @@ export default {
       dialogVisible1: false,
       lieOptions: [],//列名
       levelData: {//点等级的数据
-        p: 0.028,
-        h: 0.057
+        p: 0.02,
+        h: 0.04
       },
+      checkCode: null,//验证码
       format: {
         type: 1
       },
@@ -1290,10 +1423,13 @@ export default {
         'http://maps.google.com/mapfiles/kml/shapes/target.png'
       ],//图标库
       openProject: false,//打开工程
-      projectList: [{label: "80-2000", value: "1"},{label: "80-85", value: "2"},
-      {label: "80-2000", value: "3"},{label: "80-85", value: "4"},
-      {label: "80-2000", value: "6"},{label: "80-85", value: "5"},
-      {label: "80-2000", value: "7"},{label: "80-85", value: "8"},],
+      projectList: [],
+      project: {},//当前所选工程
+      isDataBase: false, //是否是数据库导入
+      fileList: [],//批量上传的文件
+      canClick: true, //添加canClick
+      codeTime: 60, //按钮的倒计时
+      content: "发送验证码", //按钮的内容
     };
   },
   watch: {
@@ -1346,11 +1482,110 @@ export default {
           label: "制表符",
           value: "\t",
       }]
+    this.levelList = [{ 
+      label: "GPS-C级(大地三级)",
+      value: 0,
+      children: [
+        { value: 0, label: '中误差' },
+        { value: 1, label: '两倍限差' },
+        { value: 2, label: '同精度2√2' }
+      ]
+    },
+    { 
+      label: "D、E级(大地四级)",
+      value: 1,
+      children: [
+        { value: 0, label: '中误差' },
+        { value: 1, label: '两倍限差' },
+        { value: 2, label: '同精度2√2' }
+      ]
+    },
+    { 
+      label: "RTK图根控制",
+      value: 2,
+      children: [
+        { value: 0, label: '平地', children: [{
+            label: "1: 500",
+            value: 500
+          },{
+            label: "1: 1000",
+            value: 1000,
+            children: [{ value: 0.5, label: '0.5(基本等高距)' },{ value: 1.0, label: '1.0(基本等高距)' }]
+          },{
+            label: "1: 2000",
+            value: 2000,
+            children: [{ value: 1.0, label: '1.0(基本等高距)' },{ value: 0.5, label: '0.5(基本等高距)' }]
+          }] 
+        },
+        { value: 1, label: '丘陵', children: [{
+            label: "1: 500",
+            value: 500,
+            children: [{ value: 1.0, label: '1.0(基本等高距)' },{ value: 0.5, label: '0.5(基本等高距)' }]
+          },{
+            label: "1: 1000",
+            value: 1000
+          },{
+            label: "1: 2000",
+            value: 2000
+          }] 
+        },
+        { value: 2, label: '山地', children: [{
+            label: "1: 500",
+            value: 500
+          },{
+            label: "1: 1000",
+            value: 1000
+          },{
+            label: "1: 2000",
+            value: 2000,
+            children: [{ value: 2.0, label: '2.0(基本等高距)' },{ value: 2.5, label: '2.5(基本等高距)' }]
+          }] 
+        },
+        { value: 3, label: '高山地', children: [{
+            label: "1: 500",
+            value: 500
+          },{
+            label: "1: 1000",
+            value: 1000
+          },{
+            label: "1: 2000",
+            value: 2000,
+            children: [{ value: 2.0, label: '2.0(基本等高距)' },{ value: 2.5, label: '2.5(基本等高距)' }]
+          }] 
+        },
+      ]
+    }]
     this.setLieOption()
   },
   methods: {
     fetchData() {
       this.getFormat()
+      this.getAreaParamRecord()
+    },
+    //获取验证码
+    getCode(){
+      if (!this.canClick) return;
+      request({
+        url: "/userLink/linkCode",
+        method: "get"
+      }).then(data => {
+        this.$message({
+          type: "success",
+          message: data.message
+        })
+      })
+      this.canClick = false
+      this.content = this.codeTime + 's后重新发送'
+      let clock = window.setInterval(() => {
+        this.codeTime --
+        this.content = this.codeTime + 's后重新发送'
+        if (this.codeTime < 0) {     //当倒计时小于0时清除定时器
+        window.clearInterval(clock)
+          this.content = '重新发送验证码'
+          this.codeTime = 60
+          this.canClick = true
+        }
+      },1000);
     },
     setLieOption(){
       this.lieOptions = [
@@ -1450,31 +1685,111 @@ export default {
         case 2: this.modelName = "似大地水准面精化";break
       }
     },
-    //选择点等级时，改变误差值
-    selectLevel(value){
+    //将中误差乘2
+    mult(levelData){
+      levelData.p = levelData.p * 2
+      levelData.h = levelData.h * 2
+      return levelData
+    },
+    tuj2(levelData){
+      levelData.p = levelData.p * 2 * Math.sqrt(2)
+      levelData.h = levelData.h * 2 * Math.sqrt(2)
+      return levelData
+    },
+    //得到大地的中误差
+    getDadi(value, levelData){
       switch(value){
         case 0: {
-          this.levelData = {
-            p: 0.028,
-            h: 0.057
-          }
+          this.levelData = levelData
           break
         }
         case 1: {
-          this.levelData = {
-            p: 0.057,
-            h: 0.113
-          }
+          this.levelData = this.mult(levelData)
           break
         }
         case 2: {
-          this.levelData = {
-            p: 0.1414,
-            h: 0.1414
+          this.levelData = this.tuj2(levelData)
+          break
+        }
+      }
+    },
+    //选择点等级时，改变误差值
+    selectLevel(value){
+      
+      switch(value[0]){
+        case 0: {
+          let levelData = { p: 0.01, h: 0.02 }
+          this.getDadi(value[1], levelData)
+          break
+        }
+        case 1: {
+          let levelData = { p: 0.01, h: 0.02 }
+          this.getDadi(value[1], levelData)
+          break
+        }
+        case 2: {//图根控制
+          let levelData = { p: 0.00007 }
+          switch(value[1]){//平地
+            case 0: {
+              levelData.h = 0.5
+              levelData.p = value[2] * levelData.p
+              switch(value[2]){
+                case 500: levelData.h = levelData.h / 12;break
+                case 1000: 
+                case 2000: {
+                  levelData.h = value[3] /12
+                  break
+                }
+              }
+              this.levelData = levelData
+              break
+            }
+            case 1: {
+              levelData.h = 1.0
+              levelData.p = value[2] * levelData.p
+              switch(value[2]){
+                case 500: {
+                  levelData.h = value[3] /12
+                  break
+                }
+                case 1000: 
+                case 2000: levelData.h = levelData.h / 12;break
+              }
+              this.levelData = levelData
+              break
+            }
+            case 2: {
+              levelData.h = 1.0
+              levelData.p = value[2] * levelData.p
+              switch(value[2]){
+                case 500: 
+                case 1000: levelData.h = levelData.h / 12;break
+                case 2000: {
+                  levelData.h = value[3] /12
+                  break
+                }
+              }
+              this.levelData = levelData
+              break
+            }
+            case 3: {
+              levelData.p = value[2] * levelData.p
+              switch(value[2]){
+                case 500: levelData.h = 1.0 / 12;break
+                case 1000: levelData.h = 2.0 / 12;break
+                case 2000: {
+                  levelData.h = value[3] /12
+                  break
+                }
+              }
+              this.levelData = levelData
+              break
+            }
           }
           break
         }
       }
+      
       this.pointValid()
     },
     printJson(dto){
@@ -1766,15 +2081,30 @@ export default {
         })
         return
       }
+      if (flag == 1) {
+        
+        let name = this.item1.name
+        name = name.replace(/\s+/g, "")
+        console.log(name.length);
+        if (name == null || name == "") {
+          this.$message({
+            type: "warning",
+            message: "项目名不能为空"
+          })
+          return
+        }
+      }
 
-      let temp = this.tableData[0]
-      if (temp.oldX == null || temp.oldY == null || temp.oldH == null || 
-        temp.newX == null || temp.newY == null || temp.newH == null) {
-        this.$message({
-          type: "error",
-          message: "数据不完整"
-        })
-        return
+      if(!this.isDataBase){
+        let temp = this.tableData[0]
+        if (temp.oldX == null || temp.oldY == null || temp.oldH == null || 
+          temp.newX == null || temp.newY == null || temp.newH == null) {
+          this.$message({
+            type: "error",
+            message: "数据不完整"
+          })
+          return
+        }
       }
 
       request({
@@ -1783,7 +2113,8 @@ export default {
         data: {
           data: this.tableData,
           oldItem: this.item1,
-          newItem: this.item2
+          newItem: this.item2,
+          isDataBase: this.isDataBase
         }
       }).then(res => {
         if (res.flag) {
@@ -1951,6 +2282,7 @@ export default {
         },
       }).then(data => {
         this.tableData = data.data
+        this.isDataBase = true
       })
     },
     item(item){
@@ -2036,6 +2368,7 @@ export default {
         }
       })
     },
+    //归零
     paramCE(){
       this.sevenPar={
         dX: 0,
@@ -2047,6 +2380,47 @@ export default {
         Cita_Z: 0,
         k: 1
       }
+    },
+    //获取区域参数
+    getAreaParamRecord(){
+      request({
+        url: "/areaParamRecord",
+        method: "get",
+      }).then(res => {
+        if (res.flag) {
+          let list = res.data
+          this.projectList = list.map(record => {
+            record.label = record.name
+            record.value = record.jsonContent + " " +record.id
+            return record
+          })
+          
+        }
+      })
+    },
+    selectProject(value){ 
+      let v = value[0].split(" ")
+      let data = JSON.parse(v[0])
+      this.project = data
+    },
+    usePrject(){
+      this.item1 = JSON.parse(JSON.stringify(this.project.item1))
+      this.item2 = JSON.parse(JSON.stringify(this.project.item2))
+      this.sevenPar = JSON.parse(JSON.stringify(this.project.param))
+      this.model = JSON.parse(JSON.stringify(this.project.model))
+      this.openProject = false
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${ file.name }？`);
     }
   }
 };

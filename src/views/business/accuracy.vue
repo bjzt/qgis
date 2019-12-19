@@ -796,12 +796,7 @@ export default {
     },
     //关闭提示
     handleClose(done) {
-        this.dialogVisible = false
-    //   this.$confirm('确认关闭？')
-    //     .then(_ => {
-    //       this.dialogVisible = false
-    //     })
-    //     .catch(_ => {});
+      this.dialogVisible = false
     },
     //选择格式
     changeFormat(index){

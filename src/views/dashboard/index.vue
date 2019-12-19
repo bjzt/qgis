@@ -1,30 +1,14 @@
 <template>
-  <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
-  </div>
+  <iframe id="iframe" height="100%" width="100%" src="https://www.osgeo.cn/list/ggeo"></iframe>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import request from '@/utils/request'
 
 export default {
-  name: 'Dashboard',
-  computed: {
-    ...mapGetters([
-      'name'
-    ])
+  mounted(){
+    document.getElementById("iframe").height=0;
+    document.getElementById("iframe").height = document.body.scrollHeight - 55;
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.dashboard {
-  &-container {
-    margin: 30px;
-  }
-  &-text {
-    font-size: 30px;
-    line-height: 46px;
-  }
-}
-</style>
