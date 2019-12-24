@@ -277,7 +277,7 @@
               </el-input>
             </el-form-item>
             <el-form-item :label-width="formWdth">
-              <el-button @click="submitData" type="primary">验证导入</el-button>
+              <el-button @click="isImport=true;openMap=true;" type="primary">验证导入</el-button>
             </el-form-item>
           </el-form>
         </el-row>
@@ -525,7 +525,7 @@
                 <span>转换前</span>
                 <el-button-group style="float: right">
                 <el-button size="small" @click="dialogVisible1=true;setExportLie()" type="primary">导入</el-button>
-                <el-button size="small" type="success">图显</el-button>
+                <el-button size="small" @click="openMapValue()" type="success">图显</el-button>
                 </el-button-group>
               </div>
               <el-table 
@@ -559,7 +559,7 @@
                 <span>转换后</span>
                 <el-button-group style="float: right">
                   <el-button size="small" @click="computer" type="primary">计算</el-button>
-                  <el-button size="small" type="success">图显</el-button>
+                  <el-button size="small" @click="openMapValue()" type="success">图显</el-button>
                 </el-button-group>
               </div>
               <el-table 
@@ -1114,21 +1114,74 @@
       :visible.sync="exportVisibleKml">
       <el-form size="mini">
         <el-row>
-          <el-col :span="8">
-            <el-form-item label="选择标签">
-              <el-select>
+          <el-col :span="2">
+            <el-image
+              v-if="kmlValue.icon != null"
+              style="width: 30px; height: 30px;background-color: #8cc4fd"
+              :src="kmlValue.icon"
+              fit="fill"
+              ></el-image>
+            <span v-else>未选择图标</span>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="选择图标">
+              <el-select 
+                v-model="kmlValue.icon"
+                @change="iconDefault"
+                allow-create
+                default-first-option
+                filterable>
                 <el-option
                   v-for="(item,index) in iconList"
                   :key="index" 
-                  :label="item"
-                  :value="item">
+                  :label="item.value"
+                  :value="item.value">
                   <el-image
-                  style="width: 30px; height: 30px"
-                  :src="item"
-                  fit="fill"
-                  ></el-image>
+                    v-if="item.value != null"
+                    style="width: 30px; height: 30px;background-color: #8cc4fd"
+                    :src="item.value"
+                    fit="fill"
+                    ></el-image>
+                    <span>{{item.label}}</span>
                 </el-option>
               </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="4">
+            <el-form-item label="图标颜色">
+              <el-color-picker v-model="kmlValue.iconColor"></el-color-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="图标缩放">
+              <el-input-number v-model.number="kmlValue.iconRatio" :step="0.1" :min="0"></el-input-number>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="图标不透明度">
+              <el-input-number v-model.number="kmlValue.iconColorOpaque" :min="0" :max="100"></el-input-number>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="4">
+            <el-form-item label="字体颜色">
+              <el-color-picker v-model="kmlValue.labelColor"></el-color-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="字体大小">
+              <el-input-number v-model.number="kmlValue.labelRatio" :step="0.1" :min="0"></el-input-number>
+            </el-form-item>
+          </el-col>
+          <el-col :span="5">
+            <el-form-item label="图标不透明度">
+              <el-input-number v-model.number="kmlValue.labelColorOpaque" :min="0" :max="100"></el-input-number>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="导出文件名" label-width="120px">
+              <el-input v-model="kmlValue.name" placeholder="在这里输入文件名字，默认为时间命名"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -1239,7 +1292,20 @@
         <el-button size="mini" @click="usePrject()" type="primary">确认打开该工程</el-button>
       </span>
     </el-dialog>
-    <!-- 打开工程 -->
+    <!-- 打开工程 end-->
+
+    <!-- 打开地图 start-->
+    <el-dialog 
+      fullscreen
+      @close="isImport=false"
+      :visible.sync="openMap">
+      <iframe id="mapHtml" scrolling="no" src='static\html\demo.html' style="width:100%;height:800px;"></iframe>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="openMap=false;isImport=false">取 消</el-button>
+        <el-button size="mini" v-if="isImport" @click="getMapValue();isImport=false" type="primary">确认导入点</el-button>
+      </span>
+    </el-dialog>
+    <!-- 地图 -->
   </div>
 </template>
 <style lang="scss" scoped>
@@ -1274,7 +1340,8 @@
 
 <script>
 import request from "@/utils/request";
-import { getToken } from '@/utils/auth'
+import { getToken } from '@/utils/auth';
+
 export default {
   data() {
     var isnumber = (rule, value, callback) => {
@@ -1344,6 +1411,7 @@ export default {
         x: 0,
         t: 0.0
       },
+      isImport: false,
       oldTable:{
         x: "源大地纬度B",
         y: "源大地经度L",
@@ -1413,14 +1481,16 @@ export default {
       gg: false,//杆高
       exportVisibleKml: false,//导出kml的开关
       iconList: [
-        'http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png',
-        'http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png',
-        'http://maps.google.com/mapfiles/kml/paddle/pink-blank.png',
-        'http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png',
-        'http://maps.google.com/mapfiles/kml/shapes/star.png',
-        'http://maps.google.com/mapfiles/kml/shapes/placemark_square.png',
-        'http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png',
-        'http://maps.google.com/mapfiles/kml/shapes/target.png'
+        {value: 'http://www.qgisw.com/label/1.png', label: "不埋石图根点"},
+        {value: 'http://www.qgisw.com/label/2.png',label: "高程点"},
+        {value: 'http://www.qgisw.com/label/3.png',label: "埋石图根点"},
+        {value: 'http://www.qgisw.com/label/4.png',label: "平高点/导线点"},
+        {value: 'http://www.qgisw.com/label/5.png',label: "水准点"},
+        {value: 'http://www.qgisw.com/label/6.png',label: "天文点"},
+        {value: 'http://www.qgisw.com/label/7.png',label: "土堆上的导线点"},
+        {value: 'http://www.qgisw.com/label/8.png',label: "土堆上的埋石图根点"},
+        {value: 'http://www.qgisw.com/label/9.png',label: "卫星定位等级点"},
+        {value: 'http://www.qgisw.com/label/10.png',label: "像主点"}
       ],//图标库
       openProject: false,//打开工程
       projectList: [],
@@ -1430,6 +1500,15 @@ export default {
       canClick: true, //添加canClick
       codeTime: 60, //按钮的倒计时
       content: "发送验证码", //按钮的内容
+      kmlValue: {
+        iconColor: "#FF0000",
+        iconRatio: 0.8,
+        iconColorOpaque: 100,
+        labelColor: "#FFFFFF",
+        labelRatio: 0.6,
+        labelColorOpaque: 100,
+      },//kml导出的设置
+      openMap: false
     };
   },
   watch: {
@@ -2268,11 +2347,11 @@ export default {
       })
     },
     //得到数据库中的点
-    submitData(){
+    submitData(name){
       let item1 = this.item(this.item1)
       let item2 = this.item(this.item2)
 
-      item1.name = 'Ata473,Ata456,Ata472,Ata484,Ata486,Ata455,Ata554,Ata495,Ata483'
+      item1.name = name
       request({
         url: "/data/point",
         method: "post",
@@ -2343,12 +2422,21 @@ export default {
     },
     //导出kml
     exportKml(){
+      if (this.item2.yqq != "CGCS2000" && this.item2.yqq != "WGS84") {
+
+        this.$message({
+          type: "warning",
+          message: "只有CGCS2000和WGS84才能导出kml !"
+        })
+        return
+      }
       request({
         url: "/file/upload/kml",
         method: "post",
         data: {
-          data: this.tableData,
+          data: this.newData,
           newItem: this.item2,
+          kmlValue: this.kmlValue
         },
         responseType: 'blob'
       }).then(res => {
@@ -2421,6 +2509,63 @@ export default {
     },
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${ file.name }？`);
+    },
+    getMapValue(){
+      let map = this.$el.getElementsByTagName('iframe')[0].contentWindow
+      
+      
+      this.submitData('Ata473,Ata456,Ata472,Ata484,Ata486,Ata455,Ata554,Ata495,Ata483')
+      map.location.reload(true)
+      this.openMap = false
+    },
+    openMapValue(){
+      this.openMap = true
+      let map = this.$el.getElementsByTagName('iframe')[0].contentWindow
+
+      let json = {
+        kk: "dssadas",
+        dsad: 4545
+      }
+      console.log(map);
+      console.log(map.aa);
+      
+      
+      map.jsonRead(JSON.stringify(json))
+      map.jsonObjectRead(json)
+
+      map.location.reload(true)
+    },
+    //图标的默认样式
+    iconDefault(value){
+      switch(value){
+        case "http://www.qgisw.com/label/1.png":
+        case "http://www.qgisw.com/label/2.png":
+        case "http://www.qgisw.com/label/3.png":
+        case "http://www.qgisw.com/label/4.png":
+        case "http://www.qgisw.com/label/7.png":
+        case "http://www.qgisw.com/label/8.png":
+        case "http://www.qgisw.com/label/10.png": {
+          this.kmlValue.iconColor = "#FF0000"
+          this.kmlValue.iconRatio = 0.4
+          this.kmlValue.iconColorOpaque = 100
+
+          this.kmlValue.labelRatio = 0.4
+          this.kmlValue.labelColor = "#FFFFFF"
+          this.kmlValue.labelColorOpaque = 100
+          break
+        }
+        case "http://www.qgisw.com/label/5.png":
+        case "http://www.qgisw.com/label/6.png":
+        case "http://www.qgisw.com/label/9.png": {
+          this.kmlValue.iconColor = "#FF0000"
+          this.kmlValue.iconRatio = 0.8
+          this.kmlValue.labelRatio = 0.6
+          this.kmlValue.iconColorOpaque = 100
+          this.kmlValue.labelColorOpaque = 100
+          this.kmlValue.labelColor = "#FFFFFF"
+          break
+        }
+      }
     }
   }
 };

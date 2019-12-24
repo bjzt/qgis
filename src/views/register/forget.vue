@@ -67,10 +67,12 @@
           v-model="registerForm.code"
           placeholder="输入验证码"
           name="code"
+          class="code"
           tabindex="4"
           auto-complete="on"
-          @keyup.enter.native="handleRegister"
-        />
+          @keyup.enter.native="handleRegister">
+          <el-button slot="append" @click="getCode" v-text="content">请输入验证码</el-button>
+        </el-input>
       </el-form-item>
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleRegister">确定提交</el-button>
@@ -84,6 +86,7 @@
 </template>
 
 <script>
+import request from '@/utils/request'
 export default {
   name: 'Login',
   data() {
@@ -114,17 +117,22 @@ export default {
       registerForm: {
         username: '',
         password: '',
-        repassword: ''
+        repassword: '',
+        code: ""
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }],
-        repassword: [{ required: true, trigger: 'blur', validator: validateRePassword }]
+        repassword: [{ required: true, trigger: 'blur', validator: validateRePassword }],
+        code: [{ required: true, trigger: 'blur', message: '验证码不能为空' }]
       },
       loading: false,
       passwordType: 'password',
       repasswordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+      canClick: true, //添加canClick
+      codeTime: 60, //按钮的倒计时
+      content: "发送验证码",
     }
   },
   watch: {
@@ -157,19 +165,70 @@ export default {
       })
       }
     },
+    getCode(){
+      if (this.registerForm.username == null) {
+        this.$message({
+          type: "waring",
+          message: "手机号不能为空"
+        })
+        return
+      }
+      if (!this.canClick) return;
+      request({
+        url: `/user/forgetCode?phone=${this.registerForm.username}`,
+        method: 'get',
+      }).then(res => {
+        if (res.flag) {
+          this.$message({
+            type: "success",
+            message: res.message
+          })
+        }
+      })
+      this.canClick = false
+      this.content = this.codeTime + 's后重新发送'
+      let clock = window.setInterval(() => {
+        this.codeTime --
+        this.content = this.codeTime + 's后重新发送'
+        if (this.codeTime < 0) {     //当倒计时小于0时清除定时器
+        window.clearInterval(clock)
+          this.content = '重新发送验证码'
+          this.codeTime = 60
+          this.canClick = true
+        }
+      },1000);
+    },
     handleRegister() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/forget', this.registerForm).then(() => {
-            this.$router.push({ path: '/login' })
-            this.loading = false
+          request({
+            url: 'user/forget',
+            method: "post",
+            data: this.registerForm
+          }).then((data) => {
+            if(data.code === 20000){
+              this.$message({
+                showClose: true,
+                message: data.message,
+                type: 'success'
+              });
+              this.$router.push({ path: '/login' })
+              this.loading = false
+            }else {
+              this.$message({
+                showClose: true,
+                message: data.message,
+                type: 'error'
+              });
+              this.loading = false
+            }
           }).catch(() => {
             this.loading = false
           })
         } else {
           this.loading = false
-          console.log('注册失败')
+          console.log('未知错误')
           return false
         }
       })
@@ -223,6 +282,10 @@ $cursor: #fff;
     color: #454545;
   }
 }
+.code {
+  display: inline-table !important;
+  width: 100% !important;
+} 
 </style>
 
 <style lang="scss" scoped>
