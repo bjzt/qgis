@@ -50,8 +50,8 @@
         >登录系统</el-button>
 <!-- @click.native.prevent="handleLogin" -->
       <div class="tips">
-        <span style="margin-right:20px;"><router-link to="register">新用户注册</router-link></span>
-        <span><router-link to="forget">忘记密码？</router-link></span>
+        <!-- <span style="margin-right:20px;"><router-link to="register">新用户注册</router-link></span> -->
+        <span style="margin-right:20px;"><router-link to="forget">忘记密码？</router-link></span>
       </div>
 
     </el-form>
@@ -196,10 +196,14 @@ $cursor: #fff;
   }
 }
 .el-dialog{
-  input {
-    color: black !important;
-    caret-color: black;
-    height: 40px !important;
+  .el-input {
+    display: inline-table;
+    width: 100%;
+    input {
+      color: black !important;
+      caret-color: black;
+      height: 40px !important;
+    }
   }
 }
 /* reset element-ui css */

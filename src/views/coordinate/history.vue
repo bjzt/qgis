@@ -33,18 +33,15 @@
       style="width: 100%">
       <el-table-column
         prop="companyName"
-        label="公司名称"
-        width="100">
+        label="公司名称">
       </el-table-column>
       <el-table-column
         prop="projectName"
-        label="项目名称"
-        width="100">
+        label="项目名称">
       </el-table-column>
       <el-table-column
         prop="projectType"
-        label="项目类型"
-        width="100">
+        label="项目类型">
       </el-table-column>
       <el-table-column
         prop="name"

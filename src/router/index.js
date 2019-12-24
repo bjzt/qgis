@@ -84,10 +84,6 @@ export const constantRoutes = [
         path: 'dataFormat',
         component: () => import('@/views/business/areaChange'),
         meta: { title: '区域参数' }
-      },{
-        path: 'parems',
-        component: () => import('@/views/map/mapDemo'),
-        meta: { title: '在线地图' }
       },
       {
         path: 'number',
