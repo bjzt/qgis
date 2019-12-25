@@ -2,7 +2,7 @@
   <div style="margin: 20px">
       <el-row>
         <el-col :span="4">
-      <el-menu 
+      <el-menu
         default-active="132"
         @select="selectMenu"
         background-color="#545c64"
@@ -14,23 +14,23 @@
       </el-col>
 
       <el-col :span="20">
-    <el-form size="mini" :model="oldItem">
+    <el-form ref="accuracyForm" :rules="accuracyRules"  size="mini" :model="oldItem">
       <el-row>
         <el-col :span="12">
-          <el-form-item label="项目名称:" :label-width="labelWidth">
-            <el-input v-model="oldItem.name"></el-input>
+          <el-form-item label="项目名称:" :label-width="labelWidth"    prop="entryName">
+            <el-input  v-model="oldItem.entryName"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="生产单位:" :label-width="labelWidth">
-            <el-input v-model="oldItem.name"></el-input>
+          <el-form-item label="生产单位:" :label-width="labelWidth"  prop="productionUnit">
+            <el-input  v-model="oldItem.productionUnit"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="8">
           <el-form-item label="仪器设备名称、型号:" label-width="150px">
-            <el-input v-model="oldItem.machineName"></el-input>
+            <el-input  v-model="oldItem.machineName"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -39,15 +39,15 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="图号:" :label-width="labelWidth">
-            <el-input v-model="oldItem.mapNumber"></el-input>
+          <el-form-item label="图号:" :label-width="labelWidth" prop="mapNumber">
+            <el-input  ref="mapNumber" v-model="oldItem.mapNumber"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="6">
-          <el-form-item label="图名:" :label-width="labelWidth">
-            <el-input v-model="oldItem.mapName"></el-input>
+          <el-form-item label="图名:" :label-width="labelWidth" prop="mapName">
+            <el-input  ref="mapName" v-model="oldItem.mapName"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -67,10 +67,10 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="测图比例尺:" :label-width="labelWidth">
+          <el-form-item label="测图比例尺:" :label-width="labelWidth" prop="scaleSurvey">
             <el-select  v-model="oldItem.scaleSurvey" @change="selectScale">
               <template slot="prepend">1：</template>
-              <el-option 
+              <el-option
               v-for="item of scaleSurvey"
               :key="item.value"
               :label="`1: ${item.value}`"
@@ -677,7 +677,7 @@
       </el-table-column>
     </el-table>
     <!-- 高程精度 end-->
-    
+
     <!-- 结果tabel start-->
     <el-table
       :data="result"
@@ -788,7 +788,7 @@
               <el-form-item label="选择格式">
                 <el-select @change="changeFormat" v-model="template">
                   <el-option label="自定义" :value="null"></el-option>
-                  <el-option 
+                  <el-option
                     v-for="(item,index) in formatList"
                     :label="item.name"
                     :value="index"
@@ -821,8 +821,8 @@
             <el-col :span="8">
               <el-form-item label="选择分隔符">
                 <el-select v-model="symbol">
-                  <el-option 
-                  v-for="item in symbolOptions" 
+                  <el-option
+                  v-for="item in symbolOptions"
                   :key="item.value"
                   :label="`${item.label}  ${item.value}`"
                   :value="item.value"></el-option>
@@ -832,8 +832,8 @@
             <el-col :span="6">
               <el-form-item label="选择列">
                 <el-select v-model="lie">
-                  <el-option 
-                  v-for="item in lieOptions" 
+                  <el-option
+                  v-for="item in lieOptions"
                   :key="item.value"
                   :label="item.label"
                   :value="item"></el-option>
@@ -848,7 +848,7 @@
                 </el-button-group>
               </el-form-item>
             </el-col>
-            
+
             <el-col :span="6">
               <el-form-item label="选择开始行">
                 <el-input-number v-model="start"></el-input-number>
@@ -964,6 +964,13 @@ export default {
         ordinary: 30,
         max: 5
       },
+      accuracyRules: {
+        entryName: [{ required: true, trigger: 'blur', message: '不能为空' }],
+        productionUnit: [{ required: true, trigger: 'blur', message: '不能为空' }],
+        mapName: [{ required: true, trigger: 'blur', message: '不能为空' }],
+        mapNumber: [{ required: true, trigger: 'blur', message: '不能为空' }],
+        scaleSurvey: [{ required: true, trigger: 'blur', message: '不能为空' }],
+      },
     }
   },
   created() {
@@ -1032,7 +1039,7 @@ export default {
           dataList: data.split(value),
           isSelect: false
         }
-      }) 
+      })
     },
     start(index){
       for(let i=0;i<this.showData.length;i++){
@@ -1076,9 +1083,9 @@ export default {
     selectMenu(index, indexPath){
       this.oldItem.standardValue = null
       let name = "";
-      
+
       indexPath.pop()
-      
+
       this.formatTable
       for(let i of indexPath){
         for(let menu of this.menuAllList){
@@ -1110,7 +1117,6 @@ export default {
     },
     //表格删除
     delItem(index){
-      
       let tempList = []
       for(let i=0;i<this.tableData.length;i++){
         if (i != index) {
@@ -1168,7 +1174,7 @@ export default {
         })
         return
       }
-      
+
       //循环数据
       for (let j=start;j< this.showData.length;j++){
         let data = this.showData[j].dataList
@@ -1207,7 +1213,6 @@ export default {
         })
         return
       }
-      
       let size = this.dataList.length * (this.group.ordinary /100.0)
       let maxSize = this.dataList.length * (this.group.max /100.0)
       let minSize = this.dataList.length - size - maxSize
@@ -1265,7 +1270,6 @@ export default {
         item.newX = item.newX.toFixed(3)
         item.newY = item.newY.toFixed(3)
         item.newH = item.newH.toFixed(3)
-        
         temp.push(item)
       }
       this.tableData = temp
@@ -1325,10 +1329,13 @@ export default {
     },
     //开始计算
     computer(){
+      this.$refs.accuracyForm.validate(valid => {
+        if (valid) {
+        
       if (this.tableData.length <= 0) {
         return
       }
-      
+
       switch (this.tabelType) {
         case 1: {
           let temp = this.tableData[0]
@@ -1366,8 +1373,8 @@ export default {
             templist.push(item)
           }
           this.tableData = templist
-          
-          
+
+
           if (joinCount <= 20) {
             l_sum = l_sum / joinCount
           }
@@ -1425,7 +1432,6 @@ export default {
             errorDiffe: this.oldItem.standardValue,
             notUseScale: notUseNumber / joinCount * 100
           }]
-          
           break
         }
         case 3: {
@@ -1445,7 +1451,6 @@ export default {
             if (item.isUse) {
               item.h_C = 0
               item.h_C = item.oldH - item.newH
-              
               if (item.h_C > diffe) {
                 item.isNotUse = true
                 notUseNumber++
@@ -1456,7 +1461,6 @@ export default {
               joinCount++
               l_sum = Number(item.h_C) + l_sum
             }
-            
             templist.push(item)
           }
           this.tableData = templist
@@ -1474,12 +1478,13 @@ export default {
             notUseScale: notUseNumber / joinCount * 100
           }]
           console.log(this.computeData);
-          
           break
         }
       }
       this.$forceUpdate()
       this.getResult()
+        }
+      })
     },
     getResult(){
       switch (this.tabelType) {
@@ -1602,7 +1607,7 @@ export default {
     saveFormat(){
       this.format.lie= window.JSON.stringify(this.lieList),
       this.format.symbol= this.symbol
-      
+
       request({
         url: "/accuracyFormat",
         method: "post",
@@ -1623,7 +1628,7 @@ export default {
 
       format.lie=window.JSON.stringify(this.lieList),
       format.symbol= this.symbol
-      
+
       request({
         url: "/accuracyFormat",
         method: "put",
@@ -1682,7 +1687,6 @@ export default {
     },
     //困难级别
     selectHardType(value){
-      
     },
     //地形类别
     selectTerrain(){
@@ -1709,19 +1713,19 @@ export default {
         switch (this.oldItem.scaleSurvey) {
           case 500:
             switch (this.oldItem.terrainType) {
-              case 0: 
+              case 0:
                 this.contourInterval = [0.5];
                 this.$set(this.oldItem,'contourInterval',0.5)
                 break;
-              case 1: 
+              case 1:
                 this.contourInterval = [1.0, 0.5];
                 this.$set(this.oldItem,'contourInterval',1.0)
                 break;
-              case 2: 
+              case 2:
                 this.contourInterval = [1.0];
                 this.$set(this.oldItem,'contourInterval',1.0)
                 break;
-              case 3: 
+              case 3:
                 this.contourInterval = [1.0];
                 this.$set(this.oldItem,'contourInterval',1.0)
                 break;
@@ -1729,19 +1733,19 @@ export default {
             break;
           case 1000:
             switch (this.oldItem.terrainType) {
-              case 0: 
+              case 0:
                 this.contourInterval = [0.5, 1.0];
                 this.$set(this.oldItem,'contourInterval',0.5)
                 break;
-              case 1: 
+              case 1:
                 this.contourInterval = [1.0];
                 this.$set(this.oldItem,'contourInterval',1.0)
                 break;
-              case 2: 
+              case 2:
                   this.contourInterval = [1.0];
                   this.$set(this.oldItem,'contourInterval',1.0)
                 break;
-              case 3: 
+              case 3:
                 this.contourInterval = [2.0];
                 this.$set(this.oldItem,'contourInterval',2.0)
                 break;
@@ -1749,7 +1753,7 @@ export default {
             break;
             case 2000:
             switch (this.oldItem.terrainType) {
-              case 0: 
+              case 0:
                 this.contourInterval = [ 1.0, 0.5];
                 this.$set(this.oldItem,'contourInterval',1.0)
                 break;
@@ -1757,12 +1761,12 @@ export default {
                   this.contourInterval = [1.0];
                   this.$set(this.oldItem,'contourInterval',1.0)
                 break;
-              case 2: 
+              case 2:
 
                   this.contourInterval = [2.0, 2.5];
                   this.$set(this.oldItem,'contourInterval',2.0)
                 break;
-              case 3: 
+              case 3:
                 this.contourInterval = [2.0, 2.5];
                 this.$set(this.oldItem,'contourInterval',2.0)
                 break;
@@ -1771,71 +1775,70 @@ export default {
           case 5000:
           case 10000:
             switch (this.oldItem.terrainType) {
-              case 0: 
+              case 0:
                 this.contourInterval = [1.0];
                 this.$set(this.oldItem,'contourInterval',1.0)
                 break;
-              case 1: 
+              case 1:
                 this.contourInterval = [2.5];
                 this.$set(this.oldItem,'contourInterval', 2.5)
                 break;
-              case 2: 
+              case 2:
                 this.contourInterval = [5.0];
                 this.$set(this.oldItem,'contourInterval',5.0)
                 break;
-              case 3: 
+              case 3:
                 this.contourInterval = [5.0];
                 this.$set(this.oldItem,'contourInterval',5.0)
-                
-        
+
+
                 break;
             }
             break;
           case 25000:
             switch (this.oldItem.terrainType) {
-              case 0: 
+              case 0:
 
                   this.contourInterval = [5.0, 2.5];
                   this.$set(this.oldItem,'contourInterval',5.0)
-               
+
                 break;
-              case 1: 
+              case 1:
 
                   this.contourInterval = [5];
                   this.$set(this.oldItem,'contourInterval', 5)
-                
-                
+
+
                 break;
-              case 2: 
+              case 2:
 
                   this.contourInterval = [10];
                   this.$set(this.oldItem,'contourInterval',10)
-                
+
                 break;
-              case 3: 
+              case 3:
 
                   this.contourInterval = [10];
                   this.$set(this.oldItem,'contourInterval', 10)
 
-                
                 break;
             }
             break;
           case 50000:
             switch (this.oldItem.terrainType) {
-              case 0: 
+              case 0:
                 this.contourInterval = [10, 5];
                 this.$set(this.oldItem,'contourInterval',10)
                 break;
-              case 1: 
+              case 1:
                 this.contourInterval = [10];
                 this.$set(this.oldItem,'contourInterval', 10)
                 break;
-              case 2: 
+              case 2:
                 this.contourInterval = [20];
                 this.$set(this.oldItem,'contourInterval',20)
                 break;
-              case 3: 
+              case 3:
                   this.contourInterval = [20];
                   this.$set(this.oldItem,'contourInterval',20)
                 break;
@@ -1843,19 +1846,19 @@ export default {
             break;
           case 100000:
             switch (this.oldItem.terrainType) {
-              case 0: 
+              case 0:
                   this.contourInterval = [20, 10];
                   this.$set(this.oldItem,'contourInterval',20)
                 break;
-              case 1: 
+              case 1:
                   this.contourInterval = [20];
                   this.$set(this.oldItem,'contourInterval', 20)
                 break;
-              case 2: 
+              case 2:
                   this.contourInterval = [40];
                   this.$set(this.oldItem,'contourInterval',40)
                 break;
-              case 3: 
+              case 3:
                   this.contourInterval = [40];
                   this.$set(this.oldItem,'contourInterval',40)
                 break;
