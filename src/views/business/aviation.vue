@@ -606,7 +606,9 @@ export default {
     },
     compute(){
       
-      let json = {
+        this.$refs.cameraForm.validate(valid => {
+        if (valid) {
+            let json = {
         camera: this.cameraItem,
         oldItem: this.oldItem
       }
@@ -648,7 +650,22 @@ export default {
           }
         }
       })
+      if ( (this.newItem.highCourse < 35 && this.newItem.highCourse != null) || (this.newItem.highSideDirection < 15 && this.newItem.highSideDirection != null)) {
+        this.$message({
+          type: "warning",
+          message: "重叠度不够，请重新设计"
+        })
+      }
+
+
+        }
+      })
     },
+
+
+
+
+
     toReport(){
 
     }
