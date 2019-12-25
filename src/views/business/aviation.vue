@@ -610,6 +610,19 @@ export default {
           this.newItem = res.data
         }
         this.computButton = true
+
+        if ((this.newItem.highCourse < 35 && this.newItem.highCourse != null) || (this.newItem.highSideDirection < 15 && this.newItem.highSideDirection != null)) {
+          this.$message({
+            type: "warning",
+            message: "重叠度不够，请重新设计"
+          })
+        }
+        if (this.newItem.displacement > 0.5) {
+          this.$message({
+            type: "warning",
+            message: "像点位移造成相片运动模糊,一般控制在1/2的像素，最好是1/4个像素"
+          })
+        }
       })
       if ( (this.newItem.highCourse < 35 && this.newItem.highCourse != null) || (this.newItem.highSideDirection < 15 && this.newItem.highSideDirection != null)) {
         this.$message({

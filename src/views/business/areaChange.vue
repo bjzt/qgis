@@ -87,7 +87,7 @@
                       label="x常数(km)"
                     >
                       <el-row>
-                        <el-col :xs="18" :xl="6" :lg="6" :sm="6" :md="8">
+                        <el-col :xs="18" :xl="18" :lg="18" :sm="18" :md="18">
                           <el-input ref="x" size="mini" v-model.number="item1.x"></el-input>
                         </el-col>
                       </el-row>
@@ -99,7 +99,7 @@
                       label="y常数(km)"
                     >
                       <el-row>
-                        <el-col :xs="18" :xl="6" :lg="6" :sm="6" :md="8">
+                        <el-col :xs="18" :xl="18" :lg="18" :sm="18" :md="18">
                           <el-input ref="y" size="mini" v-model.number="item1.y"></el-input>
                         </el-col>
                       </el-row>
@@ -111,7 +111,7 @@
                       label="投影面高(m)"
                     >
                       <el-row>
-                        <el-col :xs="18" :xl="6" :lg="6" :sm="6" :md="8">
+                        <el-col :xs="18" :xl="18" :lg="18" :sm="18" :md="18">
                           <el-input ref="t" size="mini" v-model="item1.t"></el-input>
                         </el-col>
                       </el-row>
@@ -210,7 +210,7 @@
                       label="x常数(km)"
                     >
                       <el-row>
-                        <el-col :xs="18" :xl="6" :lg="6" :sm="6" :md="8">
+                        <el-col :xs="18" :xl="18" :lg="18" :sm="18" :md="18">
                           <el-input ref="x" size="mini" v-model="item2.x"></el-input>
                         </el-col>
                       </el-row>
@@ -222,7 +222,7 @@
                       label="y常数(km)"
                     >
                       <el-row>
-                        <el-col :xs="18" :xl="6" :lg="6" :sm="6" :md="8">
+                        <el-col :xs="18" :xl="18" :lg="18" :sm="18" :md="18">
                           <el-input ref="y" size="mini" v-model="item2.y"></el-input>
                         </el-col>
                       </el-row>
@@ -235,7 +235,7 @@
                       label="投影面高(m)"
                     >
                       <el-row>
-                        <el-col :xs="18" :xl="6" :lg="6" :sm="6" :md="8">
+                        <el-col :xs="18" :xl="18" :lg="18" :sm="18" :md="18">
                           <el-input ref="t" size="mini" v-model="item2.t"></el-input>
                         </el-col>
                       </el-row>
@@ -520,7 +520,7 @@
       <el-tab-pane label="输入">
         <el-row>
           <el-col :span="12">
-            <el-card style="width: 500px; padding: 0px">
+            <el-card style="width: 100%; padding: 0px">
               <div slot="header" style="text-align: center">
                 <span>转换前</span>
                 <el-button-group style="float: right">
@@ -554,7 +554,7 @@
             </el-card>
           </el-col>
           <el-col :span="12">
-            <el-card style="width: 510px; padding: 0px">
+            <el-card style="width: 100%; padding: 0px">
               <div slot="header" style="text-align: center">
                 <span>转换后</span>
                 <el-button-group style="float: right">

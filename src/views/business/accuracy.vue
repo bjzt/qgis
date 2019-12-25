@@ -51,10 +51,10 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="质量子元素:" :label-width="labelWidth">
-            <el-select v-model="oldItem.subelement">
-                <el-option label="平面精度" :value="0"></el-option>
-                <el-option label="高程精度" :value="1"></el-option>
+          <el-form-item label="界址点方式:" :label-width="labelWidth">
+            <el-select v-model="oldItem.pointBoundary">
+                <el-option label="解析法" :value="0"></el-option>
+                <el-option label="图解法" :value="1"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -160,17 +160,18 @@
       </el-row>
 
       <el-row>
-        <el-col :span="12">
+        <el-col :span="10">
           <el-form-item label="检查项:" :label-width="labelWidth">
             <el-input v-model="oldItem.model"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="14">
           <el-form-item :label-width="labelWidth">
             <el-button @click="randomVisible = true" type="warning">随机检测数据</el-button>
             <el-button @click="dialogVisible=true;" type="success">导入数据</el-button>
             <el-button @click="computer()" type="primary">开始计算</el-button>
             <el-button @click="getWord()" type="success">导出当前检查项的数据</el-button>
+            <el-button @click="exportResult()" type="primary">导出数学精度</el-button>
           </el-form-item>
         </el-col>
       </el-row>
@@ -682,6 +683,7 @@
       :data="result"
       border
       size="small"
+      :span-method="accuracyScore"
       :header-cell-style="{background:'#eef1f6',color:'#606266', 'border-color': '#C1CDCD '}"
       style="width: 100%">
       <el-table-column
@@ -689,7 +691,7 @@
       width="50">
     </el-table-column>
       <el-table-column
-        prop="name"
+        prop="mapNumber"
         align="center"
         label="图幅号">
       </el-table-column>
@@ -1285,7 +1287,7 @@ export default {
         pointList: this.tableData
       }
       request({
-        url: "/file/upload/word",
+        url: `/file/upload/word/${this.tabelType}`,
         method: "post",
         data: data,
         responseType: 'blob'
@@ -1327,23 +1329,8 @@ export default {
     },
     //开始计算
     computer(){
-
-
       this.$refs.accuracyForm.validate(valid => {
         if (valid) {
-          // request({
-          //   url: "user/register",
-          //   method: "post",
-          //   data: this.customer
-          // }).then(res => {
-          //   this.$message({
-          //     type: "success",
-          //     message: res.message
-          //   })
-          //   this.getList()
-          //   this.dialogVisible = false
-          // })
-
         
       if (this.tableData.length <= 0) {
         return
@@ -1496,25 +1483,9 @@ export default {
       }
       this.$forceUpdate()
       this.getResult()
-
-
-
         }
       })
-
-
-
-
-
     },
-
-
-
-
-
-
-
-
     getResult(){
       switch (this.tabelType) {
         case 1: {
@@ -1531,15 +1502,12 @@ export default {
             }
             absoluteScore = Math.floor(absoluteScore * 10) / 10
           }
-          if (this.result.length == 0) {
-            this.result.push({})
-          }
           let json = {
             name: this.oldItem.mapName,
             absolute: this.standard.name,
             absoluteScore: absoluteScore
           }
-          this.result = [this.twoJsonMerge(this.result[0], json)]
+          this.merge(json)
           break
         }
         case 2: {
@@ -1555,15 +1523,12 @@ export default {
             }
             relativeScore = Math.floor(relativeScore * 10) / 10
           }
-          if (this.result.length == 0) {
-            this.result.push({})
-          }
           let json = {
-            name: this.oldItem.mapName,
+            mapNumber: this.oldItem.mapNumber,
             relative: this.standard.name,
             relativeScore: relativeScore
           }
-          this.result = [this.twoJsonMerge(this.result[0], json)]
+          this.merge(json)
           break
         }
         case 3: {
@@ -1578,9 +1543,6 @@ export default {
               relativeScore = 100
             }
             relativeScore = Math.floor(relativeScore * 10) / 10
-          }
-          if (this.result.length == 0) {
-            this.result.push({})
           }
           let json = {}
           switch  (this.oldItem.pointType) {
@@ -1602,22 +1564,34 @@ export default {
               break
             }
           }
-          this.result = [this.twoJsonMerge(this.result[0], json)]
+          this.merge(json)
           break
         }
       }
-      if (this.result[0].absoluteScore != null || this.result[0].relativeScore != null) {
-        let planeScore = 0
-        if (this.result[0].relativeScore != null) {
-          planeScore += this.result[0].relativeScore * 0.1
+      for(let item of this.result){
+        if (item.absoluteScore != null || item.relativeScore != null) {
+          let planeScore = 0
+          if (item.relativeScore != null) {
+            planeScore += item.relativeScore * 0.1
+          }
+          if (item.absoluteScore != null) {
+            planeScore += item.absoluteScore * 0.1
+          }
+          item.planeScore = planeScore
         }
-        if (this.result[0].absoluteScore != null) {
-          planeScore += this.result[0].absoluteScore * 0.1
-        }
-
-        this.result[0].planeScore = planeScore
       }
       this.$forceUpdate()
+    },
+    //合并result的值
+    merge(addItem){
+      if (this.result.length == 0) {
+        this.result.push({})
+      }
+      for(let item of this.result){
+        if (item.mapNumber == addItem.mapNumber) {
+          this.twoJsonMerge(item, addItem)
+        }
+      }
     },
     //合并两个json，同key时 默认2将会覆盖1的值
     twoJsonMerge(json1,json2){
@@ -1689,6 +1663,20 @@ export default {
           this.getFormat()
         }
       })
+    },
+    //将table 的评分格子都合成一个
+    accuracyScore({ row, column, rowIndex, columnIndex }){
+      switch (columnIndex) {
+        case 2:
+        case 7:
+        case 12:
+        case 13: {
+          return {
+            rowspan: this.result.length,
+            colspan: 1
+          };
+        }
+      }
     },
     changeDetectionModel(){
 
