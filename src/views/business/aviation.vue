@@ -595,7 +595,9 @@ export default {
     },
     compute(){
       
-      let json = {
+        this.$refs.cameraForm.validate(valid => {
+        if (valid) {
+            let json = {
         camera: this.cameraItem,
         oldItem: this.oldItem
       }
@@ -615,7 +617,16 @@ export default {
           message: "重叠度不够，请重新设计"
         })
       }
+
+
+        }
+      })
     },
+
+
+
+
+
     toReport(){
 
     }

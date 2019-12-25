@@ -63,7 +63,7 @@
       center>
       <el-form>
         <el-form-item>
-          <el-input placeholder="请输入验证码" v-model="loginForm.code" size="mini">
+          <el-input placeholder="请输入验证码" v-model="loginForm.code" size="mini"    @keyup.enter.native="handleLogin">
             <el-button slot="append" @click="getCode" v-text="content"></el-button>
           </el-input>
           
