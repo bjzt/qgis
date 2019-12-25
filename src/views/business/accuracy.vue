@@ -951,6 +951,7 @@ export default {
       formatList: [],//所有用户拥有的模板
       oldItem: {
         detectionMode: 0,
+        specification: 0,
         standardValue: null
       },
       tableData: [],//数据列表
@@ -1714,65 +1715,212 @@ export default {
           case 500:
             switch (this.oldItem.terrainType) {
               case 0:
-                this.contourInterval = [0.5];
-                this.$set(this.oldItem,'contourInterval',0.5)
+                switch (this.oldItem.specification) {
+                  case 0:
+                  case 1:
+                  case 2:
+                    this.contourInterval = [0.5];
+                    this.$set(this.oldItem,'contourInterval',0.5)
+                    break;
+                }
                 break;
               case 1:
-                this.contourInterval = [1.0, 0.5];
-                this.$set(this.oldItem,'contourInterval',1.0)
-                break;
+                switch (this.oldItem.specification) {
+                  case 0:
+                    this.contourInterval = [1.0, 0.5];
+                    this.$set(this.oldItem,'contourInterval',1.0)
+                    break;
+                  case 1:
+                  case 2:
+                    this.contourInterval = [0.5];
+                    this.$set(this.oldItem,'contourInterval',0.5)
+                    break;
+                }
+                break
               case 2:
-                this.contourInterval = [1.0];
-                this.$set(this.oldItem,'contourInterval',1.0)
+                switch (this.oldItem.specification) {
+                  case 0:
+                  case 1:
+                    this.contourInterval = [1.0];
+                    this.$set(this.oldItem,'contourInterval',1.0)
+                    break;
+                  case 2:
+                    this.contourInterval = [1.0,0.5];
+                    this.$set(this.oldItem,'contourInterval',1.0)
+                    break;
+                }
                 break;
               case 3:
-                this.contourInterval = [1.0];
-                this.$set(this.oldItem,'contourInterval',1.0)
+                switch (this.oldItem.specification) {
+                  case 0:
+                  case 1:
+                  case 2:
+                    this.contourInterval = [1.0];
+                    this.$set(this.oldItem,'contourInterval',1.0)
+                    break;
+                }
                 break;
             }
             break;
           case 1000:
             switch (this.oldItem.terrainType) {
               case 0:
-                this.contourInterval = [0.5, 1.0];
-                this.$set(this.oldItem,'contourInterval',0.5)
+                switch (this.oldItem.specification) {
+                  case 0:
+                    this.contourInterval = [0.5, 1.0];
+                    this.$set(this.oldItem,'contourInterval',1.0)
+                    break;
+                  case 1:
+                  case 2:
+                    this.contourInterval = [0.5];
+                    this.$set(this.oldItem,'contourInterval',0.5)
+                    break;
+                }
                 break;
               case 1:
-                this.contourInterval = [1.0];
-                this.$set(this.oldItem,'contourInterval',1.0)
-                break;
+                switch (this.oldItem.specification) {
+                  case 0:
+                  case 1:
+                    this.contourInterval = [1.0];
+                    this.$set(this.oldItem,'contourInterval',1.0)
+                    break;
+                  case 2:
+                    this.contourInterval = [0.5, 1.0];
+                    this.$set(this.oldItem,'contourInterval',0.5)
+                    break;
+                }
+                break
               case 2:
-                  this.contourInterval = [1.0];
-                  this.$set(this.oldItem,'contourInterval',1.0)
-                break;
+                switch (this.oldItem.specification) {
+                  case 0:
+                  case 1:
+                  case 2:
+                    this.contourInterval = [1.0];
+                    this.$set(this.oldItem,'contourInterval',1.0)
+                    break;
+                }
               case 3:
-                this.contourInterval = [2.0];
-                this.$set(this.oldItem,'contourInterval',2.0)
+                switch (this.oldItem.specification) {
+                  case 0:
+                  case 1:
+                    this.contourInterval = [2.0];
+                    this.$set(this.oldItem,'contourInterval',2.0)
+                    break;
+                  case 2:
+                    this.contourInterval = [1.0, 2.0];
+                    this.$set(this.oldItem,'contourInterval',1.0)
+                    break;
+                }
+                
                 break;
             }
             break;
             case 2000:
             switch (this.oldItem.terrainType) {
               case 0:
-                this.contourInterval = [ 1.0, 0.5];
-                this.$set(this.oldItem,'contourInterval',1.0)
+                switch (this.oldItem.specification) {
+                  case 0:
+                    this.contourInterval = [ 1.0, 0.5];
+                    this.$set(this.oldItem,'contourInterval',1.0)
+                    break
+                  case 1:
+                    this.contourInterval = [1.0];
+                    this.$set(this.oldItem,'contourInterval',1.0)
+                    break;
+                  case 2:
+                    this.contourInterval = [ 1.0, 0.5];
+                    this.$set(this.oldItem,'contourInterval',0.5)
+                    break;
+                }
                 break;
               case 1:
-                  this.contourInterval = [1.0];
-                  this.$set(this.oldItem,'contourInterval',1.0)
+                switch (this.oldItem.specification) {
+                  case 0:
+                  case 1:
+                  case 2:
+                    this.contourInterval = [1.0];
+                    this.$set(this.oldItem,'contourInterval',1.0)
+                    break;
+                }
                 break;
               case 2:
-
-                  this.contourInterval = [2.0, 2.5];
-                  this.$set(this.oldItem,'contourInterval',2.0)
+                switch (this.oldItem.specification) {
+                  case 0:
+                    this.contourInterval = [2.0, 2.5];
+                    this.$set(this.oldItem,'contourInterval',2.0)
+                    break
+                  case 1:
+                  case 2:
+                    this.contourInterval = [2.0];
+                    this.$set(this.oldItem,'contourInterval',2.0)
+                    break;
+                }
                 break;
               case 3:
-                this.contourInterval = [2.0, 2.5];
-                this.$set(this.oldItem,'contourInterval',2.0)
+                switch (this.oldItem.specification) {
+                  case 0:
+                    this.contourInterval = [2.0, 2.5];
+                    this.$set(this.oldItem,'contourInterval',2.0)
+                    break
+                  case 1:
+                  case 2:
+                    this.contourInterval = [2.0];
+                    this.$set(this.oldItem,'contourInterval',2.0)
+                    break;
+                }
                 break;
             }
             break;
           case 5000:
+            switch (this.oldItem.terrainType) {
+              case 0:
+                switch (this.oldItem.specification) {
+                  case 0:
+                  case 2:
+                    this.contourInterval = [1.0];
+                    this.$set(this.oldItem,'contourInterval',1.0)
+                    break;
+                  case 1:
+                    this.contourInterval = [2.0];
+                    this.$set(this.oldItem,'contourInterval',2.0)
+                    break;
+                }
+                break;
+              case 1:
+                switch (this.oldItem.specification) {
+                  case 0:
+                  case 2:
+                    this.contourInterval = [2.5];
+                    this.$set(this.oldItem,'contourInterval',2.5)
+                    break;
+                  case 1:
+                    this.contourInterval = [5.0];
+                    this.$set(this.oldItem,'contourInterval',5.0)
+                    break;
+                }
+                break;
+              case 2:
+                switch (this.oldItem.specification) {
+                  case 0:
+                  case 1:
+                  case 2:
+                    this.contourInterval = [5.0];
+                    this.$set(this.oldItem,'contourInterval',5.0)
+                    break;
+                }
+                break;
+              case 3:
+                switch (this.oldItem.specification) {
+                  case 0:
+                  case 1:
+                  case 2:
+                    this.contourInterval = [5.0];
+                    this.$set(this.oldItem,'contourInterval',5.0)
+                    break;
+                }
+                break;
+            }
+            break;
           case 10000:
             switch (this.oldItem.terrainType) {
               case 0:
@@ -1790,8 +1938,6 @@ export default {
               case 3:
                 this.contourInterval = [5.0];
                 this.$set(this.oldItem,'contourInterval',5.0)
-
-
                 break;
             }
             break;

@@ -295,7 +295,12 @@
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="高程控制间距" :label-width="labelWidth">
+            <el-form-item v-if="oldItem.flexType == 0" label="高程控制间隔" :label-width="labelWidth">
+              <el-input v-model="newItem.elevationControlSpacing">
+                <template slot="append">条基线</template>
+              </el-input>
+            </el-form-item>
+            <el-form-item v-if="oldItem.flexType == 1" label="有差分控制间距" :label-width="labelWidth">
               <el-input v-model="newItem.elevationControlSpacing">
                 <template slot="append">m</template>
               </el-input>
@@ -318,8 +323,14 @@
           </el-col>
 
           <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
-            <el-form-item label="平面控制间隔" :label-width="labelWidth">
+            <el-form-item v-if="oldItem.flexType == 0" label="平面控制间隔" :label-width="labelWidth">
               <el-input v-model="newItem.planeControlPitch">
+                <template slot="append">条基线</template>
+              </el-input>
+            </el-form-item>
+            <el-form-item v-if="oldItem.flexType == 1" label="无差分控制间距" :label-width="labelWidth">
+              <el-input v-model="newItem.planeControlPitch">
+                <template slot="append">m</template>
               </el-input>
             </el-form-item>
           </el-col>
@@ -620,6 +631,21 @@ export default {
             type: "warning",
             message: "像点位移造成相片运动模糊,一般控制在1/2的像素，最好是1/4个像素"
           })
+        }
+        if (this.newItem.groundResolution > 20) {
+          if (this.oldItem.maxHeight - this.oldItem.minHeight > this.newItem.relativeHeight / 4.0) {
+            this.$message({
+              type: "warning",
+              message: "地面分辨率大于20cm,分区地形高差不应大于1/4相对航高"
+            })
+          }
+        }else {
+          if (this.oldItem.maxHeight - this.oldItem.minHeight > this.newItem.relativeHeight / 6.0) {
+            this.$message({
+              type: "warning",
+              message: "地面分辨率小于20cm,分区地形高差不应大于1/6相对航高"
+            })
+          }
         }
       })
     },
