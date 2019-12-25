@@ -38,21 +38,33 @@
     <el-form size="mini" ref="cameraForm" :rules="aviationRules" :model="cameraItem">
       <el-row>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
+<<<<<<< HEAD
             <el-form-item prop="width" label="影像宽度" :label-width="labelWidth">
+=======
+            <el-form-item label="影像宽度" :label-width="labelWidth">
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
               <el-input v-model.number="cameraItem.width">
                 <template slot="append">pixels(像素)</template>
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
+<<<<<<< HEAD
         <el-form-item prop="sensorWidth" label="传感器宽度" :label-width="labelWidth">
+=======
+        <el-form-item label="传感器宽度" :label-width="labelWidth">
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
           <el-input v-model.number="cameraItem.sensorWidth">
             <template slot="append">mm</template>
           </el-input>
         </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
+<<<<<<< HEAD
         <el-form-item prop="pixel" label="像元尺寸" :label-width="labelWidth">
+=======
+        <el-form-item label="像元尺寸" :label-width="labelWidth">
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
           <el-input v-model.number="cameraItem.pixel">
             <template slot="append">μm(微米)</template>
           </el-input>
@@ -62,21 +74,33 @@
 
       <el-row>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
+<<<<<<< HEAD
         <el-form-item prop="height" label="影像高度" :label-width="labelWidth">
+=======
+        <el-form-item label="影像高度" :label-width="labelWidth">
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
           <el-input v-model.number="cameraItem.height">
             <template slot="append">pixels(像素)</template>
           </el-input>
         </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
+<<<<<<< HEAD
         <el-form-item prop="sensorHeight" label="传感器高度" :label-width="labelWidth">
+=======
+        <el-form-item label="传感器高度" :label-width="labelWidth">
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
           <el-input v-model.number="cameraItem.sensorHeight">
             <template slot="append">mm</template>
           </el-input>
         </el-form-item>
           </el-col>
           <el-col :xs="24" :xl="8" :lg="8" :sm="8" :md="8">
+<<<<<<< HEAD
         <el-form-item prop="focalLength" label="镜头焦距" :label-width="labelWidth">
+=======
+        <el-form-item label="镜头焦距" :label-width="labelWidth">
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
           <el-input v-model.number="cameraItem.focalLength">
             <template slot="append">mm</template>
           </el-input>

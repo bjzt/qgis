@@ -2,7 +2,11 @@
   <div style="margin: 20px">
       <el-row>
         <el-col :span="4">
+<<<<<<< HEAD
       <el-menu
+=======
+      <el-menu 
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
         default-active="132"
         @select="selectMenu"
         background-color="#545c64"
@@ -67,7 +71,11 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
+<<<<<<< HEAD
           <el-form-item label="测图比例尺:" :label-width="labelWidth" prop="scaleSurvey">
+=======
+          <el-form-item label="测图比例尺:" :label-width="labelWidth">
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
             <el-select  v-model="oldItem.scaleSurvey" @change="selectScale">
               <template slot="prepend">1：</template>
               <el-option
@@ -962,6 +970,7 @@ export default {
         ordinary: 30,
         max: 5
       },
+<<<<<<< HEAD
       accuracyRules: {
         entryName: [{ required: true, trigger: 'blur', message: '不能为空' }],
         productionUnit: [{ required: true, trigger: 'blur', message: '不能为空' }],
@@ -969,6 +978,8 @@ export default {
         mapNumber: [{ required: true, trigger: 'blur', message: '不能为空' }],
         scaleSurvey: [{ required: true, trigger: 'blur', message: '不能为空' }],
       },
+=======
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
     }
   },
   created() {
@@ -1081,9 +1092,15 @@ export default {
     selectMenu(index, indexPath){
       this.oldItem.standardValue = null
       let name = "";
+<<<<<<< HEAD
 
       indexPath.pop()
 
+=======
+      
+      indexPath.pop()
+      
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
       this.formatTable
       for(let i of indexPath){
         for(let menu of this.menuAllList){
@@ -1115,7 +1132,11 @@ export default {
     },
     //表格删除
     delItem(index){
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
       let tempList = []
       for(let i=0;i<this.tableData.length;i++){
         if (i != index) {
@@ -1212,7 +1233,11 @@ export default {
         })
         return
       }
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
       let size = this.dataList.length * (this.group.ordinary /100.0)
       let maxSize = this.dataList.length * (this.group.max /100.0)
       let minSize = this.dataList.length - size - maxSize
@@ -1270,7 +1295,11 @@ export default {
         item.newX = item.newX.toFixed(3)
         item.newY = item.newY.toFixed(3)
         item.newH = item.newH.toFixed(3)
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
         temp.push(item)
       }
       this.tableData = temp
@@ -1330,6 +1359,7 @@ export default {
     },
     //开始计算
     computer(){
+<<<<<<< HEAD
 
 
       this.$refs.accuracyForm.validate(valid => {
@@ -1352,6 +1382,12 @@ export default {
         return
       }
 
+=======
+      if (this.tableData.length <= 0) {
+        return
+      }
+      
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
       switch (this.tabelType) {
         case 1: {
           let temp = this.tableData[0]
@@ -1389,8 +1425,13 @@ export default {
             templist.push(item)
           }
           this.tableData = templist
+<<<<<<< HEAD
 
 
+=======
+          
+          
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
           if (joinCount <= 20) {
             l_sum = l_sum / joinCount
           }
@@ -1448,7 +1489,11 @@ export default {
             errorDiffe: this.oldItem.standardValue,
             notUseScale: notUseNumber / joinCount * 100
           }]
+<<<<<<< HEAD
 
+=======
+          
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
           break
         }
         case 3: {
@@ -1468,7 +1513,11 @@ export default {
             if (item.isUse) {
               item.h_C = 0
               item.h_C = item.oldH - item.newH
+<<<<<<< HEAD
 
+=======
+              
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
               if (item.h_C > diffe) {
                 item.isNotUse = true
                 notUseNumber++
@@ -1479,7 +1528,11 @@ export default {
               joinCount++
               l_sum = Number(item.h_C) + l_sum
             }
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
             templist.push(item)
           }
           this.tableData = templist
@@ -1497,12 +1550,17 @@ export default {
             notUseScale: notUseNumber / joinCount * 100
           }]
           console.log(this.computeData);
+<<<<<<< HEAD
 
+=======
+          
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
           break
         }
       }
       this.$forceUpdate()
       this.getResult()
+<<<<<<< HEAD
 
 
 
@@ -1522,6 +1580,9 @@ export default {
 
 
 
+=======
+    },
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
     getResult(){
       switch (this.tabelType) {
         case 1: {
@@ -1538,7 +1599,11 @@ export default {
             }
             absoluteScore = Math.floor(absoluteScore * 10) / 10
           }
+<<<<<<< HEAD
 
+=======
+          
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
           if (this.result.length == 0) {
             this.result.push({})
           }
@@ -1707,7 +1772,11 @@ export default {
     },
     //困难级别
     selectHardType(value){
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
     },
     //地形类别
     selectTerrain(){
@@ -1734,6 +1803,7 @@ export default {
         switch (this.oldItem.scaleSurvey) {
           case 500:
             switch (this.oldItem.terrainType) {
+<<<<<<< HEAD
               case 0:
                 this.contourInterval = [0.5];
                 this.$set(this.oldItem,'contourInterval',0.5)
@@ -1747,6 +1817,21 @@ export default {
                 this.$set(this.oldItem,'contourInterval',1.0)
                 break;
               case 3:
+=======
+              case 0: 
+                this.contourInterval = [0.5];
+                this.$set(this.oldItem,'contourInterval',0.5)
+                break;
+              case 1: 
+                this.contourInterval = [1.0, 0.5];
+                this.$set(this.oldItem,'contourInterval',1.0)
+                break;
+              case 2: 
+                this.contourInterval = [1.0];
+                this.$set(this.oldItem,'contourInterval',1.0)
+                break;
+              case 3: 
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
                 this.contourInterval = [1.0];
                 this.$set(this.oldItem,'contourInterval',1.0)
                 break;
@@ -1754,6 +1839,7 @@ export default {
             break;
           case 1000:
             switch (this.oldItem.terrainType) {
+<<<<<<< HEAD
               case 0:
                 this.contourInterval = [0.5, 1.0];
                 this.$set(this.oldItem,'contourInterval',0.5)
@@ -1767,6 +1853,21 @@ export default {
                   this.$set(this.oldItem,'contourInterval',1.0)
                 break;
               case 3:
+=======
+              case 0: 
+                this.contourInterval = [0.5, 1.0];
+                this.$set(this.oldItem,'contourInterval',0.5)
+                break;
+              case 1: 
+                this.contourInterval = [1.0];
+                this.$set(this.oldItem,'contourInterval',1.0)
+                break;
+              case 2: 
+                  this.contourInterval = [1.0];
+                  this.$set(this.oldItem,'contourInterval',1.0)
+                break;
+              case 3: 
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
                 this.contourInterval = [2.0];
                 this.$set(this.oldItem,'contourInterval',2.0)
                 break;
@@ -1774,7 +1875,11 @@ export default {
             break;
             case 2000:
             switch (this.oldItem.terrainType) {
+<<<<<<< HEAD
               case 0:
+=======
+              case 0: 
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
                 this.contourInterval = [ 1.0, 0.5];
                 this.$set(this.oldItem,'contourInterval',1.0)
                 break;
@@ -1782,12 +1887,20 @@ export default {
                   this.contourInterval = [1.0];
                   this.$set(this.oldItem,'contourInterval',1.0)
                 break;
+<<<<<<< HEAD
               case 2:
+=======
+              case 2: 
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
 
                   this.contourInterval = [2.0, 2.5];
                   this.$set(this.oldItem,'contourInterval',2.0)
                 break;
+<<<<<<< HEAD
               case 3:
+=======
+              case 3: 
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
                 this.contourInterval = [2.0, 2.5];
                 this.$set(this.oldItem,'contourInterval',2.0)
                 break;
@@ -1796,6 +1909,7 @@ export default {
           case 5000:
           case 10000:
             switch (this.oldItem.terrainType) {
+<<<<<<< HEAD
               case 0:
                 this.contourInterval = [1.0];
                 this.$set(this.oldItem,'contourInterval',1.0)
@@ -1813,11 +1927,31 @@ export default {
                 this.$set(this.oldItem,'contourInterval',5.0)
 
 
+=======
+              case 0: 
+                this.contourInterval = [1.0];
+                this.$set(this.oldItem,'contourInterval',1.0)
+                break;
+              case 1: 
+                this.contourInterval = [2.5];
+                this.$set(this.oldItem,'contourInterval', 2.5)
+                break;
+              case 2: 
+                this.contourInterval = [5.0];
+                this.$set(this.oldItem,'contourInterval',5.0)
+                break;
+              case 3: 
+                this.contourInterval = [5.0];
+                this.$set(this.oldItem,'contourInterval',5.0)
+                
+        
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
                 break;
             }
             break;
           case 25000:
             switch (this.oldItem.terrainType) {
+<<<<<<< HEAD
               case 0:
 
                   this.contourInterval = [5.0, 2.5];
@@ -1838,16 +1972,43 @@ export default {
 
                 break;
               case 3:
+=======
+              case 0: 
+
+                  this.contourInterval = [5.0, 2.5];
+                  this.$set(this.oldItem,'contourInterval',5.0)
+               
+                break;
+              case 1: 
+
+                  this.contourInterval = [5];
+                  this.$set(this.oldItem,'contourInterval', 5)
+                
+                
+                break;
+              case 2: 
+
+                  this.contourInterval = [10];
+                  this.$set(this.oldItem,'contourInterval',10)
+                
+                break;
+              case 3: 
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
 
                   this.contourInterval = [10];
                   this.$set(this.oldItem,'contourInterval', 10)
 
+<<<<<<< HEAD
 
+=======
+                
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
                 break;
             }
             break;
           case 50000:
             switch (this.oldItem.terrainType) {
+<<<<<<< HEAD
               case 0:
                 this.contourInterval = [10, 5];
                 this.$set(this.oldItem,'contourInterval',10)
@@ -1861,6 +2022,21 @@ export default {
                 this.$set(this.oldItem,'contourInterval',20)
                 break;
               case 3:
+=======
+              case 0: 
+                this.contourInterval = [10, 5];
+                this.$set(this.oldItem,'contourInterval',10)
+                break;
+              case 1: 
+                this.contourInterval = [10];
+                this.$set(this.oldItem,'contourInterval', 10)
+                break;
+              case 2: 
+                this.contourInterval = [20];
+                this.$set(this.oldItem,'contourInterval',20)
+                break;
+              case 3: 
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
                   this.contourInterval = [20];
                   this.$set(this.oldItem,'contourInterval',20)
                 break;
@@ -1868,6 +2044,7 @@ export default {
             break;
           case 100000:
             switch (this.oldItem.terrainType) {
+<<<<<<< HEAD
               case 0:
                   this.contourInterval = [20, 10];
                   this.$set(this.oldItem,'contourInterval',20)
@@ -1881,6 +2058,21 @@ export default {
                   this.$set(this.oldItem,'contourInterval',40)
                 break;
               case 3:
+=======
+              case 0: 
+                  this.contourInterval = [20, 10];
+                  this.$set(this.oldItem,'contourInterval',20)
+                break;
+              case 1: 
+                  this.contourInterval = [20];
+                  this.$set(this.oldItem,'contourInterval', 20)
+                break;
+              case 2: 
+                  this.contourInterval = [40];
+                  this.$set(this.oldItem,'contourInterval',40)
+                break;
+              case 3: 
+>>>>>>> e95eb331b219c6ce27daa8fcdb71a9ea28c0279e
                   this.contourInterval = [40];
                   this.$set(this.oldItem,'contourInterval',40)
                 break;
