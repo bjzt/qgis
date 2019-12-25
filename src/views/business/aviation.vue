@@ -505,12 +505,9 @@ export default {
       
       for (let item of this.cameraList){
         if (value == item.id) {
-          this.cameraItem.width = item.width
-          this.cameraItem.height = item.height
-          this.cameraItem.sensorWidth = item.sensorWidth
-          this.cameraItem.sensorHeight = item.sensorHeight
-          this.cameraItem.pixel = item.pixel
-          this.cameraItem.focalLength = item.focalLength
+          for(let key in item){
+            this.$set(this.cameraItem, key, item[key])
+          }
         }
       }
     },
@@ -600,7 +597,7 @@ export default {
         method: "get"
       }).then(res => {
         if (res.flag) {
-          this.customer = res.data
+          this.customer = res.data          
         }
       })
     },
