@@ -1,6 +1,13 @@
 <template>
   <div style="margin: 20px">
-    <el-form :inline="true" ref="ruleForm" :rules="nameRules"  :model="oldItem">
+    <el-form :inline="true" ref="ruleForm" :rules="nameRules" :model="oldItem">
+      <div class="tag-group" >
+        <el-tag v-if="tianqi.forecast != null">日期 : {{tianqi.forecast[0].date}}</el-tag>
+        <el-tag type="success" v-if="tianqi.forecast != null" >最高温度 : {{tianqi.forecast[0].high}}</el-tag>
+        <el-tag type="info" v-if="tianqi.forecast != null">风力 : {{tianqijiequ}}</el-tag>
+        <el-tag type="warning" v-if="tianqi.forecast != null">最低温度 : {{tianqi.forecast[0].low}}</el-tag>
+        <el-tag type="danger" v-if="tianqi.forecast != null">天气情况 : {{tianqi.forecast[0].type}}</el-tag>
+      </div>
       <h2>基本信息：</h2>
       <el-form-item label="联系人">
         <el-select size="mini" v-model="oldItem.phone" placeholder="请选择">
@@ -14,9 +21,7 @@
         </el-select>
         <span>联系人手机接收短信验证码</span>
       </el-form-item>
-      <el-form-item prop="name"
-        label="项目名称(必填)"
-      >
+      <el-form-item prop="name" label="项目名称(必填)">
         <el-input
           size="mini"
           v-model="oldItem.name"
@@ -433,11 +438,11 @@ export default {
           { type: "number", message: "格式不正确" }
         ]
       },
-      nameRules:{
-         name: [
-          { required: true, trigger: "blur", message: "不能为空" },
-        ]
-      }
+      nameRules: {
+        name: [{ required: true, trigger: "blur", message: "不能为空" }]
+      },
+      tianqi: {},
+      tianqijiequ:""
     };
   },
   watch: {
@@ -491,6 +496,12 @@ export default {
           }
         }
       }
+    },
+    tianqi: {
+      deep: true,
+      handler(value){
+        console.log(value);
+      }
     }
   },
   created() {
@@ -512,7 +523,7 @@ export default {
           let city = position.address.city; //获取城市信息
           let province = position.address.province; //获取省份信息
           that.oldItem.city = city;
-          console.log(province, city);
+          that.getWather(city);
         },
         function(e) {
           this.LocationCity = "定位失败";
@@ -527,6 +538,32 @@ export default {
       }).then(data => {
         this.cameraList = data.data;
       });
+    },
+    getWather(city) {
+      var xhr;
+      var that = this;
+      if (window.XMLHttpRequest) {
+        xhr = new XMLHttpRequest();
+      } else {
+        xhr = new ActiveXObject();
+      }
+      xhr.open(
+        "GET",
+        `http://wthrcdn.etouch.cn/weather_mini?city=${city}`,
+        true
+      );
+      xhr.send(null);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          var data = JSON.parse(xhr.responseText);
+          that.tianqi = data.data;
+          console.log(that.tianqi);
+        var c=  that.tianqi.forecast[0].fengli
+        var a= c.indexOf("A")+4
+        var b=c.substring(a).substring(0,c.substring(a).indexOf("]"))
+        that.tianqijiequ=b
+        }
+      };
     },
     cameraChange(value) {
       if (value == null) {
@@ -633,7 +670,7 @@ export default {
       });
     },
     compute() {
-       const p1 = new Promise((resolve, reject) => {
+      const p1 = new Promise((resolve, reject) => {
         this.$refs.ruleForm.validate(valid => {
           if (valid) resolve();
         });
@@ -645,7 +682,7 @@ export default {
         });
       });
 
-      Promise.all([p1,p2]).then(() => {
+      Promise.all([p1, p2]).then(() => {
         let json = {
           camera: this.cameraItem,
           oldItem: this.oldItem
