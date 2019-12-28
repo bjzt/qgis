@@ -109,6 +109,91 @@
                 </el-col>
               </el-row>
             </el-form>
+
+            <el-form v-if="service==1" :model="config">
+              <el-row>
+                <el-col :xs="18" :xl="18" :lg="18" :sm="24" :md="24">
+                  <h2 style="text-align: center">区域验证导入</h2>
+                  <el-form-item label="单位价格" :label-width="inputWidth">
+                    <el-input size="small" v-model="config.dataBasePoint">
+                      <el-button size="small" slot="append">元</el-button>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item :label-width="inputWidth">
+                    <el-button size="small" type="primary">修改</el-button>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+
+            <el-form v-if="service==2" :model="config">
+              <el-row>
+                <el-col :xs="18" :xl="18" :lg="18" :sm="24" :md="24">
+                  <h2 style="text-align: center">区域参数计算</h2>
+                  <el-form-item label="单位价格" :label-width="inputWidth">
+                    <el-input size="small" v-model="config.argsCalc">
+                      <el-button size="small" slot="append">元</el-button>
+                    </el-input>
+                  </el-form-item>
+                   <el-form-item :label-width="inputWidth">
+                    <el-button size="small" type="primary">修改</el-button>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+
+
+          <el-form v-if="service==3" :model="config">
+              <el-row>
+                <el-col :xs="18" :xl="18" :lg="18" :sm="24" :md="24">
+                  <h2 style="text-align: center">区域计算</h2>
+                  <el-form-item label="单位价格" :label-width="inputWidth">
+                    <el-input size="small" v-model="config.convertCalc">
+                      <el-button size="small" slot="append">元</el-button>
+                    </el-input>
+                  </el-form-item>
+                   <el-form-item :label-width="inputWidth">
+                    <el-button size="small" type="primary">修改</el-button>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+
+
+              <el-form v-if="service==4" :model="config">
+              <el-row>
+                <el-col :xs="18" :xl="18" :lg="18" :sm="24" :md="24">
+                  <h2 style="text-align: center">航空计算</h2>
+                  <el-form-item label="单位价格" :label-width="inputWidth">
+                    <el-input size="small" v-model="config.aviationCalc">
+                      <el-button size="small" slot="append">元</el-button>
+                    </el-input>
+                  </el-form-item>
+                   <el-form-item :label-width="inputWidth">
+                    <el-button size="small" type="primary">修改</el-button>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+
+
+            <el-form v-if="service==5" :model="config">
+              <el-row>
+                <el-col :xs="18" :xl="18" :lg="18" :sm="24" :md="24">
+                  <h2 style="text-align: center">精度检测</h2>
+                  <el-form-item label="单位价格" :label-width="inputWidth">
+                    <el-input size="small" v-model="config.mathAccuracy">
+                      <el-button size="small" slot="append">元</el-button>
+                    </el-input>
+                  </el-form-item>
+                   <el-form-item :label-width="inputWidth">
+                    <el-button size="small" type="primary">修改</el-button>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+
+
           </el-col>
         </el-row>
         <el-dialog
@@ -178,10 +263,10 @@ export default {
       label: "在线转换",
       value: 0
     },{
-      label: "验证导入",
+      label: "区域验证导入",
       value: 1
     },{
-      label: "参数计算",
+      label: "区域参数计算",
       value: 2
     },{
       label: "区域计算",

@@ -61,9 +61,9 @@
       :visible.sync="dialogVisible"
       width="300px"
       center>
-      <el-form>
+      <el-form @submit.native.prevent>
         <el-form-item>
-          <el-input placeholder="请输入验证码" v-model="loginForm.code" size="mini"    @keyup.enter.native="handleLogin">
+          <el-input placeholder="请输入验证码" @keyup.enter.native.prevent="handleLogin()" v-model="loginForm.code" size="mini" >
             <el-button slot="append" @click="getCode" v-text="content"></el-button>
           </el-input>
           
