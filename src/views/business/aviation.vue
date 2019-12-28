@@ -675,7 +675,7 @@ export default {
         if (valid) {
           let json = {
             camera: this.cameraItem,
-            oldItem: data
+            oldItem: this.oldItem
           }
           request({
             url: "/aviation/camera",
