@@ -1675,17 +1675,14 @@ export default {
     submitExport() {
       console.log("export");
       request({
-        url: this.baseUrl+"/file/upload/export",
+        url: this.baseUrl + "/file/upload/export",
         method: "post",
-        data:this.fileUrlList,
-        responseType:"blob"
+        data: this.fileUrlList,
+        responseType: "blob"
       }).then(res => {
-        this.$message({
-          type: "success",
-          message: res.message
-        }); 
         const { content, filename } = res;
-        const blob = new Blob([content]);
+        console.log(filename);
+        const blob = new Blob([content],{type: 'application/vnd.ms-excel'});
         if ("download" in document.createElement("a")) {
           // 非IE下载
           const elink = document.createElement("a");
@@ -1701,7 +1698,6 @@ export default {
           navigator.msSaveBlob(blob, filename);
         }
       });
-      
     },
 
     fetchData() {
@@ -2524,6 +2520,7 @@ export default {
         responseType: "blob"
       }).then(res => {
         const { content, filename } = res;
+
         const blob = new Blob([content]);
         if ("download" in document.createElement("a")) {
           // 非IE下载
