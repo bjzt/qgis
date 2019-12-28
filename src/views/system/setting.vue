@@ -135,6 +135,9 @@
                       <el-button size="small" slot="append">元</el-button>
                     </el-input>
                   </el-form-item>
+                   <el-form-item :label-width="inputWidth">
+                    <el-button size="small" type="primary">修改</el-button>
+                  </el-form-item>
                 </el-col>
               </el-row>
             </el-form>
@@ -148,6 +151,9 @@
                     <el-input size="small" v-model="config.convertCalc">
                       <el-button size="small" slot="append">元</el-button>
                     </el-input>
+                  </el-form-item>
+                   <el-form-item :label-width="inputWidth">
+                    <el-button size="small" type="primary">修改</el-button>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -163,6 +169,9 @@
                       <el-button size="small" slot="append">元</el-button>
                     </el-input>
                   </el-form-item>
+                   <el-form-item :label-width="inputWidth">
+                    <el-button size="small" type="primary">修改</el-button>
+                  </el-form-item>
                 </el-col>
               </el-row>
             </el-form>
@@ -176,6 +185,9 @@
                     <el-input size="small" v-model="config.mathAccuracy">
                       <el-button size="small" slot="append">元</el-button>
                     </el-input>
+                  </el-form-item>
+                   <el-form-item :label-width="inputWidth">
+                    <el-button size="small" type="primary">修改</el-button>
                   </el-form-item>
                 </el-col>
               </el-row>
