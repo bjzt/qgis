@@ -161,9 +161,6 @@
             </el-select>
           </el-form-item>
         </el-col>
-      </el-row>
-
-      <el-row>
         <el-col :xs="24" :xl="6" :lg="6" :sm="6" :md="6">
           <el-form-item v-if="oldItem.flexType == 1" label="倾斜镜头角度" :label-width="labelWidth">
             <el-input v-model.number="oldItem.tiltAngle">
@@ -368,14 +365,15 @@
     </el-form>
     <div style="width: 220px; margin: auto">
       <el-button @click="compute" type="primary">点击计算</el-button>
-      <el-button v-if="computButton" @click="toReport" type="success">生成报告</el-button>
+      <a :href="`${baseUrl}/file/upload/download?filePath=${this.newItem.url}`" style="display: inline-block;">
+        <el-button v-if="computButton" type="success">生成报告</el-button>
+      </a>
     </div>
   </div>
 </template>
 
 <script>
-import request from "@/utils/request";
-// import BMap from 'BMap'
+import request from '@/utils/request'
 
 export default {
   data() {
@@ -408,6 +406,7 @@ export default {
         buildType: 0,
         terrainType: 0,
         time: 1250,
+        tiltAngle: 45,
         cd: null
       },
       newItem: {},
@@ -438,6 +437,7 @@ export default {
           { type: "number", message: "格式不正确" }
         ]
       },
+      baseUrl: process.env.VUE_APP_BASE_API,
       nameRules: {
         name: [{ required: true, trigger: "blur", message: "不能为空" }]
       },
@@ -669,73 +669,74 @@ export default {
         }
       });
     },
-    compute() {
-      const p1 = new Promise((resolve, reject) => {
-        this.$refs.ruleForm.validate(valid => {
-          if (valid) resolve();
-        });
-      });
-
-      const p2 = new Promise((resolve, reject) => {
-        this.$refs.cameraForm.validate(valid => {
-          if (valid) resolve();
-        });
-      });
-
-      Promise.all([p1, p2]).then(() => {
-        let json = {
-          camera: this.cameraItem,
-          oldItem: this.oldItem
-        };
-        request({
-          url: "/aviation/camera",
-          method: "post",
-          data: json
-        }).then(res => {
-          if (res.flag) {
-            this.newItem = res.data;
+    compute(){
+      
+      this.$refs.cameraForm.validate(valid => {
+        if (valid) {
+          let json = {
+            camera: this.cameraItem,
+            oldItem: this.oldItem
           }
-          this.computButton = true;
+          request({
+            url: "/aviation/camera",
+            method: "post",
+            data: json
+          }).then(res => {
+            if (res.flag) {
+              this.newItem = res.data
+            }
+            this.computButton = true
 
-          if (
-            (this.newItem.highCourse < 35 && this.newItem.highCourse != null) ||
-            (this.newItem.highSideDirection < 15 &&
-              this.newItem.highSideDirection != null)
-          ) {
+            if ((this.newItem.highCourse < 35 && this.newItem.highCourse != null) || (this.newItem.highSideDirection < 15 && this.newItem.highSideDirection != null)) {
+              this.$message({
+                type: "warning",
+                message: "重叠度不够，请重新设计"
+              })
+            }
+            if (this.newItem.displacement > 0.5) {
+              this.$message({
+                type: "warning",
+                message: "像点位移造成相片运动模糊,一般控制在1/2的像素，最好是1/4个像素"
+              })
+            }
+            if (this.newItem.groundResolution > 20) {
+              if (this.oldItem.maxHeight - this.oldItem.minHeight > this.newItem.relativeHeight / 4.0) {
+                this.$message({
+                  type: "warning",
+                  message: "地面分辨率大于20cm,分区地形高差不应大于1/4相对航高"
+                })
+              }
+            }else {
+              if (this.oldItem.maxHeight - this.oldItem.minHeight > this.newItem.relativeHeight / 6.0) {
+                this.$message({
+                  type: "warning",
+                  message: "地面分辨率小于20cm,分区地形高差不应大于1/6相对航高"
+                })
+              }
+            }
+          })
+          if ( (this.newItem.highCourse < 35 && this.newItem.highCourse != null) || (this.newItem.highSideDirection < 15 && this.newItem.highSideDirection != null)) {
             this.$message({
               type: "warning",
               message: "重叠度不够，请重新设计"
-            });
-          }
-          if (this.newItem.displacement > 0.5) {
-            this.$message({
-              type: "warning",
-              message:
-                "像点位移造成相片运动模糊,一般控制在1/2的像素，最好是1/4个像素"
-            });
+            })
           }
           if (this.newItem.groundResolution > 20) {
-            if (
-              this.oldItem.maxHeight - this.oldItem.minHeight >
-              this.newItem.relativeHeight / 4.0
-            ) {
+            if (this.oldItem.maxHeight - this.oldItem.minHeight >this.newItem.relativeHeight / 4.0) {
               this.$message({
                 type: "warning",
                 message: "地面分辨率大于20cm,分区地形高差不应大于1/4相对航高"
               });
             }
           } else {
-            if (
-              this.oldItem.maxHeight - this.oldItem.minHeight >
-              this.newItem.relativeHeight / 6.0
-            ) {
+            if (this.oldItem.maxHeight - this.oldItem.minHeight >this.newItem.relativeHeight / 6.0) {
               this.$message({
                 type: "warning",
                 message: "地面分辨率小于20cm,分区地形高差不应大于1/6相对航高"
               });
             }
           }
-        });
+        }
         if (
           (this.newItem.highCourse < 35 && this.newItem.highCourse != null) ||
           (this.newItem.highSideDirection < 15 &&
@@ -746,15 +747,8 @@ export default {
             message: "重叠度不够，请重新设计"
           });
         }
-      });
-
-      // this.$refs.cameraForm.validate(valid => {
-      //   if (valid) {
-      //   }
-      // });
-    },
-
-    toReport() {}
+      })
+    }
   }
 };
 </script>

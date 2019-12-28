@@ -17,8 +17,8 @@
     <el-form ref="accuracyForm" :rules="accuracyRules"  size="mini" :model="oldItem">
       <el-row>
         <el-col :span="12">
-          <el-form-item label="项目名称:" :label-width="labelWidth"    prop="entryName">
-            <el-input  v-model="oldItem.entryName"></el-input>
+          <el-form-item label="项目名称:" :label-width="labelWidth" prop="projectName">
+            <el-input  v-model="oldItem.projectName"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -50,7 +50,7 @@
             <el-input  ref="mapName" v-model="oldItem.mapName"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="6" v-if="pointBoundary">
           <el-form-item label="界址点方式:" :label-width="labelWidth">
             <el-select v-model="oldItem.pointBoundary">
                 <el-option label="解析法" :value="0"></el-option>
@@ -82,21 +82,14 @@
       </el-row>
 
       <el-row>
-        <el-col :span="6">
-          <el-form-item label="困难等级:" :label-width="labelWidth">
-            <el-select v-model="oldItem.hardType" @change="selectHardType">
-                <el-option label="一般地区" :value="0"></el-option>
-                <el-option label="困难地区" :value="1"></el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
+        <el-col :span="6" v-if="terrainType">
           <el-form-item label="地形类别:" :label-width="labelWidth">
             <el-select v-model="oldItem.terrainType" @change="selectTerrain">
-                <el-option label="平地" :value="0"></el-option>
-                <el-option label="丘陵地" :value="1"></el-option>
-                <el-option label="山地" :value="2"></el-option>
-                <el-option label="高山地" :value="3"></el-option>
+              <el-option 
+                v-for="(item,index) of terrainTypeList"
+                :key="index"
+                :label="item.label"
+                :value="item.value"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -113,13 +106,20 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="技术要求" :label-width="labelWidth">
+          <el-form-item label="技术要求" label-width="70px">
             <el-row>
-              <el-col :span="12">
+              <el-col :span="6">
                 <el-input v-model="oldItem.standard" disabled></el-input>
               </el-col>
-              <el-col :span="12">
-                <el-input v-model.number="oldItem.standardValue"></el-input>
+              <el-col :span="18">
+                <el-select v-model.number="oldItem.standardValue">
+                  <el-option 
+                  v-for="(item,index) of standardValueList" 
+                  :key="index"
+                  :label="item"
+                  :value="item"
+                  ></el-option>
+                </el-select>
               </el-col>
             </el-row>
           </el-form-item>
@@ -127,23 +127,25 @@
       </el-row>
 
       <el-row>
-        <el-col :span="6">
+        <el-col :span="6" v-if="pointType">
           <el-form-item label="点类别" :label-width="labelWidth">
             <el-select v-model="oldItem.pointType" @change="selectPointType">
-              <el-option label="加密点" :value="0"></el-option>
-              <el-option label="注记点" :value="1"></el-option>
-              <el-option label="等高线" :value="2"></el-option>
-              <el-option label="地物点" :value="3"></el-option>
+              <el-option 
+              v-for="(item,index) of pointTypeList"
+              :key="index"
+              :label="item.label"
+              :value="item.value"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="6" v-if="pointLevel">
           <el-form-item label="点级别" :label-width="labelWidth">
             <el-select v-model="oldItem.pointLevel" @change="selectLevel">
-              <el-option label="B" :value="0"></el-option>
-              <el-option label="C" :value="1"></el-option>
-              <el-option label="D" :value="2"></el-option>
-              <el-option label="E" :value="3"></el-option>
+              <el-option 
+              v-for="(item,index) of pointLevelList"
+              :key="index"
+              :label="item.label"
+              :value="item.value"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -694,6 +696,9 @@
         prop="mapNumber"
         align="center"
         label="图幅号">
+        <template  slot-scope="scope">
+          <span>{{scope.row.mapNumber}}</span>
+        </template>
       </el-table-column>
       <el-table-column
         align="center"
@@ -710,26 +715,41 @@
             prop="absolute"
             align="center"
             label="绝对位置">
+            <template  slot-scope="scope">
+              <span>{{scope.row.absolute}}</span>
+            </template>
           </el-table-column>
           <el-table-column
             prop="absoluteScore"
             align="center"
             label="得分">
+            <template  slot-scope="scope">
+              <span>{{scope.row.absoluteScore}}</span>
+            </template>
           </el-table-column>
           <el-table-column
             prop="relative"
             align="center"
             label="相对位置">
+            <template  slot-scope="scope">
+              <span>{{scope.row.relative}}</span>
+            </template>
           </el-table-column>
           <el-table-column
             prop="relativeScore"
             align="center"
             label="得分">
+            <template  slot-scope="scope">
+              <span>{{scope.row.relativeScore}}</span>
+            </template>
           </el-table-column>
           <el-table-column
             prop="planeScore"
             align="center"
             label="平面精度评分">
+            <template  slot-scope="scope">
+              <span>{{scope.row.planeScore}}</span>
+            </template>
           </el-table-column>
         </el-table-column>
         <el-table-column
@@ -739,32 +759,50 @@
             prop="elevation"
             align="center"
             label="高程注记">
+            <template  slot-scope="scope">
+              <span>{{scope.row.elevation}}</span>
+            </template>
           </el-table-column>
           <el-table-column
             prop="elevationScore"
             align="center"
             label="得分">
+            <template  slot-scope="scope">
+              <span>{{scope.row.elevationScore}}</span>
+            </template>
           </el-table-column>
           <el-table-column
             prop="contour"
             align="center"
             label="等高线内插高程注记">
+            <template  slot-scope="scope">
+              <span>{{scope.row.contour}}</span>
+            </template>
           </el-table-column>
           <el-table-column
             prop="contourScore"
             align="center"
             label="得分">
+            <template  slot-scope="scope">
+              <span>{{scope.row.contourScore}}</span>
+            </template>
           </el-table-column>
           <el-table-column
             prop="altitudeScore"
             align="center"
             label="高程精度评分">
+            <template  slot-scope="scope">
+              <span>{{scope.row.altitudeScore}}</span>
+            </template>
           </el-table-column>
         </el-table-column>
         <el-table-column
-            prop="created"
+            prop="math"
             align="center"
             label="数学精度评分">
+            <template  slot-scope="scope">
+              <span>{{scope.row.math}}</span>
+            </template>
           </el-table-column>
       </el-table-column>
     </el-table>
@@ -814,6 +852,17 @@
                   :headers="importHeaders">
                   <el-button type="success">上传数据</el-button>
                 </el-upload>
+              </el-form-item>
+            </el-col>
+            <el-col :span="3">
+              <el-form-item>
+                <el-switch
+                  v-model="isTwoPoint"
+                  active-text="对点"
+                  inactive-text="覆盖"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949">
+                </el-switch>
               </el-form-item>
             </el-col>
           </el-row>
@@ -936,6 +985,7 @@ export default {
       format: {
         type: 0
       },
+      isTwoPoint: false,
       start: 0,//开始计算的行
       computeData: [],//计算的结果
       lieList: [],//模板的列
@@ -965,13 +1015,21 @@ export default {
         ordinary: 30,
         max: 5
       },
+      standardValueList: [],//多选时的值
       accuracyRules: {
-        entryName: [{ required: true, trigger: 'blur', message: '不能为空' }],
+        projectName: [{ required: true, trigger: 'blur', message: '不能为空' }],
         productionUnit: [{ required: true, trigger: 'blur', message: '不能为空' }],
         mapName: [{ required: true, trigger: 'blur', message: '不能为空' }],
         mapNumber: [{ required: true, trigger: 'blur', message: '不能为空' }],
         scaleSurvey: [{ required: true, trigger: 'blur', message: '不能为空' }],
       },
+      pointType: false,
+      pointLevel: false,
+      terrainType: false,
+      pointBoundary: false,
+      pointTypeList: [],
+      pointLevelList: [],
+      terrainTypelList: []
     }
   },
   created() {
@@ -1049,6 +1107,12 @@ export default {
             this.showData[i].isSelect = true
         }
       }
+    },
+    oldItem: {
+      deep: true,
+      handler(){
+        this.getErrorValue()
+      }
     }
   },
   methods: {
@@ -1084,11 +1148,10 @@ export default {
     selectMenu(index, indexPath){
       this.oldItem.standardValue = null
       let name = "";
-
-      indexPath.pop()
-
+      let path = indexPath
+      path.pop()
       this.formatTable
-      for(let i of indexPath){
+      for(let i of path){
         for(let menu of this.menuAllList){
           if (i == menu.id) {
             name += menu.name+"-"
@@ -1101,9 +1164,47 @@ export default {
           this.oldItem.model = name + menu.name;
 
           this.standard.id = index
+          //生成特殊选项
+          this.showOption(menu.option)
+
           this.standard.name = menu.name
+          this.standard.weight = menu.weight
+          this.standard.mathWeight = menu.mathWeight
           if (this.standard != null) {
             this.$set(this.oldItem,'standard', menu.standard)
+          }
+        }
+      }
+    },
+    //将菜单的特殊选项显示出来
+    showOption(option){
+      if (option != null) {
+        this.pointType = false
+        this.pointLevel = false
+        this.terrainType = false
+        this.pointBoundary = false
+        
+        let op = JSON.parse(option)
+        
+        for(let key in op){
+          if (key=='pointLevel') {
+            this.pointLevel = true
+            this.pointLevelList = op.pointLevel
+            this.$set(this.oldItem, 'pointLevel', this.pointLevelList[0].value)
+          }
+          if ('pointType' == key) {
+            this.pointType = true
+            this.pointTypeList = op.pointType
+            this.$set(this.oldItem, 'pointType', this.pointTypeList[0].value)
+          }
+          if ('terrainType' == key) {
+            this.terrainType = true
+            this.terrainTypeList = op.terrainType
+            this.$set(this.oldItem, 'terrainType', op.terrainType[0].value)
+          }
+          if ('pointBoundary' == key) {
+            this.pointBoundary = true
+            this.$set(this.oldItem, 'pointBoundary', 0)
           }
         }
       }
@@ -1164,7 +1265,7 @@ export default {
     },
     //将选号的数据传到tabel里
     addDataToTable(){
-      this.tableData = []
+      
       let start = 0
       if (this.start > 0) {
         start = this.start -1
@@ -1175,7 +1276,10 @@ export default {
         })
         return
       }
-
+      let newTableData = []
+      if (!this.isTwoPoint) {
+        this.tableData = []
+      }
       //循环数据
       for (let j=start;j< this.showData.length;j++){
         let data = this.showData[j].dataList
@@ -1201,7 +1305,18 @@ export default {
           dto.status = false
           dto.isNotUse = false
         }
-        this.tableData.push(dto)
+        if (!this.isTwoPoint) {
+          this.tableData.push(dto)
+        }else {
+          for(let d of this.tableData){
+            if(d.name == dto.name){
+              newTableData.push(this.twoJsonMerge(d, dto))
+            }
+          }
+        }
+      }
+      if (this.isTwoPoint) {
+        this.tableData = newTableData
       }
       this.dialogVisible = false
     },
@@ -1277,18 +1392,22 @@ export default {
       this.randomVisible =false
     },
     getWord(){
-      let data = {
-        name: "",
-        detectionMode: this.oldItem.detectionMode,
-        notUseNumber: this.computeData[0].notUseNumber,
-        notUseScale: this.computeData[0].notUseScale,
-        pointError: this.computeData[0].pointError,
-        error: this.oldItem.standardValue,
-        mapNumber: this.oldItem.mapNumber,
-        pointList: this.tableData
-      }
+      // let data = {
+      //   name: "",
+      //   detectionMode: this.oldItem.detectionMode,
+      //   notUseNumber: this.computeData[0].notUseNumber,
+      //   notUseScale: this.computeData[0].notUseScale,
+      //   pointError: this.computeData[0].pointError,
+      //   error: this.oldItem.standardValue,
+      //   mapNumber: this.oldItem.mapNumber,
+      //   pointList: this.tableData
+      // }
+      let data = JSON.parse(JSON.stringify(this.oldItem))
+      data.data = this.tableData
+      // let url = `/file/upload/word/${this.tabelType}`
+      let url = `/file/upload/accuracy/excel/${this.tabelType}`
       request({
-        url: `/file/upload/word/${this.tabelType}`,
+        url: url,
         method: "post",
         data: data,
         responseType: 'blob'
@@ -1333,164 +1452,163 @@ export default {
       this.$refs.accuracyForm.validate(valid => {
         if (valid) {
         
-      if (this.tableData.length <= 0) {
-        return
-      }
-
-      switch (this.tabelType) {
-        case 1: {
-          let temp = this.tableData[0]
-          if (temp.oldX == null || temp.oldY == null || temp.newX == null || temp.newY == null) {
+          if (this.tableData.length <= 0) {
             return
           }
-          let templist = []
-          let joinCount = 0
-          let notUseNumber = 0
-          let l_sum = 0
-          let diffe = this.oldItem.standardValue * 2;
-          if (this.oldItem.detectionMode == 0) {
-            diffe = this.oldItem.standardValue * 2 * Math.sqrt(2)
-          }
-          for(let item of this.tableData){
-            if (item.isUse) {
-              item.x_C = item.oldX - item.newX
-              item.y_C = item.oldY - item.newY
-              item.l_C = Math.pow(item.x_C, 2) + Math.pow(item.y_C, 2)
-              item.l_C = Math.sqrt(item.l_C)
-              item.pvv = Math.pow(item.l_C, 2)
-              item.x_C = item.x_C.toFixed(3)
-              item.y_C = item.y_C.toFixed(3)
-              item.l_C = item.l_C.toFixed(3)
-              if (item.l_C > diffe) {
-                item.isNotUse = true
-                notUseNumber++
-              }else {
-                item.isNotUse = false
+          switch (this.tabelType) {
+            case 1: {
+              let temp = this.tableData[0]
+              if (temp.oldX == null || temp.oldY == null || temp.newX == null || temp.newY == null) {
+                return
               }
-              item.pvv = item.pvv.toFixed(6)
-              joinCount++
-              l_sum = Number(item.l_C) + l_sum
-            }
-            templist.push(item)
-          }
-          this.tableData = templist
-
-
-          if (joinCount <= 20) {
-            l_sum = l_sum / joinCount
-          }
-
-          this.computeData = [{
-            count: this.tableData.length,
-            joinCount: joinCount,
-            notUseNumber: notUseNumber,
-            diffe: diffe.toFixed(4),
-            pointError: l_sum.toFixed(4),
-            errorDiffe: this.oldItem.standardValue,
-            notUseScale: notUseNumber / joinCount * 100
-          }]
-          break
-        }
-        case 2: {
-          let temp = this.tableData[0]
-          if (temp.oldLength == null || temp.newLength == null) {
-            return
-          }
-          let templist = []
-          let joinCount = 0
-          let notUseNumber = 0
-          let l_sum = 0
-          let diffe = this.oldItem.standardValue * 2;
-          if (this.oldItem.detectionMode == 0) {
-            diffe = this.oldItem.standardValue * 2 * Math.sqrt(2)
-          }
-          for(let item of this.tableData){
-            if (item.isUse) {
-              item.length_C = item.oldLength - item.newLength
-              if (item.length_C > diffe) {
-                item.isNotUse = true
-                notUseNumber++
-              }else {
-                item.isNotUse = false
+              let templist = []
+              let joinCount = 0
+              let notUseNumber = 0
+              let l_sum = 0
+              let diffe = this.oldItem.standardValue * 2;
+              if (this.oldItem.detectionMode == 0) {
+                diffe = this.oldItem.standardValue * 2 * Math.sqrt(2)
               }
-              item.length_C = item.length_C.toFixed(3)
-              joinCount++
-              l_sum = Number(item.length_C) + l_sum
-            }
-            templist.push(item)
-          }
-          this.tableData = templist
-
-          if (joinCount <= 20) {
-            l_sum = l_sum / joinCount
-          }
-          this.computeData = [{
-            count: this.tableData.length,
-            joinCount: joinCount,
-            notUseNumber: notUseNumber,
-            diffe: diffe.toFixed(4),
-            pointError: l_sum.toFixed(4),
-            errorDiffe: this.oldItem.standardValue,
-            notUseScale: notUseNumber / joinCount * 100
-          }]
-          break
-        }
-        case 3: {
-          let temp = this.tableData[0]
-          if (temp.oldH == null || temp.newH == null) {
-            return
-          }
-          let templist = []
-          let joinCount = 0
-          let notUseNumber = 0
-          let l_sum = 0
-          let diffe = this.oldItem.standardValue * 2;
-          if (this.oldItem.detectionMode == 0) {
-            diffe = this.oldItem.standardValue * 2 * Math.sqrt(2)
-          }
-          for(let item of this.tableData){
-            if (item.isUse) {
-              item.h_C = 0
-              item.h_C = item.oldH - item.newH
-              if (item.h_C > diffe) {
-                item.isNotUse = true
-                notUseNumber++
-              }else {
-                item.isNotUse = false
+              for(let item of this.tableData){
+                if (item.isUse) {
+                  item.x_C = item.oldX - item.newX
+                  item.y_C = item.oldY - item.newY
+                  item.l_C = Math.pow(item.x_C, 2) + Math.pow(item.y_C, 2)
+                  item.l_C = Math.sqrt(item.l_C)
+                  item.pvv = Math.pow(item.l_C, 2)
+                  item.x_C = item.x_C.toFixed(3)
+                  item.y_C = item.y_C.toFixed(3)
+                  item.l_C = item.l_C.toFixed(3)
+                  if (item.l_C > diffe) {
+                    item.isNotUse = true
+                    notUseNumber++
+                  }else {
+                    item.isNotUse = false
+                  }
+                  item.pvv = item.pvv.toFixed(6)
+                  joinCount++
+                  l_sum = Number(item.l_C) + l_sum
+                }
+                templist.push(item)
               }
-              item.h_C = item.h_C.toFixed(3)
-              joinCount++
-              l_sum = Number(item.h_C) + l_sum
-            }
-            templist.push(item)
-          }
-          this.tableData = templist
+              this.tableData = templist
 
-          if (joinCount <= 20) {
-            l_sum = l_sum / joinCount
+
+              if (joinCount <= 20) {
+                l_sum = l_sum / joinCount
+              }
+
+              this.computeData = [{
+                count: this.tableData.length,
+                joinCount: joinCount,
+                notUseNumber: notUseNumber,
+                diffe: diffe.toFixed(4),
+                pointError: l_sum.toFixed(4),
+                errorDiffe: this.oldItem.standardValue,
+                notUseScale: notUseNumber / joinCount * 100
+              }]
+              break
+            }
+            case 2: {
+              let temp = this.tableData[0]
+              if (temp.oldLength == null || temp.newLength == null) {
+                return
+              }
+              let templist = []
+              let joinCount = 0
+              let notUseNumber = 0
+              let l_sum = 0
+              let diffe = this.oldItem.standardValue * 2;
+              if (this.oldItem.detectionMode == 0) {
+                diffe = this.oldItem.standardValue * 2 * Math.sqrt(2)
+              }
+              for(let item of this.tableData){
+                if (item.isUse) {
+                  item.length_C = item.oldLength - item.newLength
+                  if (item.length_C > diffe) {
+                    item.isNotUse = true
+                    notUseNumber++
+                  }else {
+                    item.isNotUse = false
+                  }
+                  item.length_C = item.length_C.toFixed(3)
+                  joinCount++
+                  l_sum = Number(item.length_C) + l_sum
+                }
+                templist.push(item)
+              }
+              this.tableData = templist
+
+              if (joinCount <= 20) {
+                l_sum = l_sum / joinCount
+              }
+              this.computeData = [{
+                count: this.tableData.length,
+                joinCount: joinCount,
+                notUseNumber: notUseNumber,
+                diffe: diffe.toFixed(4),
+                pointError: l_sum.toFixed(4),
+                errorDiffe: this.oldItem.standardValue,
+                notUseScale: notUseNumber / joinCount * 100
+              }]
+              break
+            }
+            case 3: {
+              let temp = this.tableData[0]
+              if (temp.oldH == null || temp.newH == null) {
+                return
+              }
+              let templist = []
+              let joinCount = 0
+              let notUseNumber = 0
+              let l_sum = 0
+              let diffe = this.oldItem.standardValue * 2;
+              if (this.oldItem.detectionMode == 0) {
+                diffe = this.oldItem.standardValue * 2 * Math.sqrt(2)
+              }
+              for(let item of this.tableData){
+                if (item.isUse) {
+                  item.h_C = 0
+                  item.h_C = item.oldH - item.newH
+                  if (item.h_C > diffe) {
+                    item.isNotUse = true
+                    notUseNumber++
+                  }else {
+                    item.isNotUse = false
+                  }
+                  item.h_C = item.h_C.toFixed(3)
+                  joinCount++
+                  l_sum = Number(item.h_C) + l_sum
+                }
+                templist.push(item)
+              }
+              this.tableData = templist
+
+              if (joinCount <= 20) {
+                l_sum = l_sum / joinCount
+              }
+              this.computeData = [{
+                count: this.tableData.length,
+                joinCount: joinCount,
+                notUseNumber: notUseNumber,
+                diffe: diffe.toFixed(4),
+                pointError: l_sum.toFixed(4),
+                errorDiffe: this.oldItem.standardValue,
+                notUseScale: notUseNumber / joinCount * 100
+              }]
+              break
+            }
           }
-          this.computeData = [{
-            count: this.tableData.length,
-            joinCount: joinCount,
-            notUseNumber: notUseNumber,
-            diffe: diffe.toFixed(4),
-            pointError: l_sum.toFixed(4),
-            errorDiffe: this.oldItem.standardValue,
-            notUseScale: notUseNumber / joinCount * 100
-          }]
-          console.log(this.computeData);
-          break
-        }
-      }
-      this.$forceUpdate()
-      this.getResult()
+          
+          this.$forceUpdate()
+          this.getResult()
         }
       })
     },
     getResult(){
+      
       switch (this.tabelType) {
         case 1: {
-          console.log(this.computeData);
           let absoluteScore;
           if (this.computeData[0].notUseScale > 5) {
             absoluteScore = "不合格"
@@ -1504,9 +1622,10 @@ export default {
             absoluteScore = Math.floor(absoluteScore * 10) / 10
           }
           let json = {
-            name: this.oldItem.mapName,
+            mapNumber: this.oldItem.mapNumber,
             absolute: this.standard.name,
-            absoluteScore: absoluteScore
+            absoluteScore: absoluteScore,
+            absoluteWeight: this.standard.weight
           }
           this.merge(json)
           break
@@ -1527,7 +1646,8 @@ export default {
           let json = {
             mapNumber: this.oldItem.mapNumber,
             relative: this.standard.name,
-            relativeScore: relativeScore
+            relativeScore: relativeScore,
+            relativeWeight: this.standard.weight
           }
           this.merge(json)
           break
@@ -1550,17 +1670,19 @@ export default {
             case 0:
             case 1: {
               json = {
-                name: this.oldItem.mapName,
-                elevation: this.standard.name,
-                elevationScore: relativeScore
+                mapNumber: this.oldItem.mapNumber,
+                elevation1: this.standard.name,
+                elevationScore1: relativeScore,
+                elevationWeight1: this.standard.weight
               }
               break
             }
             case 2: {
               json = {
-                name: this.oldItem.mapName,
-                contour: this.standard.name,
-                contourScore: relativeScore
+                mapNumber: this.oldItem.mapNumber,
+                contour2: this.standard.name,
+                contourScore2: relativeScore,
+                elevationWeight2: this.standard.weight
               }
               break
             }
@@ -1569,29 +1691,31 @@ export default {
           break
         }
       }
-      for(let item of this.result){
-        if (item.absoluteScore != null || item.relativeScore != null) {
-          let planeScore = 0
-          if (item.relativeScore != null) {
-            planeScore += item.relativeScore * 0.1
-          }
-          if (item.absoluteScore != null) {
-            planeScore += item.absoluteScore * 0.1
-          }
-          item.planeScore = planeScore
-        }
-      }
       this.$forceUpdate()
     },
     //合并result的值
     merge(addItem){
-      if (this.result.length == 0) {
-        this.result.push({})
+      if (addItem.relativeScore != null) {
+        addItem.planeScore = addItem.relativeScore * this.standard.weight
+      }else if (addItem.absoluteScore != null) {
+        addItem.planeScore = addItem.absoluteScore * this.standard.weight
       }
-      for(let item of this.result){
-        if (item.mapNumber == addItem.mapNumber) {
-          this.twoJsonMerge(item, addItem)
+      if (this.result.length == 0) {
+        this.result.push(addItem)
+      }else {
+        let temp = []
+        for(let item of this.result){
+          console.log(item.mapNumber, addItem.mapNumber);
+          if (item.mapNumber == addItem.mapNumber) {
+            console.log(item.mapNumber, addItem.mapNumber);
+            if (item.planeScore != null && addItem.planeScore != null) {
+              addItem.planeScore += item.planeScore
+            }
+            temp.push(this.twoJsonMerge(item, addItem))
+          }
         }
+        console.log(this.result, temp);
+        this.result = temp
       }
     },
     //合并两个json，同key时 默认2将会覆盖1的值
@@ -1678,6 +1802,29 @@ export default {
           };
         }
       }
+    },
+    //得到中误差
+    getErrorValue(){
+      if(this.standard.id != null){
+        request({
+          url: `/accuracy/getData/${this.standard.id}`,
+          method: "post",
+          data: this.oldItem
+        }).then(res => {
+          if (res.flag) {
+            if (res.data != null) {
+              if (typeof res.data === 'number') {
+                this.standardValueList = [res.data]
+                this.$set(this.oldItem, 'standardValue', res.data)
+              }else {
+                this.$set(this.oldItem, 'standardValue', res.data[0])
+                this.standardValueList = res.data
+              }
+            }
+          }
+        })
+      }
+      
     },
     changeDetectionModel(){
 
