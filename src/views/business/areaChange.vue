@@ -2630,6 +2630,13 @@ export default {
         });
         return;
       }
+      if(this.newData.length == 0){
+        this.$message({
+          type: "warning",
+          message: "数据不能为空 !"
+        })
+        return
+      }
       request({
         url: "/file/upload/kml",
         method: "post",
