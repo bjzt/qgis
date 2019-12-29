@@ -1673,16 +1673,24 @@ export default {
   },
   methods: {
     submitExport() {
-      console.log("export");
       request({
         url: this.baseUrl + "/file/upload/export",
         method: "post",
-        data: this.fileUrlList,
+        data: {
+          fileUrlList: this.fileUrlList,
+          sevenPar: this.sevenPar,
+          oldItem: this.item1,
+          newItem: this.item2,
+          symbol: this.symbol,
+          lieList: this.lieList
+        },
         responseType: "blob"
       }).then(res => {
+        this.$refs.upload.clearFiles();
+        this.fileUrlList = [];
         const { content, filename } = res;
         console.log(filename);
-        const blob = new Blob([content],{type: 'application/vnd.ms-excel'});
+        const blob = new Blob([content], { type: "application/vnd.ms-excel" });
         if ("download" in document.createElement("a")) {
           // 非IE下载
           const elink = document.createElement("a");
@@ -1699,7 +1707,6 @@ export default {
         }
       });
     },
-
     fetchData() {
       this.getFormat();
       this.getAreaParamRecord();
