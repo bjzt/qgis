@@ -1,31 +1,37 @@
 <template>
   <div style="margin: 20px">
     <el-form :inline="true" ref="ruleForm" :rules="nameRules" :model="oldItem">
-      <div class="tag-group" >
+      <!-- <div class="tag-group">
         <el-tag v-if="tianqi.forecast != null">日期 : {{tianqi.forecast[0].date}}</el-tag>
-        <el-tag type="success" v-if="tianqi.forecast != null" >最高温度 : {{tianqi.forecast[0].high}}</el-tag>
+        <el-tag type="success" v-if="tianqi.forecast != null">最高温度 : {{tianqi.forecast[0].high}}</el-tag>
         <el-tag type="info" v-if="tianqi.forecast != null">风力 : {{tianqijiequ}}</el-tag>
         <el-tag type="warning" v-if="tianqi.forecast != null">最低温度 : {{tianqi.forecast[0].low}}</el-tag>
         <el-tag type="danger" v-if="tianqi.forecast != null">天气情况 : {{tianqi.forecast[0].type}}</el-tag>
-      </div>
+      </div>-->
+      <el-row>
+        <el-col :span="4"  v-if="tianqi.forecast != null">
+          <div style="font-size: 30px" > 日期 : {{tianqi.forecast[0].date}}</div>
+        </el-col>
+        <el-col :span="6"  v-if="tianqi.forecast != null">
+          <div style="font-size: 30px">最高温度 : {{tianqi.forecast[0].high}}</div>
+        </el-col>
+        <el-col :span="4"  v-if="tianqi.forecast != null">
+          <div style="font-size: 30px" >风力 : {{tianqijiequ}}</div>
+        </el-col>
+        <el-col :span="6"  v-if="tianqi.forecast != null">
+          <div  style="font-size: 30px">最低温度 : {{tianqi.forecast[0].low}}</div>
+        </el-col>
+        <el-col :span="4"  v-if="tianqi.forecast != null">
+          <div style="font-size: 30px"> 天气情况 : {{tianqi.forecast[0].type}}</div>
+        </el-col>
+      </el-row>
+
       <h2>基本信息：</h2>
-      <el-form-item label="联系人">
-        <el-select size="mini" v-model="oldItem.phone" placeholder="请选择">
-          <el-option :label="`${customer.name}_${customer.phone}`" :value="customer.phone"></el-option>
-          <el-option
-            v-for="item in userLinkOption"
-            :key="item.id"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
-        <span>联系人手机接收短信验证码</span>
-      </el-form-item>
       <el-form-item prop="name" label="项目名称(必填)">
         <el-input
           size="mini"
           v-model="oldItem.name"
-          style="width: 200px"
+          style="width: 400px"
           show-word-limit
           maxlength="50"
           placeholder="50字以内"
@@ -365,7 +371,10 @@
     </el-form>
     <div style="width: 220px; margin: auto">
       <el-button @click="compute" type="primary">点击计算</el-button>
-      <a :href="`${baseUrl}/file/upload/download?filePath=${this.newItem.url}`" style="display: inline-block;">
+      <a
+        :href="`${baseUrl}/file/upload/download?filePath=${this.newItem.url}`"
+        style="display: inline-block;"
+      >
         <el-button v-if="computButton" type="success">生成报告</el-button>
       </a>
     </div>
@@ -373,7 +382,7 @@
 </template>
 
 <script>
-import request from '@/utils/request'
+import request from "@/utils/request";
 
 export default {
   data() {
@@ -442,7 +451,8 @@ export default {
         name: [{ required: true, trigger: "blur", message: "不能为空" }]
       },
       tianqi: {},
-      tianqijiequ:""
+      tianqijiequ: "",
+      Cost: ""
     };
   },
   watch: {
@@ -499,7 +509,7 @@ export default {
     },
     tianqi: {
       deep: true,
-      handler(value){
+      handler(value) {
         console.log(value);
       }
     }
@@ -507,6 +517,12 @@ export default {
   created() {
     this.fetchData();
     this.getUserLink();
+    request({
+      url: "/data/config",
+      method: "get"
+    }).then(data => {
+      this.Cost = data.data.aviationCalc;
+    });
   },
   mounted() {
     this.getCity();
@@ -558,10 +574,10 @@ export default {
           var data = JSON.parse(xhr.responseText);
           that.tianqi = data.data;
           console.log(that.tianqi);
-        var c=  that.tianqi.forecast[0].fengli
-        var a= c.indexOf("A")+4
-        var b=c.substring(a).substring(0,c.substring(a).indexOf("]"))
-        that.tianqijiequ=b
+          var c = that.tianqi.forecast[0].fengli;
+          var a = c.indexOf("A") + 4;
+          var b = c.substring(a).substring(0, c.substring(a).indexOf("]"));
+          that.tianqijiequ = b;
         }
       };
     },
@@ -669,85 +685,121 @@ export default {
         }
       });
     },
-    compute(){
-      
+    compute() {
       this.$refs.cameraForm.validate(valid => {
         if (valid) {
-          let json = {
-            camera: this.cameraItem,
-            oldItem: this.oldItem
-          }
-          request({
-            url: "/aviation/camera",
-            method: "post",
-            data: json
-          }).then(res => {
-            if (res.flag) {
-              this.newItem = res.data
+          this.$confirm(
+            "本次将要消费  " + this.Cost + "元   , 是否继续?",
+            "提示",
+            {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消",
+              type: "warning"
             }
-            this.computButton = true
+          ).then(() => {
+            let json = {
+              camera: this.cameraItem,
+              oldItem: this.oldItem
+            };
+            request({
+              url: "/aviation/camera",
+              method: "post",
+              data: json
+            }).then(res => {
+              if (res.flag) {
+                this.newItem = res.data;
+              }
+              this.computButton = true;
 
-            if ((this.newItem.highCourse < 35 && this.newItem.highCourse != null) || (this.newItem.highSideDirection < 15 && this.newItem.highSideDirection != null)) {
+              if (
+                (this.newItem.highCourse < 35 &&
+                  this.newItem.highCourse != null) ||
+                (this.newItem.highSideDirection < 15 &&
+                  this.newItem.highSideDirection != null)
+              ) {
+                this.$message({
+                  type: "warning",
+                  message: "重叠度不够，请重新设计"
+                });
+              }
+              if (this.newItem.displacement > 0.5) {
+                this.$message({
+                  type: "warning",
+                  message:
+                    "像点位移造成相片运动模糊,一般控制在1/2的像素，最好是1/4个像素"
+                });
+              }
+              if (this.newItem.groundResolution > 20) {
+                if (
+                  this.oldItem.maxHeight - this.oldItem.minHeight >
+                  this.newItem.relativeHeight / 4.0
+                ) {
+                  this.$message({
+                    type: "warning",
+                    message:
+                      "地面分辨率大于20cm,分区地形高差不应大于1/4相对航高"
+                  });
+                }
+              } else {
+                if (
+                  this.oldItem.maxHeight - this.oldItem.minHeight >
+                  this.newItem.relativeHeight / 6.0
+                ) {
+                  this.$message({
+                    type: "warning",
+                    message:
+                      "地面分辨率小于20cm,分区地形高差不应大于1/6相对航高"
+                  });
+                }
+              }
+            });
+            if (
+              (this.newItem.highCourse < 35 &&
+                this.newItem.highCourse != null) ||
+              (this.newItem.highSideDirection < 15 &&
+                this.newItem.highSideDirection != null)
+            ) {
               this.$message({
                 type: "warning",
                 message: "重叠度不够，请重新设计"
-              })
-            }
-            if (this.newItem.displacement > 0.5) {
-              this.$message({
-                type: "warning",
-                message: "像点位移造成相片运动模糊,一般控制在1/2的像素，最好是1/4个像素"
-              })
+              });
             }
             if (this.newItem.groundResolution > 20) {
-              if (this.oldItem.maxHeight - this.oldItem.minHeight > this.newItem.relativeHeight / 4.0) {
+              if (
+                this.oldItem.maxHeight - this.oldItem.minHeight >
+                this.newItem.relativeHeight / 4.0
+              ) {
                 this.$message({
                   type: "warning",
                   message: "地面分辨率大于20cm,分区地形高差不应大于1/4相对航高"
-                })
+                });
               }
-            }else {
-              if (this.oldItem.maxHeight - this.oldItem.minHeight > this.newItem.relativeHeight / 6.0) {
+            } else {
+              if (
+                this.oldItem.maxHeight - this.oldItem.minHeight >
+                this.newItem.relativeHeight / 6.0
+              ) {
                 this.$message({
                   type: "warning",
                   message: "地面分辨率小于20cm,分区地形高差不应大于1/6相对航高"
-                })
+                });
               }
             }
-          })
-          if ( (this.newItem.highCourse < 35 && this.newItem.highCourse != null) || (this.newItem.highSideDirection < 15 && this.newItem.highSideDirection != null)) {
-            this.$message({
-              type: "warning",
-              message: "重叠度不够，请重新设计"
-            })
-          }
-          if (this.newItem.groundResolution > 20) {
-            if (this.oldItem.maxHeight - this.oldItem.minHeight >this.newItem.relativeHeight / 4.0) {
+
+            if (
+              (this.newItem.highCourse < 35 &&
+                this.newItem.highCourse != null) ||
+              (this.newItem.highSideDirection < 15 &&
+                this.newItem.highSideDirection != null)
+            ) {
               this.$message({
                 type: "warning",
-                message: "地面分辨率大于20cm,分区地形高差不应大于1/4相对航高"
+                message: "重叠度不够，请重新设计"
               });
             }
-          } else {
-            if (this.oldItem.maxHeight - this.oldItem.minHeight >this.newItem.relativeHeight / 6.0) {
-              this.$message({
-                type: "warning",
-                message: "地面分辨率小于20cm,分区地形高差不应大于1/6相对航高"
-              });
-            }
-          }
-        }
-        if (
-          (this.newItem.highCourse < 35 && this.newItem.highCourse != null) ||
-          (this.newItem.highSideDirection < 15 &&
-            this.newItem.highSideDirection != null)
-        ) {
-          this.$message({
-            type: "warning",
-            message: "重叠度不够，请重新设计"
           });
         }
-      })
+      });
     }
   }
 };

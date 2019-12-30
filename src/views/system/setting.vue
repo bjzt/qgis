@@ -89,17 +89,17 @@
                 <el-col :xs="18" :xl="18" :lg="18" :sm="24" :md="24">
                   <h2 style="text-align: center">在线坐标转换</h2>
                   <el-form-item label="单位价格" :label-width="inputWidth">
-                    <el-input size="small" v-model="config.price">
+                    <el-input size="small" v-model.number="config.price">
                       <el-button size="small" slot="append">元</el-button>
                     </el-input>
                   </el-form-item>
                   <el-form-item label="最大上传点数量" :label-width="inputWidth">
-                    <el-input size="small" v-model="config.maxPointNumber">
+                    <el-input size="small" v-model.number="config.maxPointNumber">
                       <el-button size="small" slot="append">个</el-button>
                     </el-input>
                   </el-form-item>
                   <el-form-item label="最大跨度" :label-width="inputWidth">
-                    <el-input size="small" v-model="config.maxKD">
+                    <el-input size="small" v-model.number="config.maxKD">
                       <el-button size="small" slot="append">km</el-button>
                     </el-input>
                   </el-form-item>
@@ -115,12 +115,12 @@
                 <el-col :xs="18" :xl="18" :lg="18" :sm="24" :md="24">
                   <h2 style="text-align: center">区域验证导入</h2>
                   <el-form-item label="单位价格" :label-width="inputWidth">
-                    <el-input size="small" v-model="config.dataBasePoint">
+                    <el-input size="small" v-model.number="config.dataBasePoint">
                       <el-button size="small" slot="append">元</el-button>
                     </el-input>
                   </el-form-item>
                   <el-form-item :label-width="inputWidth">
-                    <el-button size="small" type="primary">修改</el-button>
+                    <el-button size="small" @click="updateConfig" type="primary">修改</el-button>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -131,12 +131,12 @@
                 <el-col :xs="18" :xl="18" :lg="18" :sm="24" :md="24">
                   <h2 style="text-align: center">区域参数计算</h2>
                   <el-form-item label="单位价格" :label-width="inputWidth">
-                    <el-input size="small" v-model="config.argsCalc">
+                    <el-input size="small" v-model.number="config.argsCalc">
                       <el-button size="small" slot="append">元</el-button>
                     </el-input>
                   </el-form-item>
                    <el-form-item :label-width="inputWidth">
-                    <el-button size="small" type="primary">修改</el-button>
+                    <el-button size="small" @click="updateConfig" type="primary">修改</el-button>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -148,12 +148,12 @@
                 <el-col :xs="18" :xl="18" :lg="18" :sm="24" :md="24">
                   <h2 style="text-align: center">区域计算</h2>
                   <el-form-item label="单位价格" :label-width="inputWidth">
-                    <el-input size="small" v-model="config.convertCalc">
+                    <el-input size="small" v-model.number="config.convertCalc">
                       <el-button size="small" slot="append">元</el-button>
                     </el-input>
                   </el-form-item>
                    <el-form-item :label-width="inputWidth">
-                    <el-button size="small" type="primary">修改</el-button>
+                    <el-button size="small" @click="updateConfig" type="primary">修改</el-button>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -165,12 +165,12 @@
                 <el-col :xs="18" :xl="18" :lg="18" :sm="24" :md="24">
                   <h2 style="text-align: center">航空计算</h2>
                   <el-form-item label="单位价格" :label-width="inputWidth">
-                    <el-input size="small" v-model="config.aviationCalc">
+                    <el-input size="small" v-model.number="config.aviationCalc">
                       <el-button size="small" slot="append">元</el-button>
                     </el-input>
                   </el-form-item>
                    <el-form-item :label-width="inputWidth">
-                    <el-button size="small" type="primary">修改</el-button>
+                    <el-button size="small" @click="updateConfig" type="primary">修改</el-button>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -182,12 +182,12 @@
                 <el-col :xs="18" :xl="18" :lg="18" :sm="24" :md="24">
                   <h2 style="text-align: center">精度检测</h2>
                   <el-form-item label="单位价格" :label-width="inputWidth">
-                    <el-input size="small" v-model="config.mathAccuracy">
+                    <el-input size="small" v-model.number="config.mathAccuracy">
                       <el-button size="small" slot="append">元</el-button>
                     </el-input>
                   </el-form-item>
                    <el-form-item :label-width="inputWidth">
-                    <el-button size="small" type="primary">修改</el-button>
+                    <el-button size="small" @click="updateConfig" type="primary">修改</el-button>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -322,6 +322,22 @@ export default {
           this.dialogVisible = false
           this.getList()
           }
+      })
+    },
+    updateConfig(){
+      // console.log(this.config);
+      
+       request({
+        url: "/data/config",
+        method: "put",
+        data: this.config
+      }).then(res => {
+        if (res.flag) {
+          this.$message({
+            type: "success",
+            message: res.message
+          })
+        }
       })
     },
     add(){
