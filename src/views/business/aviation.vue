@@ -1,24 +1,20 @@
 <template>
   <div style="margin: 20px">
     <el-form :inline="true" ref="ruleForm" :rules="nameRules" :model="oldItem">
-      <!-- <div class="tag-group">
-        <el-tag v-if="tianqi.forecast != null">日期 : {{tianqi.forecast[0].date}}</el-tag>
-        <el-tag type="success" v-if="tianqi.forecast != null">最高温度 : {{tianqi.forecast[0].high}}</el-tag>
-        <el-tag type="info" v-if="tianqi.forecast != null">风力 : {{tianqijiequ}}</el-tag>
-        <el-tag type="warning" v-if="tianqi.forecast != null">最低温度 : {{tianqi.forecast[0].low}}</el-tag>
-        <el-tag type="danger" v-if="tianqi.forecast != null">天气情况 : {{tianqi.forecast[0].type}}</el-tag>
-      </div>-->
       <el-row>
+        <el-col :span="3"  v-if="tianqi.forecast != null">
+          <div style="font-size: 30px" > 城市 : {{tianqi.forecast[0].city}}</div>
+        </el-col>
         <el-col :span="4"  v-if="tianqi.forecast != null">
           <div style="font-size: 30px" > 日期 : {{tianqi.forecast[0].date}}</div>
         </el-col>
-        <el-col :span="6"  v-if="tianqi.forecast != null">
+        <el-col :span="5"  v-if="tianqi.forecast != null">
           <div style="font-size: 30px">最高温度 : {{tianqi.forecast[0].high}}</div>
         </el-col>
-        <el-col :span="4"  v-if="tianqi.forecast != null">
+        <el-col :span="3"  v-if="tianqi.forecast != null">
           <div style="font-size: 30px" >风力 : {{tianqijiequ}}</div>
         </el-col>
-        <el-col :span="6"  v-if="tianqi.forecast != null">
+        <el-col :span="5"  v-if="tianqi.forecast != null">
           <div  style="font-size: 30px">最低温度 : {{tianqi.forecast[0].low}}</div>
         </el-col>
         <el-col :span="4"  v-if="tianqi.forecast != null">
@@ -221,7 +217,7 @@
         </el-col>
       </el-row>
       <el-row style="text-align:center">
-        <el-button type="primary">根据范围计高程</el-button>
+        <el-button @click="openMap=true" type="primary">根据范围计高程</el-button>
       </el-row>
     </el-form>
     <h2>计算参数：</h2>
@@ -378,6 +374,24 @@
         <el-button v-if="computButton" type="success">生成报告</el-button>
       </a>
     </div>
+
+    <!-- 打开地图 start-->
+    <el-dialog fullscreen :visible.sync="openMap">
+      <iframe
+        id="mapHtml"
+        scrolling="no"
+        src="/gis/sgis/"
+        style="width:100%;height:800px;"
+      ></iframe>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="openMap=false;">取 消</el-button>
+        <el-button
+          size="mini"
+          @click="getMapValue();"
+          type="primary"
+        >确认导入当前高程</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -397,6 +411,7 @@ export default {
         resolutionValue: 1800,
         speedValue: 18
       },
+      openMap: false, //gis 弹窗
       computButton: false,
       standardOldItemValue: {
         time: 1250,
@@ -575,6 +590,7 @@ export default {
           that.tianqi = data.data;
           console.log(that.tianqi);
           var c = that.tianqi.forecast[0].fengli;
+          that.tianqi.forecast[0].city = city
           var a = c.indexOf("A") + 4;
           var b = c.substring(a).substring(0, c.substring(a).indexOf("]"));
           that.tianqijiequ = b;
@@ -800,6 +816,20 @@ export default {
           });
         }
       });
+    },
+    //得到gis传过来的值
+    getMapValue() {
+      let map = this.$el.getElementsByTagName("iframe")[0].contentWindow;
+      
+      console.log(map);
+      
+      //得到gis的值
+      this.$set(this.oldItem, "maxHeight", map.maxheight)
+      this.$set(this.oldItem, "minHeight", map.minheight)
+      this.$set(this.oldItem, "verageHeight", map.verageheight)
+      
+      map.location.reload(true);
+      this.openMap = false;
     }
   }
 };

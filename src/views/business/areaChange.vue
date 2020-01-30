@@ -473,7 +473,7 @@
                         @click="dialogVisible1=true;setExportLie()"
                         type="primary"
                       >导入</el-button>
-                      <el-button size="small" @click="openMapValue()" type="success">图显</el-button>
+                      <el-button size="small" @click="openMapValue(1)" type="success">图显</el-button>
                     </el-button-group>
                   </div>
                   <el-table
@@ -496,7 +496,7 @@
                     <span>转换后</span>
                     <el-button-group style="float: right">
                       <el-button size="small" @click="computer" type="primary">计算</el-button>
-                      <el-button size="small" @click="openMapValue()" type="success">图显</el-button>
+                      <el-button size="small" @click="openMapValue(2)" type="success">图显</el-button>
                     </el-button-group>
                   </div>
                   <el-table
@@ -1249,7 +1249,7 @@
       <iframe
         id="mapHtml"
         scrolling="no"
-        src="static\html\demo.html"
+        src="/gis/sgis/"
         style="width:100%;height:800px;"
       ></iframe>
       <span slot="footer" class="dialog-footer">
@@ -2724,26 +2724,26 @@ export default {
     },
     getMapValue() {
       let map = this.$el.getElementsByTagName("iframe")[0].contentWindow;
-
+      
+      console.log(map.names);
+      
       this.submitData(
         "Ata473,Ata456,Ata472,Ata484,Ata486,Ata455,Ata554,Ata495,Ata483"
       );
       map.location.reload(true);
       this.openMap = false;
     },
-    openMapValue() {
+    openMapValue(type) {
       this.openMap = true;
       let map = this.$el.getElementsByTagName("iframe")[0].contentWindow;
 
-      let json = {
-        kk: "dssadas",
-        dsad: 4545
-      };
-      console.log(map);
-      console.log(map.aa);
-
-      map.jsonRead(JSON.stringify(json));
-      map.jsonObjectRead(json);
+      let data = null;
+      if (type==1){
+        data = JSON.stringify(this.oldData)
+      }else if (type==2){
+        data = JSON.stringify(this.newData)
+      }
+      map.setCoords(data)
 
       map.location.reload(true);
     },

@@ -3,7 +3,6 @@
     <el-row>
       <el-col :span="4">
         <el-menu
-          default-active="132"
           @select="selectMenu"
           background-color="#545c64"
           text-color="#fff"
@@ -1299,18 +1298,17 @@ export default {
       this.randomVisible = false;
     },
     getWord() {
-      // let data = {
-      //   name: "",
-      //   detectionMode: this.oldItem.detectionMode,
-      //   notUseNumber: this.computeData[0].notUseNumber,
-      //   notUseScale: this.computeData[0].notUseScale,
-      //   pointError: this.computeData[0].pointError,
-      //   error: this.oldItem.standardValue,
-      //   mapNumber: this.oldItem.mapNumber,
-      //   pointList: this.tableData
-      // }
-      let data = JSON.parse(JSON.stringify(this.oldItem));
-      data.data = this.tableData;
+      let data = {
+        notUseNumber: this.computeData[0].notUseNumber,
+        notUseScale: this.computeData[0].notUseScale,
+        pointError: this.computeData[0].pointError,
+        error: this.oldItem.standardValue,
+        pointList: this.tableData
+      }
+      
+      data = this.twoJsonMerge(data, JSON.parse(JSON.stringify(this.oldItem)));
+
+      // data.data = this.tableData;
       // let url = `/file/upload/word/${this.tabelType}`
       let url = `/file/upload/accuracy/excel/${this.tabelType}`;
       request({
@@ -1600,20 +1598,18 @@ export default {
           if(this.oldItem.pointType == 2) {
             json = {
               mapNumber: this.oldItem.mapNumber,
-              contour2: this.standard.name,
-              contourScore2: relativeScore,
-              elevationWeight2: this.standard.weight
+              contour: this.standard.name,
+              contourScore: relativeScore,
+              contourWeight: this.standard.weight
             };
           }else {
             json = {
                 mapNumber: this.oldItem.mapNumber,
-                elevation1: this.standard.name,
-                elevationScore1: relativeScore,
-                elevationWeight1: this.standard.weight
+                elevation: this.standard.name,
+                elevationScore: relativeScore,
+                elevationWeight: this.standard.weight
               };
-          }
-          console.log(json);
-          
+          } 
           this.merge(json);
           break;
         }
@@ -1622,25 +1618,6 @@ export default {
     },
     //合并result的值
     merge(addItem) {
-      if (addItem.relativeScore != null) {
-        addItem.relativeScore = addItem.relativeScore * this.standard.weight;
-      }
-      if (addItem.absoluteScore != null) {
-        addItem.absoluteScore = addItem.absoluteScore * this.standard.weight;
-      }
-
-      if (this.oldItem.pointType == 2) {
-        if (addItem.contour2 != null && addItem.contourScore2 != null) {
-          addItem.contour = addItem.contour2;
-          addItem.contourScore = addItem.contourScore2 * this.standard.weight;
-        }
-      } else {
-        if (addItem.elevationScore1 != null && addItem.elevation1 != null) {
-          addItem.elevation = addItem.elevation1;
-          addItem.elevationScore = addItem.elevationScore1 * this.standard.weight;
-        }
-      }
-
       if (this.result.length == 0) {
         this.result.push(addItem);
       } else {
@@ -1655,42 +1632,45 @@ export default {
           }
         }
         if (!flag) {
-          accuracyScore += addItem.relativeScore;
           temp.push(addItem);
         }
-        let sum = 0;
-        let sum1 = 0;
-        let accuracyScore = 0;
-        let gaochengScore = 0;
-        for (let item of temp) {
-          if (item.relativeScore != null) {
-            accuracyScore += item.relativeScore;
-            sum += 1;
-          }
-          if (item.absoluteScore != null) {
-            accuracyScore += item.absoluteScore;
-            sum += 1;
-          }
-          if (item.elevationScore != null) {
-            gaochengScore += item.elevationScore;
-            sum1 += 1;
-          }
-          if (item.contourScore != null) {
-            gaochengScore += item.contourScore;
-            sum1 += 1;
-          }
-        }
-
         this.result = temp;
-        if (sum != 0) {
-          accuracyScore = accuracyScore / sum;
-          this.result[0].planeScore = accuracyScore;
+      }
+      let sum = 0;
+      let sum1 = 0;
+      let accuracyScore = 0;
+      let gaochengScore = 0;
+      for (let item of this.result) {
+        if (item.relativeScore != null) {
+          accuracyScore += item.relativeScore * item.relativeWeight;
+          sum += 1;
         }
-        if (sum1 != 0) {
-          gaochengScore = gaochengScore / sum1;
-          this.result[0].altitudeScore = gaochengScore;
+        
+        if (item.absoluteScore != null) {
+          accuracyScore += item.absoluteScore * item.absoluteWeight;
+          sum += 1;
+        }
+        if (item.elevationScore != null) {
+          gaochengScore += item.elevationScore * item.elevationWeight;
+          sum1 += 1;
+        }
+        if (item.contourScore != null) {
+          gaochengScore += item.contourScore * item.contourWeight;
+          sum1 += 1;
         }
       }
+      let math = 0
+      if (sum != 0) {
+        accuracyScore = accuracyScore / sum;
+        this.result[0].planeScore = accuracyScore;
+        math += accuracyScore
+      }
+      if (sum1 != 0) {
+        gaochengScore = gaochengScore / sum1;
+        this.result[0].altitudeScore = gaochengScore;
+        math += gaochengScore
+      }
+      this.result[0].math = math * this.standard.mathWeight / 2
     },
     //合并两个json，同key时 默认2将会覆盖1的值
     twoJsonMerge(json1, json2) {
