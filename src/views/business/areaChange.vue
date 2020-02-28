@@ -261,13 +261,13 @@
               <el-input v-model="item1.name"></el-input>
             </el-form-item>
             <el-form-item label="联系人" :label-width="formWdth">
-              <el-select size="mini" v-model="phone" placeholder="请选择联系人">
-                <el-option :label="`${customer.name}_${customer.phone}`" :value="customer.phone"></el-option>
+              <el-select size="mini" v-model="thatUser" placeholder="请选择联系人" value-key="id">
+                <el-option :label="`${customer.name}_${customer.phone}`" :value="customer"></el-option>
                 <el-option
                   v-for="item in userLinkOption"
                   :key="item.id"
                   :label="item.label"
-                  :value="item.value"
+                  :value="item"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -377,7 +377,7 @@
                 <el-select v-model="model" @change="selectModel">
                   <el-option label="布尔莎七参数" :value="0"></el-option>
                   <el-option label="四参数" :value="1"></el-option>
-                  <el-option label="似大地水准面精化" :value="2"></el-option>
+                  <el-option disabled label="似大地水准面精化" :value="2"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
@@ -1265,12 +1265,12 @@
     <!-- 地图 -->
   </div>
 </template>
-<style lang="scss" scoped>
-.onLine {
-  .el-input-group__append {
-    padding: 0;
-  }
-}
+<style lang="scss">
+// .onLine {
+//   .el-input-group__append {
+//     padding: 0;
+//   }
+// }
 .scrollbar {
   .el-scrollbar__wrap {
     overflow-x: hidden;
@@ -1430,7 +1430,9 @@ export default {
         label: "点名",
         value: "0"
       },
-      phone: null, //所选的手机号
+      thatUser: {
+        phone: ""
+      }, //所选的手机号
       dataList: [], //上传的文件数据
       fileUrlList: [], // 上传文件返回的url
       start: 0, //开始计算的行
@@ -2028,7 +2030,6 @@ export default {
         let userLink = data.data;
         userLink.map(link => {
           link.label = link.name + "_" + link.phone;
-          link.value = link.phone;
         });
         this.userLinkOption = userLink;
       });
@@ -2355,6 +2356,16 @@ export default {
             message: "项目名不能为空"
           });
           return;
+        }
+
+        if(this.thatUser.id == null || this.thatUser.phone == ""){
+          this.$message({
+            type: "warning",
+            message: "请选择联系人"
+          });
+          return;
+        }else {
+          this.item1.userLinkId = this.thatUser.id
         }
       }
 

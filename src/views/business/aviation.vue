@@ -1,23 +1,23 @@
 <template>
   <div style="margin: 20px">
     <el-form :inline="true" ref="ruleForm" :rules="nameRules" :model="oldItem">
-      <el-row>
-        <el-col :span="3"  v-if="tianqi.forecast != null">
+      <el-row v-if="tianqi.forecast != null">
+        <el-col :span="3">
           <div style="font-size: 30px" > 城市 : {{tianqi.forecast[0].city}}</div>
         </el-col>
-        <el-col :span="4"  v-if="tianqi.forecast != null">
+        <el-col :span="4">
           <div style="font-size: 30px" > 日期 : {{tianqi.forecast[0].date}}</div>
         </el-col>
-        <el-col :span="5"  v-if="tianqi.forecast != null">
+        <el-col :span="5">
           <div style="font-size: 30px">最高温度 : {{tianqi.forecast[0].high}}</div>
         </el-col>
-        <el-col :span="3"  v-if="tianqi.forecast != null">
-          <div style="font-size: 30px" >风力 : {{tianqijiequ}}</div>
+        <el-col :span="3">
+          <div style="font-size: 30px" >风力 : {{tianqi.forecast[0].fengli}}</div>
         </el-col>
-        <el-col :span="5"  v-if="tianqi.forecast != null">
+        <el-col :span="5">
           <div  style="font-size: 30px">最低温度 : {{tianqi.forecast[0].low}}</div>
         </el-col>
-        <el-col :span="4"  v-if="tianqi.forecast != null">
+        <el-col :span="4">
           <div style="font-size: 30px"> 天气情况 : {{tianqi.forecast[0].type}}</div>
         </el-col>
       </el-row>
@@ -466,7 +466,6 @@ export default {
         name: [{ required: true, trigger: "blur", message: "不能为空" }]
       },
       tianqi: {},
-      tianqijiequ: "",
       Cost: ""
     };
   },
@@ -522,12 +521,6 @@ export default {
         }
       }
     },
-    tianqi: {
-      deep: true,
-      handler(value) {
-        console.log(value);
-      }
-    }
   },
   created() {
     this.fetchData();
@@ -553,6 +546,9 @@ export default {
         function getinfo(position) {
           let city = position.address.city; //获取城市信息
           let province = position.address.province; //获取省份信息
+          if (city == "" || city == null) {
+            city = "北京";
+          }
           that.oldItem.city = city;
           that.getWather(city);
         },
@@ -588,12 +584,11 @@ export default {
         if (xhr.readyState == 4 && xhr.status == 200) {
           var data = JSON.parse(xhr.responseText);
           that.tianqi = data.data;
-          console.log(that.tianqi);
           var c = that.tianqi.forecast[0].fengli;
           that.tianqi.forecast[0].city = city
           var a = c.indexOf("A") + 4;
           var b = c.substring(a).substring(0, c.substring(a).indexOf("]"));
-          that.tianqijiequ = b;
+          that.tianqi.forecast[0].fengli = b;
         }
       };
     },

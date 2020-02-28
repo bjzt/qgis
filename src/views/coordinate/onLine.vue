@@ -6,13 +6,13 @@
           <el-row>
             <el-col :xs="24" :xl="12" :lg="18" :sm="24" :md="24" >
               <el-form-item label-width="120px" label="联系人(必填)">
-                <el-select size="mini" v-model="thisPhone" placeholder="请选择">
-                  <el-option :label="`${customer.name}_${customer.phone}`" :value="customer.phone"></el-option>
+                <el-select size="mini" v-model="thatUser" placeholder="请选择" value-key="id">
+                  <el-option :label="`${customer.name}_${customer.phone}`" :value="customer"></el-option>
                   <el-option
                     v-for="item in userLinkOption"
                     :key="item.id"
                     :label="item.label"
-                    :value="item.value">
+                    :value="item">
                   </el-option>
                 </el-select>
                 <span>联系人作为安全责任人，其手机接收短信验证码</span>
@@ -253,7 +253,7 @@
                   </el-row>
                 </el-form-item>
                 <el-form-item label="手机号" label-width="120px">
-                  <span v-text="thisPhone"></span>
+                  <span v-text="thatUser.phone"></span>
                 </el-form-item>
                 <el-form-item label="结算方式" label-width="120px">
                   <el-switch
@@ -372,14 +372,13 @@ export default {
       baseUrl: process.env.VUE_APP_BASE_API,
       fileUpload: true,//文件上传与文本上传切换
       checkcode: '',//验证码
-      thisPhone: '',//当前选择的手机号
+      thatUser: {
+        phone: ""
+      },//当前选择的使用人
       text: '',//文本内容
       name: "",
       filePath: "",
       userLinkOption: [],//联系人选项
-      userLink: {
-        phone: null
-      },
       canClick: true,
       content: "获取验证码",
       codeTime: 60,
@@ -436,9 +435,6 @@ export default {
       let points = newText.split("\n") 
       this.point.number = points.length
     },
-    thisPhone(newV){
-      this.userLink.phone = newV
-    }
   },
   computed: {
     price(){
@@ -496,7 +492,7 @@ export default {
     //获取验证码
     getCode(){
       if (!this.canClick) return;
-      if (this.thisPhone=="" || this.thisPhone== null) {
+      if (this.thatUser.phone=="" || this.thatUser.phone == null) {
         this.$message({
           type: "warning",
           message: "请选择联系人"
@@ -520,7 +516,7 @@ export default {
         url: "/changeFileRecord/fileCode",
         method: "get",
         params: {
-          phone: this.thisPhone
+          phone: this.thatUser.phone
         }
       }).then(data => {
         this.$message({
@@ -564,7 +560,6 @@ export default {
         let userLink = data.data;
         userLink.map(link => {
           link.label = link.name +"_" + link.phone
-          link.value = link.phone
         })
         this.userLinkOption = userLink
       })
@@ -613,6 +608,7 @@ export default {
       
       item1.filePath = this.filePath
       item1.code = this.checkcode
+      item1.userLinkId = this.thatUser.id
       if (!this.fileUpload) {
         item1.text = this.text
       }
