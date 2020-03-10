@@ -73,7 +73,7 @@
                         </el-col>
                         <el-col :xs="8" :xl="8" :lg="8" :sm="8" :md="8">
                           <el-form-item prop="zw3">
-                            <el-input ref="zw3" size="mini" v-model="item1.zw3">
+                            <el-input ref="zw3" size="mini" v-model.number="item1.zw3">
                               <el-button slot="append" style="font-size:20px;padding:0px;">″</el-button>
                             </el-input>
                           </el-form-item>
@@ -189,14 +189,14 @@
                         </el-col>
                         <el-col :xs="8" :xl="8" :lg="8" :sm="8" :md="8">
                           <el-form-item prop="zw2">
-                            <el-input size="mini" v-model.number="item2.zw2">
+                            <el-input ref="zw2" size="mini" v-model.number="item2.zw2">
                               <el-button slot="append" style="font-size:20px;padding:0">′</el-button>
                             </el-input>
                           </el-form-item>
                         </el-col>
                         <el-col :xs="8" :xl="8" :lg="8" :sm="8" :md="8">
                           <el-form-item prop="zw3">
-                            <el-input size="mini" v-model="item2.zw3">
+                            <el-input ref="zw3" size="mini" v-model.number="item2.zw3">
                               <el-button slot="append" style="font-size:20px;padding:0">″</el-button>
                             </el-input>
                           </el-form-item>
@@ -1183,7 +1183,7 @@
                   </el-col>
                   <el-col :xs="8" :xl="8" :lg="8" :sm="8" :md="8">
                     <el-form-item prop="zw3">
-                      <el-input ref="zw3" disabled v-model="project.item1.zw3"></el-input>
+                      <el-input ref="zw3" disabled v-model.number="project.item1.zw3"></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -1220,7 +1220,7 @@
                 </el-col>
                 <el-col :xs="8" :xl="8" :lg="8" :sm="8" :md="8">
                   <el-form-item prop="zw3">
-                    <el-input ref="zw3" disabled v-model="project.item2.zw3"></el-input>
+                    <el-input ref="zw3" disabled v-model.number="project.item2.zw3"></el-input>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -1246,12 +1246,7 @@
 
     <!-- 打开地图 start-->
     <el-dialog fullscreen @close="isImport=false" :visible.sync="openMap">
-      <iframe
-        id="mapHtml"
-        scrolling="no"
-        src="/gis/sgis/"
-        style="width:100%;height:800px;"
-      ></iframe>
+      <iframe id="mapHtml" scrolling="no" src="/gis/sgis/" style="width:100%;height:800px;"></iframe>
       <span slot="footer" class="dialog-footer">
         <el-button size="mini" @click="openMap=false;isImport=false">取 消</el-button>
         <el-button
@@ -1330,25 +1325,49 @@ export default {
       baseUrl: process.env.VUE_APP_BASE_API,
       importHeaders: { "X-Token": getToken() },
       itemRules1: {
-        name: [{ required: true, trigger: "blur", message: "不能为空" }],
+        name: [
+          { required: true, trigger: ["blur", "change"], message: "不能为空" }
+        ],
         zw1: [
-          { required: true, trigger: "blur", message: "不能为空" },
-          { type: "number", message: "只能是数字" }
+          {
+            required: true,
+            message: "请输入",
+            trigger: "blur"
+          },
+          { type: "number", trigger: ["blur", "change"], validator: isnumber }
         ],
         zw2: [
-          { required: true, trigger: "blur", message: "不能为空" },
-          { type: "number", message: "只能是数字" }
+          { required: true, message: "请输入", trigger: "blur" },
+          {
+            type: "number", //要检验的类型（number，email，date等）
+            message: "只能输入0~60",
+            min: 0,
+            max: 60,
+            trigger: ["blur", "change"]
+          }
         ],
-        zw3: [{ required: true, trigger: "blur", validator: isNumber }],
+        zw3: [
+          { required: true, message: "请输入", trigger: "blur" },
+          {
+            type: "number", //要检验的类型（number，email，date等）
+            message: "只能输入0~60",
+            min: 0,
+            max: 60,
+            trigger: ["blur", "change"]
+          }
+        ],
         x: [
-          { required: true, trigger: "blur", message: "不能为空" },
-          { type: "number", message: "只能是数字" }
+          { required: true, message: "请输入", trigger: "blur" },
+          { type: "number", trigger: ["blur", "change"], validator: isnumber }
         ],
         y: [
-          { required: true, trigger: "blur", message: "不能为空" },
-          { type: "number", message: "只能是数字" }
+          { required: true, message: "请输入", trigger: "blur" },
+          { type: "number", trigger: ["blur", "change"], validator: isnumber }
         ],
-        t: [{ required: true, trigger: "blur", validator: isnumber }]
+        t: [
+          { required: true, message: "请输入", trigger: "blur" },
+          { type: "number", trigger: ["blur", "change"], validator: isnumber }
+        ]
       },
       isTwoPoint: false,
       item1: {
@@ -2358,14 +2377,14 @@ export default {
           return;
         }
 
-        if(this.thatUser.id == null || this.thatUser.phone == ""){
+        if (this.thatUser.id == null || this.thatUser.phone == "") {
           this.$message({
             type: "warning",
             message: "请选择联系人"
           });
           return;
-        }else {
-          this.item1.userLinkId = this.thatUser.id
+        } else {
+          this.item1.userLinkId = this.thatUser.id;
         }
       }
 
@@ -2641,12 +2660,12 @@ export default {
         });
         return;
       }
-      if(this.newData.length == 0){
+      if (this.newData.length == 0) {
         this.$message({
           type: "warning",
           message: "数据不能为空 !"
-        })
-        return
+        });
+        return;
       }
       request({
         url: "/file/upload/kml",
@@ -2735,9 +2754,9 @@ export default {
     },
     getMapValue() {
       let map = this.$el.getElementsByTagName("iframe")[0].contentWindow;
-      
+
       console.log(map.names);
-      
+
       this.submitData(
         "Ata473,Ata456,Ata472,Ata484,Ata486,Ata455,Ata554,Ata495,Ata483"
       );
@@ -2749,12 +2768,12 @@ export default {
       let map = this.$el.getElementsByTagName("iframe")[0].contentWindow;
 
       let data = null;
-      if (type==1){
-        data = JSON.stringify(this.oldData)
-      }else if (type==2){
-        data = JSON.stringify(this.newData)
+      if (type == 1) {
+        data = JSON.stringify(this.oldData);
+      } else if (type == 2) {
+        data = JSON.stringify(this.newData);
       }
-      map.setCoords(data)
+      map.setCoords(data);
 
       map.location.reload(true);
     },
