@@ -38,6 +38,9 @@
       <el-table-column
         prop="projectName"
         label="项目名称">
+         <template slot-scope="scope">
+          <el-input v-model="scope.row.projectName"></el-input>
+        </template>
       </el-table-column>
       <el-table-column
         prop="projectType"
@@ -80,7 +83,7 @@
         prop="created"
         label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" @click="del(scope.row.id)" type="text">删除</el-button>
+          <el-button size="mini" @click="del(scope.row.id,scope.row.projectName)" type="text">修改项目名称</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -142,10 +145,10 @@ export default {
       this.listQuery.currentPage = val
       this.getList()
     },
-    del(id){
+    del(id,name){
       request({
-        url: `/changeFileRecord/${id}`,
-        method: "delete"
+        url: `/changeFileRecord/${id}/${name}`,
+        method: "put"
       }).then(data => {
         if (data.flag) {
           this.$message({
@@ -155,6 +158,7 @@ export default {
           this.getList()
         }
       })
+
     }
   }
 }
