@@ -307,10 +307,9 @@
                       type="textarea"
                       :rows="3"
                     ></el-input>
-                    <!-- 
-                      这里其实没有检验规则 所以可以一并提交
+
+                    <!-- 这里其实没有检验规则 所以可以一并提交 -->
                     <el-button size="mini" @click="uploadText">上传文本</el-button>
-                    -->
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -674,9 +673,42 @@ export default {
     },
     //上传文本内容
     uploadText() {
-      // this.commit(this.text)
+      //验证方法
+      this.confirmText();
     },
-    //提交表单
+    // 验证文本
+    confirmText() {
+       if (!/^\S/.test(this.item1.name)) {
+        this.$message({
+          type: "error",
+          message: "项目名不能为空"
+        });
+        return;
+      }
+      this.res = "正在验证文本,请稍等";
+      let item1 = this.item(this.item1);
+      item1.text = this.text;
+      request({
+        url: "/changeFileRecord/verify",
+        method: "post",
+        data: {
+          item1: item1,
+        }
+      })
+        .then(res => {
+          this.$message({
+            type: "success",
+            message: res.message
+          });
+        })
+        .catch(err => {
+           this.$message({
+           type: "error",
+           message: res.message
+        });
+        });
+    },
+    // 提交表单
     commit() {
       if (!/^\S/.test(this.item1.name)) {
         this.$message({
