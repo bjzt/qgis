@@ -1692,6 +1692,18 @@ export default {
     ];
     this.setLieOption();
   },
+  //test
+  mounted() {
+    FMEServer.init({
+      server : "https://www.qgisw.com:8081",
+      token : "1d8c70efb83eec96fdf38616f05f2b9c629c9350"
+    });
+    const repository = "Samples";
+    const workspace = "矢量文件.fmw";
+    const setVars = "";
+
+    FMEServer.getSession( repository, workspace, setVars );
+  },
   methods: {
     submitExport() {
       request({
@@ -1735,9 +1747,19 @@ export default {
     //获取验证码
     getCode() {
       if (!this.canClick) return;
+      if (this.thatUser.phone == "" || this.thatUser.phone == null) {
+        this.$message({
+          type: "warning",
+          message: "请选择联系人"
+        });
+        return;
+      }
       request({
-        url: "/userLink/linkCode",
-        method: "get"
+        url: "/changeFileRecord/fileCode",
+        method: "get",
+        params: {
+          phone: this.thatUser.phone
+        }
       }).then(data => {
         this.$message({
           type: "success",

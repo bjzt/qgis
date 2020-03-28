@@ -103,6 +103,16 @@
                       <el-button size="small" slot="append">km</el-button>
                     </el-input>
                   </el-form-item>
+                  <el-form-item label="点之间的距离" :label-width="inputWidth">
+                    <el-input size="small" v-model.number="config.pointLength">
+                      <el-button size="small" slot="append">km</el-button>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item label="点距离最小比例" :label-width="inputWidth">
+                    <el-input size="small" v-model.number="config.lengthScale">
+                      <el-button size="small" slot="append">%</el-button>
+                    </el-input>
+                  </el-form-item>
                   <el-form-item :label-width="inputWidth">
                     <el-button size="small" type="primary">修改</el-button>
                   </el-form-item>
