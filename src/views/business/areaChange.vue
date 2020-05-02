@@ -277,7 +277,7 @@
               </el-input>
             </el-form-item>
             <el-form-item :label-width="formWdth">
-              <el-button @click="isImport=true;openMap=true;" type="primary">验证导入</el-button>
+              <el-button @click="isImport=true;openMap=true;" type="primary">参数导入</el-button>
             </el-form-item>
           </el-form>
         </el-row>
@@ -1252,7 +1252,7 @@
         <el-button
           size="mini"
           v-if="isImport"
-          @click="getMapValue();isImport=false"
+          @click="getMapValue();"
           type="primary"
         >确认导入点</el-button>
       </span>
@@ -1512,7 +1512,11 @@ export default {
         labelColorOpaque: 100
       }, //kml导出的设置
       openMap: false,
-      fileList: []
+      fileList: [],
+      pointPrice: null,
+      argsCalc: null, //参数计算单价
+      discountList: [],
+      paramsDiscountList: []
     };
   },
   watch: {
@@ -1691,6 +1695,30 @@ export default {
       }
     ];
     this.setLieOption();
+    //取得价格数据
+    request({
+      url: "/data/config",
+      method: "get"
+    }).then(data => {
+      this.pointPrice = data.data.dataBasePoint;
+      this.argsCalc = data.data.argsCalc;
+      this.convertCalc = data.data.convertCalc;
+    });
+    //获取折扣配置
+    request({
+      url: "/discount/1",
+      method: "get"
+    }).then(data => {
+      this.discountList = data.data;
+    });
+    
+    //获取折扣配置
+    request({
+      url: "/discount/5",
+      method: "get"
+    }).then(data => {
+      this.paramsDiscountList = data.data;
+    });
   },
   //test
   mounted() {
@@ -1755,7 +1783,7 @@ export default {
         return;
       }
       request({
-        url: "/changeFileRecord/fileCode",
+        url: "/areaParam/code",
         method: "get",
         params: {
           phone: this.thatUser.phone
@@ -2380,6 +2408,30 @@ export default {
     },
     //提交表单中的数据到后台验证是否合格
     submitValid(flag) {
+      if (!this.isDataBase) {
+        let temp = this.tableData[0];
+        if (temp == null) {
+          this.$message({
+            type: "error",
+            message: "数据不能为空"
+          });
+          return;
+        }
+        if (
+          temp.oldX == null ||
+          temp.oldY == null ||
+          temp.oldH == null ||
+          temp.newX == null ||
+          temp.newY == null ||
+          temp.newH == null
+        ) {
+          this.$message({
+            type: "error",
+            message: "数据不完整"
+          });
+          return;
+        }
+      }
       if (this.tableData.length <= 0) {
         this.$message({
           type: "error",
@@ -2388,6 +2440,13 @@ export default {
         return;
       }
       if (flag == 1) {
+        if (this.checkCode == null) {
+          this.$message({
+            type: "warning",
+            message: "请填写验证码"
+          });
+          return
+        }
         let name = this.item1.name;
         name = name.replace(/\s+/g, "");
         console.log(name.length);
@@ -2408,26 +2467,21 @@ export default {
         } else {
           this.item1.userLinkId = this.thatUser.id;
         }
-      }
 
-      if (!this.isDataBase) {
-        let temp = this.tableData[0];
-        if (
-          temp.oldX == null ||
-          temp.oldY == null ||
-          temp.oldH == null ||
-          temp.newX == null ||
-          temp.newY == null ||
-          temp.newH == null
-        ) {
-          this.$message({
-            type: "error",
-            message: "数据不完整"
-          });
-          return;
-        }
+        this.$confirm(
+          "本次将要消费  " + this.argsCalc + "元   , 是否继续?",
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }
+        ).then(() => {this.submit(flag)});
+      }else {
+        this.submit(flag)
       }
-
+    },
+    submit(flag){
       request({
         url: `/areaParam/validData/${this.model}/${flag}`,
         method: "post",
@@ -2521,35 +2575,62 @@ export default {
         });
         return;
       }
+      
+      this.$confirm(
+          "本次将要消费  " + this.price(this.convertCalc, this.oldData.length, this.paramsDiscountList) + "元   , 是否继续?",
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }
+        ).then(() => {
+          request({
+            url: "/areaParam/computer",
+            method: "post",
+            data: {
+              data: this.oldData,
+              sevenPar: sevenPar,
+              oldItem: this.item1,
+              newItem: this.item2
+            }
+          }).then(res => {
+            if (res.flag) {
+              this.$message({
+                type: "success",
+                message: res.message
+              });
 
-      request({
-        url: "/areaParam/computer",
+              let temp = [];
+              this.newData = res.data;
+              for (let data of this.newData) {
+                for (let old of this.oldData) {
+                  if (old.name == data.name) {
+                    temp.push(this.twoJsonMerge(old, data));
+                  }
+                }
+              }
+              this.newData = temp;
+            }
+          });
+        });
+
+      
+    },
+    async toCgcs(data, oldItem){
+      if(oldItem.yqq == 'CGCS2000'){
+        return {
+          data: data
+        };
+      }
+      return request({
+        url: "/areaParam/tocgcs",
         method: "post",
         data: {
-          data: this.oldData,
-          sevenPar: sevenPar,
-          oldItem: this.item1,
-          newItem: this.item2
+          data: data,
+          oldItem: oldItem
         }
-      }).then(res => {
-        if (res.flag) {
-          this.$message({
-            type: "success",
-            message: res.message
-          });
-
-          let temp = [];
-          this.newData = res.data;
-          for (let data of this.newData) {
-            for (let old of this.oldData) {
-              if (old.name == data.name) {
-                temp.push(this.twoJsonMerge(old, data));
-              }
-            }
-          }
-          this.newData = temp;
-        }
-      });
+      })
     },
     selectHeader(value) {
       this.header0 = false;
@@ -2603,6 +2684,7 @@ export default {
       let item2 = this.item(this.item2);
 
       item1.name = name;
+      item1.checkCode = this.checkCode
       request({
         url: "/data/point",
         method: "post",
@@ -2774,27 +2856,68 @@ export default {
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
+    price(pointPrice, number, discountList){
+      for (let discount of discountList) {
+        if (number >= discount.number) {
+          if (discount.price == null) {
+            return number * pointPrice * discount.discount;
+          } else {
+            return discount.price;
+          }
+        }
+      }
+      return pointPrice * number;
+    },
     getMapValue() {
+      if (this.checkCode == null) {
+        this.$message({
+          type: "warning",
+          message: "请填写验证码"
+        });
+        return
+      }
+      
       let map = this.$el.getElementsByTagName("iframe")[0].contentWindow;
 
       console.log(map.names);
-
-      this.submitData(
-        "Ata473,Ata456,Ata472,Ata484,Ata486,Ata455,Ata554,Ata495,Ata483"
-      );
-      map.location.reload(true);
-      this.openMap = false;
+      let temp = "Ata473,Ata456,Ata472,Ata484,Ata486,Ata455,Ata554,Ata495,Ata483"
+      let number = temp.split(",").length
+      this.$confirm(
+        "本次将要消费  " + this.price(this.pointPrice, number, this.discountList) + "元   , 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      ).then(() => {
+        this.submitData(
+          "Ata473,Ata456,Ata472,Ata484,Ata486,Ata455,Ata554,Ata495,Ata483"
+        );
+        this.isImport=false
+        map.location.reload(true);
+        this.openMap = false;
+      });
     },
-    openMapValue(type) {
+    async openMapValue(type) {
       this.openMap = true;
       let map = this.$el.getElementsByTagName("iframe")[0].contentWindow;
 
       let data = null;
       if (type == 1) {
-        data = JSON.stringify(this.oldData);
+        data = await this.toCgcs(this.oldData, this.item1)
       } else if (type == 2) {
-        data = JSON.stringify(this.newData);
+        data = await this.toCgcs(this.newData, this.item2)
       }
+      if (data == null) {
+        this.$message({
+          type: "error",
+          message: "网络错误，请稍后再试"
+        });
+      }
+      data = JSON.stringify(data.data);
+      console.log(data);
+      
       map.setCoords(data);
 
       map.location.reload(true);

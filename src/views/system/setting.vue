@@ -279,7 +279,7 @@ export default {
       label: "区域参数计算",
       value: 2
     },{
-      label: "区域计算",
+      label: "区域坐标转换",
       value: 3
     },{
       label: "航空设计",

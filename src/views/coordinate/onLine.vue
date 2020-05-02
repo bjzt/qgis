@@ -557,7 +557,7 @@ export default {
       });
       //获取折扣配置
       request({
-        url: "/discount",
+        url: "/discount/0",
         method: "get"
       }).then(data => {
         this.discountList = data.data;
